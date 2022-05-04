@@ -13,13 +13,13 @@ public class Shop
     {
         LoggedInUser = GuestUser;
 
-        _commands = new ICommand[]
+        _commands = new []
         {
             new SearchByNameCommand(Assortment.Products),
             new ViewProductsCommand(Assortment.Products),
             new LoginCommand(Assortment.Users),
             new LogoutCommand(),
-            new IncorrectCommand()
+            IncorrectCommand
         };
 
         _commands[^1] = new HelpCommand(_commands);
