@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace TestProject1
+namespace Shop.Tests
 {
     public class Tests
     {
