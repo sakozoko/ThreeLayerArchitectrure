@@ -7,8 +7,6 @@ public class LogoutCommand : BasicCommand
 {
     private static readonly string[] Names = { "logout", "lo" };
 
-    private IUser _user;
-
     public LogoutCommand() : base(Names)
     {
     }
