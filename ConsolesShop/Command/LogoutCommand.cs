@@ -6,9 +6,11 @@ namespace ConsolesShop.Command;
 public class LogoutCommand : BasicCommand
 {
     private static readonly string[] Names = { "logout", "lo" };
+    private readonly Action _saveSession;
 
-    public LogoutCommand() : base(Names)
+    public LogoutCommand(Action act) : base(Names)
     {
+        _saveSession = act;
     }
 
     public override bool CanExecute(IUser user, string[] args)
@@ -21,6 +23,7 @@ public class LogoutCommand : BasicCommand
     public override void Execute(string[] args)
     {
         (_user as RegisteredUser).Logout();
+        _saveSession();
     }
 
     public override void GetHelp()

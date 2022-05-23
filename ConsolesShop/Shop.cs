@@ -13,35 +13,21 @@ public class Shop
     {
         LoggedInUser = GuestUser;
 
-        _commands = new []
+        _commands = new[]
         {
             new SearchByNameCommand(Assortment.Products),
             new ViewProductsCommand(Assortment.Products),
-            new LoginCommand(Assortment.Users),
-            new LogoutCommand(),
+            new LoginCommand(Assortment.Users,
+                x => { LoggedInUser = x; }),
+            new LogoutCommand(
+                () => { LoggedInUser = GuestUser; }),
             IncorrectCommand
         };
 
         _commands[^1] = new HelpCommand(_commands);
-        InitializeRegisteredUserEvents();
     }
 
-   public IUser LoggedInUser { get; private set; }
-
-    private void InitializeRegisteredUserEvents()
-    {
-        foreach (var user in Assortment.Users)
-            if (user is RegisteredUser us)
-                us.ChangeIsLoggedIn += OnLoggedInChanged;
-    }
-
-    private void OnLoggedInChanged(object sender, UserLogInEventArgs e)
-    {
-        if (e.IsLoggedIn)
-            LoggedInUser = sender as IUser;
-        else if (LoggedInUser is RegisteredUser { IsLoggedIn: true })
-            LoggedInUser = GuestUser;
-    }
+    public IUser LoggedInUser { get; private set; }
 
     private ICommand CorrectCommand(string name)
     {

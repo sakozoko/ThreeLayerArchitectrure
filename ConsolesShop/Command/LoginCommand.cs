@@ -6,11 +6,17 @@ namespace ConsolesShop.Command;
 
 public class LoginCommand : BasicCommand
 {
+    private const int CountOfArgs = 4;
     private static readonly string[] Names = { "li", "login" };
+    private readonly Action<RegisteredUser> _saveSession;
     private readonly IUser[] _users;
     private string _name;
     private string _password;
-    private const int CountOfArgs = 4;
+
+    public LoginCommand(IUser[] users, Action<RegisteredUser> act) : this(users)
+    {
+        _saveSession = act;
+    }
 
     public LoginCommand(IUser[] users) : base(Names)
     {
@@ -25,31 +31,33 @@ public class LoginCommand : BasicCommand
     public override void Execute(string[] args)
     {
         if (!TryParseLoginAndPassword(args)) return;
-            var user = TryFindUserByName();
-            switch (user)
-            {
-                case null:
-                    Console.WriteLine("Name incorrect");
-                    break;
-                case RegisteredUser us:
-                    Console.WriteLine(us.Login(_password) ? "Login successful" : "Password incorrect");
-                    break;
-            }
+        var user = TryFindUserByName();
+        switch (user)
+        {
+            case null:
+                Console.WriteLine("Name incorrect");
+                break;
+            case RegisteredUser us:
+                Console.WriteLine(us.Login(_password) ? "Login successful" : "Password incorrect");
+                _saveSession(us);
+                break;
+        }
     }
 
     private IUser TryFindUserByName()
     {
         return _users.FirstOrDefault(user => user.Name == _name);
     }
+
     private bool TryParseLoginAndPassword(string[] args)
     {
         if (args is null)
             return false;
         var nameIsParsed = false;
-        var passwordIsParsed=false;
+        var passwordIsParsed = false;
         try
         {
-            for (int i = 0; i < CountOfArgs; i++)
+            for (var i = 0; i < CountOfArgs; i++)
             {
                 if (args[i] == "-n")
                 {
@@ -63,6 +71,7 @@ public class LoginCommand : BasicCommand
                     passwordIsParsed = true;
                 }
             }
+
             return nameIsParsed && passwordIsParsed;
         }
         catch (IndexOutOfRangeException)
