@@ -26,7 +26,7 @@ public static class Assortment
 
     public static readonly IUser[] Users =
     {
-        new Administrator("Admin", "", "123123"),
-        new RegisteredUser("Alex", "John", "332211")
+        new Administrator(1,"Admin", "", "123123"),
+        new RegisteredUser(2,"Alex", "John", "332211")
     };
 }

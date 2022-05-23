@@ -4,8 +4,9 @@ public class RegisteredUser : IUser
 {
     private string _password;
 
-    public RegisteredUser(string name, string surname, string password)
+    public RegisteredUser(int id,string name, string surname, string password)
     {
+        Id = id;
         Name = name;
         Surname = surname;
         _password = password;
@@ -13,6 +14,7 @@ public class RegisteredUser : IUser
 
     public bool IsLoggedIn { get; private set; }
 
+    public int Id { get; }
     public string Name { get; set; }
     public string Surname { get; set; }
 
@@ -40,4 +42,18 @@ public class RegisteredUser : IUser
         IsLoggedIn = false;
         return true;
     }
+    public override bool Equals(object obj)
+    {
+        if (obj is null or not IUser)
+        {
+            return false;
+        }
+        return Id==((IUser) obj).Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id;
+    }
+
 }

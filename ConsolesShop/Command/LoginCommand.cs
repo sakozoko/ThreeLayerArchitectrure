@@ -13,14 +13,10 @@ public class LoginCommand : BasicCommand
     private string _name;
     private string _password;
 
-    public LoginCommand(IUser[] users, Action<RegisteredUser> act) : this(users)
-    {
-        _saveSession = act;
-    }
-
-    public LoginCommand(IUser[] users) : base(Names)
+    public LoginCommand(IUser[] users, Action<RegisteredUser> act) : base(Names)
     {
         _users = users;
+        _saveSession = act;
     }
 
     public override bool CanExecute(IUser user, string[] args)
