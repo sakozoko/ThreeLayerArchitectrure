@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConsolesShop.User;
 
@@ -6,14 +7,14 @@ namespace ConsolesShop.Command;
 
 public class LoginCommand : BasicCommand
 {
-    private const int CountOfArgs = 4;
     private static readonly string[] Names = { "li", "login" };
+    private static readonly string[] Parameters = {"-n", "-p" };
     private readonly Action<RegisteredUser> _saveSession;
     private readonly IUser[] _users;
     private string _name;
     private string _password;
 
-    public LoginCommand(IUser[] users, Action<RegisteredUser> act) : base(Names)
+    public LoginCommand(IUser[] users, Action<RegisteredUser> act) : base(Names, Parameters)
     {
         _users = users;
         _saveSession = act;
@@ -44,31 +45,21 @@ public class LoginCommand : BasicCommand
     {
         return _users.FirstOrDefault(user => user.Name == _name);
     }
-
     private bool TryParseLoginAndPassword(string[] args)
     {
-        if (args is null)
-            return false;
-        var nameIsParsed = false;
-        var passwordIsParsed = false;
         try
         {
-            for (var i = 0; i < CountOfArgs; i++)
-            {
-                if (args[i] == "-n")
-                {
-                    _name = args[i + 1];
-                    nameIsParsed = true;
-                }
-
-                if (args[i] == "-p")
-                {
-                    _password = args[i + 1];
-                    passwordIsParsed = true;
-                }
-            }
-
-            return nameIsParsed && passwordIsParsed;
+            var dict = ParseArgs(args);
+            return dict.TryGetValue(Parameters[0], out _name)
+                   && dict.TryGetValue(Parameters[1], out _password);
+        }
+        catch (NullReferenceException)
+        {
+            return false;
+        }
+        catch (ArgumentNullException)
+        {
+            return false;
         }
         catch (IndexOutOfRangeException)
         {

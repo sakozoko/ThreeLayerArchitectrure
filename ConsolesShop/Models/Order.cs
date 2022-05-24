@@ -1,24 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using ConsolesShop.Goods;
+﻿using System.Collections.Generic;
 using ConsolesShop.User;
 
-namespace ConsolesShop.Order;
+namespace ConsolesShop.Models;
 
 public class Order
 {
     private readonly Dictionary<int,int> _products;
-    private readonly RegisteredUser _owner;
+    public RegisteredUser Owner { get; }
 
+    public int Id { get; }
     public string Description { get; private set; }
     public bool IsDelivered { get; private set; }
     public bool IsCancelled { get; private set; }
 
-    public Order(string desc, RegisteredUser owner)
+    public Order(int id,string desc, RegisteredUser owner)
     {
+        Id = id;
         Description = desc;
-        _owner = owner;
+        Owner = owner;
         _products = new Dictionary<int, int>();
+    }
+
+    public Order(string desc, RegisteredUser owner) : this(0, desc, owner)
+    {
     }
     
     public void AddProduct(int id)
@@ -28,7 +32,7 @@ public class Order
 
     public bool Cancel(IUser user)
     {
-        if (!_owner.Equals(user) && user is Administrator)
+        if (!Owner.Equals(user) && user is Administrator)
         {
             return false;
         }
@@ -44,5 +48,10 @@ public class Order
         }
         IsDelivered = true;
         return true;
+    }
+
+    public override string ToString()
+    {
+        return $"{Id} \t {Description} \t {IsCancelled} \t {IsDelivered} ";
     }
 }

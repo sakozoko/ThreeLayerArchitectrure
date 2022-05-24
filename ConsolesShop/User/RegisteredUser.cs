@@ -1,15 +1,37 @@
-﻿namespace ConsolesShop.User;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ConsolesShop.Models;
+
+namespace ConsolesShop.User;
 
 public class RegisteredUser : IUser
 {
     private string _password;
+    
+    private readonly List<Order> _orders;
 
+    public List<Order> Orders
+    {
+        get
+        {
+            if (_orders.Count==0)
+            {
+                foreach (var order in Assortment.Orders.Where(order => order.Owner.Equals(this)))
+                {
+                    _orders.Add(order);
+                }
+            }
+
+            return _orders;
+        }
+    }
     public RegisteredUser(int id,string name, string surname, string password)
     {
         Id = id;
         Name = name;
         Surname = surname;
         _password = password;
+        _orders = new List<Order>();
     }
 
     public bool IsLoggedIn { get; private set; }
@@ -33,6 +55,11 @@ public class RegisteredUser : IUser
             return false;
         _password = newPassword;
         return true;
+    }
+
+    public void CreateNewOrder()
+    {
+        Orders.Add(new Order("Wall Street 321",this));
     }
 
     public bool Logout()

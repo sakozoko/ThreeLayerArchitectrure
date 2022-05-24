@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using ConsolesShop.Goods;
+using ConsolesShop.Models;
+using ConsolesShop.Models.Goods;
 using ConsolesShop.User;
 
 namespace ConsolesShop;
@@ -14,7 +15,8 @@ public static class Assortment
         new Category("Fourth"),
         new Category("Fifth")
     };
-
+    
+    
     public static readonly List<Product> Products = new()
     {
         new Product(1, "First", "First description", 12, Categories[0]),
@@ -28,5 +30,15 @@ public static class Assortment
     {
         new Administrator(1,"Admin", "", "123123"),
         new RegisteredUser(2,"Alex", "John", "332211")
+    };
+
+    public static readonly List<Order> Orders = new()
+    {
+        new Order(1,"Vishneva st. 34", Users[1] as RegisteredUser),
+        new Order(2, "Vishneva st. 34", Users[1] as RegisteredUser),
+        new Order(3, "Vishneva st. 34", Users[1] as RegisteredUser),
+        new Order(4, "Vishneva st. 34", Users[1] as RegisteredUser),
+        new Order(5, "Vishneva st. 34", Users[1] as RegisteredUser),
+        new Order(6, "Vishneva st. 34", Users[1] as RegisteredUser),
     };
 }

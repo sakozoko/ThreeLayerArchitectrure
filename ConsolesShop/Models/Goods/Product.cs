@@ -1,4 +1,4 @@
-﻿namespace ConsolesShop.Goods;
+﻿namespace ConsolesShop.Models.Goods;
 
 public class Product
 {

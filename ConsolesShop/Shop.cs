@@ -21,6 +21,8 @@ public class Shop
                 x => { LoggedInUser = x; }),
             new LogoutCommand(
                 () => { LoggedInUser = GuestUser; }),
+            new CreateNewOrderCommand(),
+            new ViewOrderHistoryCommand(),
             IncorrectCommand
         };
 

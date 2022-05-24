@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConsolesShop.Goods;
+using ConsolesShop.Models.Goods;
 
 namespace ConsolesShop.Command;
 
 public class ViewProductsCommand : BasicCommand
 {
-    private static readonly string[] Names = { "view", "v", "vp" };
+    private static readonly string[] Names = { "view product", "vp" };
     private readonly List<Product> _products;
 
     public ViewProductsCommand(List<Product> products) : base(Names)
@@ -28,6 +28,6 @@ public class ViewProductsCommand : BasicCommand
 
     public override void GetHelp()
     {
-        Console.WriteLine("View products \t view, v, or vp \t none");
+        Console.WriteLine("View products \t view products or vp \t none");
     }
 }

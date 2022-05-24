@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConsolesShop.Goods;
+using ConsolesShop.Models.Goods;
 using ConsolesShop.User;
 
 namespace ConsolesShop.Command;
