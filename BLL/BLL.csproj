@@ -2,13 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <LangVersion>latestmajor</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
+        <LangVersion>latestmajor</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BLL\BLL.csproj" />
       <ProjectReference Include="..\DAL\DAL.csproj" />
+      <ProjectReference Include="..\Entities\Entities.csproj" />
     </ItemGroup>
 
 </Project>
