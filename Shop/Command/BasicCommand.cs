@@ -1,12 +1,14 @@
-﻿using Entities.User;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace BLL.Command;
+namespace Shop.Command;
 
 public abstract class BasicCommand : ICommand
 {
     private readonly string[] _names;
     private readonly string[] _params;
-    protected IUser User;
 
     protected BasicCommand(string[] names, string[] parameters = null)
     {
@@ -23,21 +25,15 @@ public abstract class BasicCommand : ICommand
         return false;
     }
 
-    public virtual bool CanExecute(IUser user, string[] args = null)
-    {
-        User ??= user;
-        return user is Administrator;
-    }
-
-    public abstract Task<string> Execute(string[] args = null);
-    public abstract Task<string> GetHelp();
+    public abstract Task<string> Execute(string[] args);
+    public abstract string GetHelp();
 
     /// <summary>
     ///     Args must be as "-key, value, -key, value, etc",then algorithm working
     /// </summary>
     /// <param name="args">Args</param>
     /// <returns></returns>
-    protected Dictionary<string, string> ParseArgs(string[] args)
+    private Dictionary<string, string> ParseArgs(string[] args)
     {
         if (_params == null)
             throw new NullReferenceException("Params is null");

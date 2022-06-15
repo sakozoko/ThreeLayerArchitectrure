@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Entities.User;
+namespace Entities.Users;
 
 [Serializable]
 public class UserException : Exception

@@ -3,19 +3,24 @@ using Entities;
 
 namespace DAL.Repositories;
 
-public class OrderRepository:IRepository<Order>
+public class OrderRepository : IRepository<Order>
 {
-    private DbContext _dbContext;
-    private List<Order> _orders;
+    private readonly DbContext _dbContext;
+    private int _lastId;
+    private readonly List<Order> _orders;
 
     public OrderRepository(DbContext dbContext)
     {
         _dbContext = dbContext;
         _orders = _dbContext.Orders;
+        _lastId = _orders.Count;
     }
-    public void Add(Order entity)
+
+    public int Add(Order entity)
     {
+        entity.Id = ++_lastId;
         _orders.Add(entity);
+        return _lastId;
     }
 
     public IEnumerable<Order> GetAll()

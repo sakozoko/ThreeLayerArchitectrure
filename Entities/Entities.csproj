@@ -7,4 +7,16 @@
         <LangVersion>latestmajor</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+        <Compile Remove="Users\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Users\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Users\**"/>
+    </ItemGroup>
+
 </Project>

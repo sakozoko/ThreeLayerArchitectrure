@@ -1,43 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
+namespace Shop;
 
-namespace Shop
+public static class Program
 {
-    
-    public class Program
-    {
-  
-        
-        private static readonly BLL.Shop Shop=new BLL.Shop();
-        static async Task TaskAsync1()
-        {
-            await Task.Factory.StartNew(() => Console.WriteLine("TaskAsync1 is working"));
-        }
-        static Task Task1()
-        {
-            return new Task(() => { Console.WriteLine("Task1 is working"); });
-        }
+    private static readonly Shop Shop = new();
 
-        static Task<string> TaskResultsString()
+    private static async Task Main(string[] args)
+    {
+        var k = Console.ReadLine();
+        while (k != "exit")
         {
-            return new Task<string>(() => "123");
+            try
+            {
+                await Shop.ExecuteCommand(k);
+            }
+            catch (AggregateException)
+            {
+                Console.WriteLine("Exception!!!");
+            }
+
+            k = Console.ReadLine();
         }
-        static async Task Main(string[] args)
-        {
-            //Task1().Start();
-            //await TaskAsync1();
-            //////
-            //Console.ReadKey();
-                string k = Console.ReadLine();
-                while (k != "exit")
-                {
-                    Shop.ExecuteCommand(k);
-                    k = Console.ReadLine();
-                }
-        }
-        
     }
 }

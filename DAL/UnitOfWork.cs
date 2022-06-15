@@ -2,20 +2,19 @@
 using DAL.Repositories;
 using Entities;
 using Entities.Goods;
-using Entities.User;
 
 namespace DAL;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private DbContext _context = new ();
-    private  IRepository<IUser> _userRepository;
-    private  IRepository<Product> _productRepository;
-    private  IRepository<Order> _orderRepository;
-    private  IRepository<Category> _categoryRepository;
+    private IRepository<Category> _categoryRepository;
+    private readonly DbContext _context = new();
+    private IRepository<Order> _orderRepository;
+    private IRepository<Product> _productRepository;
+    private IRepository<User> _userRepository;
 
 
-    public IRepository<IUser> UserRepository
+    public IRepository<User> UserRepository
     {
         get
         {
@@ -24,7 +23,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public IRepository<Product> ProductRepository  
+    public IRepository<Product> ProductRepository
     {
         get
         {
@@ -41,6 +40,7 @@ public class UnitOfWork : IUnitOfWork
             return _orderRepository;
         }
     }
+
     public IRepository<Category> CategoryRepository
     {
         get

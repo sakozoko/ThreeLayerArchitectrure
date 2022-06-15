@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using Entities.User;
+using System.Threading.Tasks;
 
-namespace BLL.Command;
+namespace Shop.Command;
 
 public class HelpCommand : BasicCommand
 {
@@ -13,12 +13,7 @@ public class HelpCommand : BasicCommand
         _commands = commands;
     }
 
-    public override bool CanExecute(IUser user, string[] args = null)
-    {
-        return true;
-    }
-
-    public override Task<string> Execute(string[] args=null)
+    public override Task<string> Execute(string[] args)
     {
         return Task<string>.Factory.StartNew(() =>
         {
@@ -26,18 +21,17 @@ public class HelpCommand : BasicCommand
             stringBuilder.Append("Name \t To invoke \t Args");
             foreach (var command in _commands)
             {
-                var str = command.GetHelp().Result;
+                var str = command.GetHelp();
                 stringBuilder.Append("\n" + str);
             }
 
-            stringBuilder.Append(GetHelp().Result);
+            stringBuilder.Append(GetHelp());
             return stringBuilder.ToString();
         });
-
     }
 
-    public override Task<string>GetHelp()
+    public override string GetHelp()
     {
-        return Task<string>.Factory.StartNew(() => "Help \t h or help \t none");
+        return "Help \t h or help \t none";
     }
 }

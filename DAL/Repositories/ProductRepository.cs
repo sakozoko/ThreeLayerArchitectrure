@@ -7,17 +7,21 @@ public class ProductRepository : IRepository<Product>
 {
     private readonly DbContext _dbContext;
     private readonly List<Product> _products;
+    private int _lastId;
 
     public ProductRepository(DbContext dbContext)
     {
         _dbContext = dbContext;
         _products = _dbContext.Products;
+        _lastId = _products.Count;
     }
 
 
-    public void Add(Product entity)
+    public int Add(Product entity)
     {
+        entity.Id = ++_lastId;
         _products.Add(entity);
+        return _lastId;
     }
 
     public IEnumerable<Product> GetAll()

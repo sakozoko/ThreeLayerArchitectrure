@@ -1,6 +1,6 @@
-﻿namespace Entities.User;
+﻿namespace Entities.Users;
 
-public class RegisteredUser : IUser
+public class RegisteredUser : User
 {
     private string _password;
 
@@ -53,8 +53,8 @@ public class RegisteredUser : IUser
 
     public override bool Equals(object obj)
     {
-        if (obj is null or not IUser) return false;
-        return Id == ((IUser)obj).Id;
+        if (obj is null or not User) return false;
+        return Id == ((User)obj).Id;
     }
 
     public override int GetHashCode()

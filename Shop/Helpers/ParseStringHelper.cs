@@ -1,4 +1,6 @@
-﻿namespace BLL.Helpers;
+﻿using System.Collections.Generic;
+
+namespace Shop.Helpers;
 
 public static class ParseStringHelper
 {

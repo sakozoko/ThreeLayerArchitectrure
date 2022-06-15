@@ -1,5 +1,5 @@
 ﻿
-namespace Entities.User;
+namespace Entities.Users;
 
 public class Administrator : RegisteredUser
 {
