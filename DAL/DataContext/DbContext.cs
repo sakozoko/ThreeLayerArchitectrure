@@ -27,11 +27,11 @@ public class DbContext
     {
         Products = new List<Product>
         {
-            new(1, "First", "First description", 12, Categories[0]),
-            new(2, "Second", "Second description", 354, Categories[2]),
-            new(3, "Third", "Third description", 6364, Categories[3]),
-            new(4, "Fourth", "Fourth description", 1454, Categories[0]),
-            new(5, "Fifth", "Fifth description", 561, Categories[4])
+            new(){Id = 1,Name = "First",Description = "First description",Cost = 12, Category = Categories[0]},
+            new(){Id = 2,Name = "Second",Description = "Second description",Cost = 354, Category = Categories[2]},
+            new(){Id = 3,Name = "Third",Description = "Third description",Cost = 2541, Category = Categories[3]},
+            new(){Id = 4,Name = "Fourth",Description = "Fourth description",Cost = 1231, Category = Categories[0]},
+            new(){Id = 5,Name = "Fifth",Description = "Fifth description",Cost = 511, Category = Categories[4]},
         };
         Orders = new List<Order>
         {

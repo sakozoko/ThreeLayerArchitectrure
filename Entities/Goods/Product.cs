@@ -2,20 +2,11 @@
 
 public class Product
 {
-    public Product(int id, string name, string description, decimal cost, Category category = null)
-    {
-        Id = id;
-        Name = name;
-        Description = description;
-        Cost = cost;
-        Category = category;
-    }
-
     public int Id { get; set; }
-    public string Name { get; }
+    public string Name { get; set; }
     public string Description { get; set; }
-    public decimal Cost { get; }
-    public Category Category { get; }
+    public decimal Cost { get; set; }
+    public Category Category { get; set; }
 
     public override string ToString()
     {
