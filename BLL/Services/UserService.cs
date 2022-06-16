@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using BLL.Logger;
 using Bll.Services;
 using DAL.Repositories;
@@ -81,36 +80,40 @@ public class UserService : IUserService
         throw new ServiceException(nameof(UserService), msg);
     }
 
+    private bool ChangeProperty(string token,  Action<User> act, User user = null)
+    {
+        var requestUser = _tokenHandler.GetUser(token);
+        if (requestUser is not null)
+        {
+            if (user is null)
+            {
+                act.Invoke(requestUser);
+                return true;
+            }
+
+            if (user == requestUser)
+            {
+                act.Invoke(user);
+                return true;
+            }
+
+            if (requestUser.IsAdmin)
+            {
+                act.Invoke(user);
+                _logger.Log($"Admin {requestUser.Name} changed property for user id {user.Id}");
+                return true;
+            }
+            _logger.LogException($"{nameof(UserService)}.{nameof(ChangeProperty)} throw exception. " + Msg);
+            throw new ServiceException(nameof(UserService), Msg);
+        }
+        _logger.LogException($"{nameof(UserService)}.{nameof(ChangeProperty)} throw exception. Token is bad");
+        throw new ServiceException(nameof(UserService), "Token is bad"); 
+    }
     public Task<bool> ChangePassword(string token, string value,User user=null)
     {
         return Task<bool>.Factory.StartNew(() =>
         {
-            var requestUser = _tokenHandler.GetUser(token);
-            if (requestUser is not null)
-            {
-                if (user is null)
-                {
-                    requestUser.Password = value;
-                    return true;
-                }
-
-                if (user == requestUser)
-                {
-                    user.Password = value;
-                    return true;
-                }
-
-                if (requestUser.IsAdmin)
-                {
-                    user.Password = value;
-                    _logger.Log($"Admin {requestUser.Name} changed Password for user id {user.Id}");
-                    return true;
-                }
-                _logger.LogException($"{nameof(UserService)}.{nameof(ChangePassword)} throw exception. " + Msg);
-                throw new ServiceException(nameof(UserService), Msg);
-            }
-            _logger.LogException($"{nameof(UserService)}.{nameof(ChangePassword)} throw exception. Token is bad");
-            throw new ServiceException(nameof(UserService), "Token is bad"); 
+            return ChangeProperty(token, x => { x.Password = value;}, user);
         });
     }
 
@@ -118,67 +121,15 @@ public class UserService : IUserService
     {
         return Task<bool>.Factory.StartNew(() =>
         {
-            var requestUser = _tokenHandler.GetUser(token);
-            if (requestUser is not null)
-            {
-                if (user is null)
-                {
-                    requestUser.Name = value;
-                    return true;
-                }
-
-                if (user == requestUser)
-                {
-                    user.Name = value;
-                    return true;
-                }
-
-                if (requestUser.IsAdmin)
-                {
-                    user.Name = value;
-                    _logger.Log($"Admin {requestUser.Name} changed Name for user id {user.Id}");
-                    return true;
-                }
-                _logger.LogException($"{nameof(UserService)}.{nameof(ChangeName)} throw exception. " + Msg);
-                throw new ServiceException(nameof(UserService), Msg);
-            }
-            _logger.LogException($"{nameof(UserService)}.{nameof(ChangeName)} throw exception. Token is bad");
-            throw new ServiceException(nameof(UserService), "Token is bad");
+            return ChangeProperty(token, x => { x.Name = value; }, user);
         });
     }
     
-    public Task<bool> ChangeSurname(string token, string value, User user=null)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<bool> ChangeSurname(string token, string value, User user=null) =>
+        Task<bool>.Factory.StartNew(() =>
         {
-            var requestUser = _tokenHandler.GetUser(token);
-            if (requestUser is not null)
-            {
-                if (user is null)
-                {
-                    requestUser.Surname = value;
-                    return true;
-                }
-
-                if (user == requestUser)
-                {
-                    user.Surname = value;
-                    return true;
-                }
-
-                if (requestUser.IsAdmin)
-                {
-                    user.Surname = value;
-                    _logger.Log($"Admin {requestUser.Name} changed Surname for user id {user.Id}");
-                    return true;
-                }
-                _logger.LogException($"{nameof(UserService)}.{nameof(ChangeSurname)} throw exception. " + Msg);
-                throw new ServiceException(nameof(UserService), Msg);
-            }
-            _logger.LogException($"{nameof(UserService)}.{nameof(ChangeSurname)} throw exception. Token is bad");
-            throw new ServiceException(nameof(UserService), "Token is bad");
+            return ChangeProperty(token, x => { x.Surname = value; }, user);
         });
-    }
 
     public Task<bool> ChangeIsAdmin(string token, bool value,User user)
     {
