@@ -15,19 +15,19 @@ public class UnitOfWork : IUnitOfWork
     private IRepository<OrderStatus> _orderStatusRepository;
 
     public IRepository<User> UserRepository =>
-        _userRepository ??= new UserRepository(_context);
+        _userRepository ??= new GenericRepository<User>(_context);
 
     public IRepository<Product> ProductRepository =>
-        _productRepository ??= new ProductRepository(_context);
+        _productRepository ??= new GenericRepository<Product>(_context);
 
     public IRepository<Order> OrderRepository =>
-        _orderRepository ??= new OrderRepository(_context);
+        _orderRepository ??= new GenericRepository<Order>(_context);
 
     public IRepository<Category> CategoryRepository => 
-        _categoryRepository ??= new CategoryRepository(_context);
+        _categoryRepository ??= new GenericRepository<Category>(_context);
 
     public IRepository<OrderStatus> OrderStatusRepository =>
-        _orderStatusRepository ??= new OrderStatusRepository(_context);
+        _orderStatusRepository ??= new GenericRepository<OrderStatus>(_context);
 
 
 }

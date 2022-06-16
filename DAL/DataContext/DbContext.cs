@@ -58,4 +58,17 @@ public class DbContext
             new() { Id = 6, Description = "Vishneva st. 34", Owner = Users[1] }
         };
     }
+
+    public IEnumerable<T> Set<T>()
+    {
+        var properties = GetType().GetFields();
+        foreach (var propertyInfo in properties)
+        {
+            if (propertyInfo.FieldType == typeof(List<T>))
+            {
+                return (IEnumerable<T>)propertyInfo.GetValue(this);
+            }
+        }
+        throw new ApplicationException("Not found property with type List<T>");
+    }
 }
