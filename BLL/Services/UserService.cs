@@ -109,27 +109,14 @@ public class UserService : IUserService
         _logger.LogException($"{nameof(UserService)}.{nameof(ChangeProperty)} throw exception. Token is bad");
         throw new ServiceException(nameof(UserService), "Token is bad"); 
     }
-    public Task<bool> ChangePassword(string token, string value,User user=null)
-    {
-        return Task<bool>.Factory.StartNew(() =>
-        {
-            return ChangeProperty(token, x => { x.Password = value;}, user);
-        });
-    }
+    public Task<bool> ChangePassword(string token, string value,User user=null) => 
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Password = value, user));
 
-    public Task<bool> ChangeName(string token, string value, User user=null)
-    {
-        return Task<bool>.Factory.StartNew(() =>
-        {
-            return ChangeProperty(token, x => { x.Name = value; }, user);
-        });
-    }
-    
+    public Task<bool> ChangeName(string token, string value, User user=null) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Name = value, user));
+
     public Task<bool> ChangeSurname(string token, string value, User user=null) =>
-        Task<bool>.Factory.StartNew(() =>
-        {
-            return ChangeProperty(token, x => { x.Surname = value; }, user);
-        });
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Surname = value, user));
 
     public Task<bool> ChangeIsAdmin(string token, bool value,User user)
     {
