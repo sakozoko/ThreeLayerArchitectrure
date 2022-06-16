@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using BLL.Helpers;
+﻿using BLL.Helpers;
 using BLL.Logger;
 using DAL.Repositories;
 using Entities;
@@ -9,7 +8,7 @@ namespace BLL.Services;
 
 public class ProductService : IProductService
 {
-    private const string Msg = "User not logged in";
+    private const string Msg = "Token is bad";
     private readonly ILogger _logger;
     private readonly IRepository<Product> _productRepository;
     private readonly CustomTokenHandler _tokenHandler;
@@ -48,6 +47,43 @@ public class ProductService : IProductService
             });
     }
 
+    public Task<bool> ChangeName(string token, string value, Product product) => 
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Name = value, product));
+
+    public Task<bool> ChangeDescription(string token, string value, Product product) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Description = value, product));
+
+    public Task<bool> ChangeCost(string token, decimal value, Product product) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Cost = value, product));
+
+    public Task<bool> ChangeCategory(string token, Category category, Product product)
+    {
+        return Task<bool>.Factory.StartNew(() =>
+        {
+            return category is not null && ChangeProperty(token, x => x.Category = category, product);
+        });
+    }
+
+    private bool ChangeProperty(string token, Action<Product> act, Product product)
+    {
+        var requestUser = _tokenHandler.GetUser(token);
+        if (product is null)
+            return false;
+        if (requestUser is not null)
+        {
+            if (requestUser.IsAdmin)
+            {
+                act.Invoke(product);
+                _logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
+                return true;
+            }
+            _logger.LogException($"{nameof(ProductService)}.{nameof(ChangeProperty)} throw exception. Do not have permission");
+            throw new ServiceException(nameof(ProductService), "Do not have permission");
+        }
+        _logger.LogException($"{nameof(ProductService)}.{nameof(ChangeProperty)} throw exception. "+Msg);
+        throw new ServiceException(nameof(ProductService), Msg);
+    }
+
     public Task<IEnumerable<Product>> GetProductsFromOrder(string token, Order order)
     {
         return Task<IEnumerable<Product>>.Factory.StartNew(() =>
@@ -64,11 +100,11 @@ public class ProductService : IProductService
                 }
                 if(order.Owner==us)
                     return order.Products;
-                msg = $"{us.Name} do not have permission";
+                msg = "Do not have permission";
             }
 
             if (string.IsNullOrEmpty(msg))
-                msg = $"Token is bad";
+                msg = Msg;
             _logger.LogException($"{nameof(ProductService)}.{nameof(GetProductsFromOrder)} throw exception. " + msg);
             throw new ServiceException(nameof(ProductService), msg);
 
