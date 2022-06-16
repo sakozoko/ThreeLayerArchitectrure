@@ -6,8 +6,8 @@ namespace DAL.Repositories;
 public class OrderRepository : IRepository<Order>
 {
     private readonly DbContext _dbContext;
-    private int _lastId;
     private readonly List<Order> _orders;
+    private int _lastId;
 
     public OrderRepository(DbContext dbContext)
     {

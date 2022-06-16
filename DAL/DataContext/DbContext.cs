@@ -15,6 +15,18 @@ public class DbContext
     };
 
     public readonly List<Order> Orders;
+
+    public readonly List<OrderStatus> OrderStatuses = new()
+    {
+        new OrderStatus { Id=1, StatusValue = "New" },
+        new OrderStatus { Id=2, StatusValue = "Canceled by the administrator" },
+        new OrderStatus { Id=3, StatusValue = "Payment received" },
+        new OrderStatus { Id=4, StatusValue = "Sent" },
+        new OrderStatus { Id=5, StatusValue = "Completed" },
+        new OrderStatus { Id=6, StatusValue = "Received" },
+        new OrderStatus { Id=7, StatusValue = "Canceled by user" }
+    };
+
     public readonly List<Product> Products;
 
     public readonly List<User> Users = new()
@@ -27,11 +39,14 @@ public class DbContext
     {
         Products = new List<Product>
         {
-            new(){Id = 1,Name = "First",Description = "First description",Cost = 12, Category = Categories[0]},
-            new(){Id = 2,Name = "Second",Description = "Second description",Cost = 354, Category = Categories[2]},
-            new(){Id = 3,Name = "Third",Description = "Third description",Cost = 2541, Category = Categories[3]},
-            new(){Id = 4,Name = "Fourth",Description = "Fourth description",Cost = 1231, Category = Categories[0]},
-            new(){Id = 5,Name = "Fifth",Description = "Fifth description",Cost = 511, Category = Categories[4]},
+            new() { Id = 1, Name = "First", Description = "First description", Cost = 12, Category = Categories[0] },
+            new() { Id = 2, Name = "Second", Description = "Second description", Cost = 354, Category = Categories[2] },
+            new() { Id = 3, Name = "Third", Description = "Third description", Cost = 2541, Category = Categories[3] },
+            new()
+            {
+                Id = 4, Name = "Fourth", Description = "Fourth description", Cost = 1231, Category = Categories[0]
+            },
+            new() { Id = 5, Name = "Fifth", Description = "Fifth description", Cost = 511, Category = Categories[4] }
         };
         Orders = new List<Order>
         {

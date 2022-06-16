@@ -7,46 +7,27 @@ namespace DAL;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private IRepository<Category> _categoryRepository;
     private readonly DbContext _context = new();
+    private IRepository<Category> _categoryRepository;
     private IRepository<Order> _orderRepository;
     private IRepository<Product> _productRepository;
     private IRepository<User> _userRepository;
+    private IRepository<OrderStatus> _orderStatusRepository;
+
+    public IRepository<User> UserRepository =>
+        _userRepository ??= new UserRepository(_context);
+
+    public IRepository<Product> ProductRepository =>
+        _productRepository ??= new ProductRepository(_context);
+
+    public IRepository<Order> OrderRepository =>
+        _orderRepository ??= new OrderRepository(_context);
+
+    public IRepository<Category> CategoryRepository => 
+        _categoryRepository ??= new CategoryRepository(_context);
+
+    public IRepository<OrderStatus> OrderStatusRepository =>
+        _orderStatusRepository ??= new OrderStatusRepository(_context);
 
 
-    public IRepository<User> UserRepository
-    {
-        get
-        {
-            _userRepository ??= new UserRepository(_context);
-            return _userRepository;
-        }
-    }
-
-    public IRepository<Product> ProductRepository
-    {
-        get
-        {
-            _productRepository ??= new ProductRepository(_context);
-            return _productRepository;
-        }
-    }
-
-    public IRepository<Order> OrderRepository
-    {
-        get
-        {
-            _orderRepository ??= new OrderRepository(_context);
-            return _orderRepository;
-        }
-    }
-
-    public IRepository<Category> CategoryRepository
-    {
-        get
-        {
-            _categoryRepository ??= new CategoryRepository(_context);
-            return _categoryRepository;
-        }
-    }
 }
