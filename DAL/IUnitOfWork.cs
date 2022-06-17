@@ -10,5 +10,4 @@ public interface IUnitOfWork
     public IRepository<Product> ProductRepository { get; }
     public IRepository<Order> OrderRepository { get; }
     public IRepository<Category> CategoryRepository { get; }
-    public IRepository<OrderStatus> OrderStatusRepository { get; }
 }

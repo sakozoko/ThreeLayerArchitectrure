@@ -12,7 +12,6 @@ public class UnitOfWork : IUnitOfWork
     private IRepository<Order> _orderRepository;
     private IRepository<Product> _productRepository;
     private IRepository<User> _userRepository;
-    private IRepository<OrderStatus> _orderStatusRepository;
 
     public IRepository<User> UserRepository =>
         _userRepository ??= new GenericRepository<User>(_context);
@@ -25,9 +24,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IRepository<Category> CategoryRepository => 
         _categoryRepository ??= new GenericRepository<Category>(_context);
-
-    public IRepository<OrderStatus> OrderStatusRepository =>
-        _orderStatusRepository ??= new GenericRepository<OrderStatus>(_context);
+    
 
 
 }

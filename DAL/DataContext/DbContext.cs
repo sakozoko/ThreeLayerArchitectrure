@@ -1,11 +1,12 @@
-﻿using Entities;
+﻿using System.Reflection;
+using Entities;
 using Entities.Goods;
 
 namespace DAL.DataContext;
 
 public class DbContext
 {
-    public readonly List<Category> Categories = new()
+    private readonly List<Category> _categories = new()
     {
         new Category { Id = 1, Name = "First" },
         new Category { Id = 2, Name = "Second" },
@@ -14,22 +15,11 @@ public class DbContext
         new Category { Id = 5, Name = "Fifth" }
     };
 
-    public readonly List<Order> Orders;
+    private readonly List<Order> _orders;
 
-    public readonly List<OrderStatus> OrderStatuses = new()
-    {
-        new OrderStatus { Id=1, StatusValue = "New" },
-        new OrderStatus { Id=2, StatusValue = "Canceled by the administrator" },
-        new OrderStatus { Id=3, StatusValue = "Payment received" },
-        new OrderStatus { Id=4, StatusValue = "Sent" },
-        new OrderStatus { Id=5, StatusValue = "Completed" },
-        new OrderStatus { Id=6, StatusValue = "Received" },
-        new OrderStatus { Id=7, StatusValue = "Canceled by user" }
-    };
+    private readonly List<Product> _products;
 
-    public readonly List<Product> Products;
-
-    public readonly List<User> Users = new()
+    private readonly List<User> _users = new()
     {
         new User { Id = 1, Name = "Admin", IsAdmin = true, Password = "123123" },
         new User { Id = 2, Name = "Alex", Surname = "John", IsAdmin = false, Password = "332211" }
@@ -37,31 +27,31 @@ public class DbContext
 
     public DbContext()
     {
-        Products = new List<Product>
+        _products = new List<Product>
         {
-            new() { Id = 1, Name = "First", Description = "First description", Cost = 12, Category = Categories[0] },
-            new() { Id = 2, Name = "Second", Description = "Second description", Cost = 354, Category = Categories[2] },
-            new() { Id = 3, Name = "Third", Description = "Third description", Cost = 2541, Category = Categories[3] },
+            new() { Id = 1, Name = "First", Description = "First description", Cost = 12, Category = _categories[0] },
+            new() { Id = 2, Name = "Second", Description = "Second description", Cost = 354, Category = _categories[2] },
+            new() { Id = 3, Name = "Third", Description = "Third description", Cost = 2541, Category = _categories[3] },
             new()
             {
-                Id = 4, Name = "Fourth", Description = "Fourth description", Cost = 1231, Category = Categories[0]
+                Id = 4, Name = "Fourth", Description = "Fourth description", Cost = 1231, Category = _categories[0]
             },
-            new() { Id = 5, Name = "Fifth", Description = "Fifth description", Cost = 511, Category = Categories[4] }
+            new() { Id = 5, Name = "Fifth", Description = "Fifth description", Cost = 511, Category = _categories[4] }
         };
-        Orders = new List<Order>
+        _orders = new List<Order>
         {
-            new() { Id = 1, Description = "Vishneva st. 34", Owner = Users[1] },
-            new() { Id = 2, Description = "Vishneva st. 34", Owner = Users[1] },
-            new() { Id = 3, Description = "Vishneva st. 34", Owner = Users[1] },
-            new() { Id = 4, Description = "Vishneva st. 34", Owner = Users[1] },
-            new() { Id = 5, Description = "Vishneva st. 34", Owner = Users[1] },
-            new() { Id = 6, Description = "Vishneva st. 34", Owner = Users[1] }
+            new() { Id = 1, Description = "Vishneva st. 34", Owner = _users[1] },
+            new() { Id = 2, Description = "Vishneva st. 34", Owner = _users[1] },
+            new() { Id = 3, Description = "Vishneva st. 34", Owner = _users[1] },
+            new() { Id = 4, Description = "Vishneva st. 34", Owner = _users[1] },
+            new() { Id = 5, Description = "Vishneva st. 34", Owner = _users[1] },
+            new() { Id = 6, Description = "Vishneva st. 34", Owner = _users[1] }
         };
     }
 
     public IEnumerable<T> Set<T>()
     {
-        var properties = GetType().GetFields();
+        var properties = GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
         foreach (var propertyInfo in properties)
         {
             if (propertyInfo.FieldType == typeof(List<T>))
@@ -69,6 +59,6 @@ public class DbContext
                 return (IEnumerable<T>)propertyInfo.GetValue(this);
             }
         }
-        throw new ApplicationException("Not found property with type List<T>");
+        throw new ApplicationException("Not found field with type List<T>");
     }
 }
