@@ -1,6 +1,12 @@
 ﻿namespace Entities;
 
-public class OrderStatus:BaseEntity
+public enum OrderStatus
 {
-    public string StatusValue { get; set; }
+New,
+CanceledByTheAdministrator,
+PaymentReceived,
+Sent,
+Completed,
+Received,
+CanceledByUser
 }
