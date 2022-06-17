@@ -18,18 +18,15 @@ public class OrderCreatingCommand : BasicCommand
     }
 
 
-    public override Task<string> Execute(string[] args)
+    public override string Execute(string[] args)
     {
-        return Task<string>.Factory.StartNew(() =>
-        {
-            if (!TryParseParameters(args)) return GetHelp();
-            var productTask =
-                _service.Factory.ProductService.GetProductById(Shop.AuthenticationData?.Token, _product);
-            var userTask = _service.Factory.UserService.GetById(Shop.AuthenticationData?.Token, _id);
-            var id = _service.Factory.OrderService.CreateOrder(Shop.AuthenticationData?.Token, _desc,
-                productTask.Result, userTask.Result);
-            return $"Successful! Id your order is {id.Result}";
-        });
+        if (!TryParseParameters(args)) return GetHelp();
+        var productTask =
+            _service.Factory.ProductService.GetById(Shop.AuthenticationData?.Token, _product);
+        var userTask = _service.Factory.UserService.GetById(Shop.AuthenticationData?.Token, _id);
+        var id = _service.Factory.OrderService.Create(Shop.AuthenticationData?.Token, _desc,
+            productTask.Result, userTask.Result);
+        return $"Successful! Id your order is {id.Result}";
     }
 
     private bool TryParseParameters(string[] args)

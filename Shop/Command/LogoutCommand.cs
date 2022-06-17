@@ -11,16 +11,12 @@ public class LogoutCommand : BasicCommand
     }
 
 
-    public override Task<string> Execute(string[] args)
+    public override string Execute(string[] args)
     {
-        return Task<string>.Factory.StartNew(() =>
-        {
-            if (Shop.AuthenticationData is null) return "Error";
-
-            var str = $"{Shop.AuthenticationData.Name}, bye bye!";
-            Shop.AuthenticationData = null;
-            return str;
-        });
+        if (Shop.AuthenticationData is null) return "Error";
+        var str = $"{Shop.AuthenticationData.Name}, bye bye!";
+        Shop.AuthenticationData = null;
+        return str;
     }
 
     public override string GetHelp()

@@ -47,16 +47,12 @@ public class Shop
         return correctCommand;
     }
 
-    public Task ExecuteCommand(string commandString)
+    public void ExecuteCommand(string commandString)
     {
-        return Task.Factory.StartNew(() =>
-        {
-            var args = SplitString(commandString);
-            var command = CorrectCommand(args[0]);
-            var result = command.Execute(args).Result;
-
-            Console.WriteLine(result);
-        });
+        var args = SplitString(commandString);
+        var command = CorrectCommand(args[0]);
+        var result = command.Execute(args);
+        Console.WriteLine(result);
     }
 
     private string[] SplitString(string str)

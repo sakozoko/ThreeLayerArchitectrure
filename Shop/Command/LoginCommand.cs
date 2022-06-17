@@ -17,18 +17,14 @@ public class LoginCommand : BasicCommand
         _service = service;
     }
 
-    public override Task<string> Execute(string[] args)
+    public override string Execute(string[] args)
     {
-        return Task<string>.Factory.StartNew(() =>
-        {
-            if (!TryParseLoginAndPassword(args)) return GetHelp();
-
-            var authenticateRequest = new AuthenticateRequest { Username = _name, Password = _password };
-            var response = _service.Factory.UserService.Authenticate(authenticateRequest);
-            if (response is null) return "Name or password is incorrect";
-            Shop.AuthenticationData = response;
-            return $"{response.Name}, hi!";
-        });
+        if (!TryParseLoginAndPassword(args)) return GetHelp();
+        var authenticateRequest = new AuthenticateRequest { Username = _name, Password = _password };
+        var response = _service.Factory.UserService.Authenticate(authenticateRequest);
+        if (response is null) return "Name or password is incorrect";
+        Shop.AuthenticationData = response;
+        return $"{response.Name}, hi!";
     }
 
 

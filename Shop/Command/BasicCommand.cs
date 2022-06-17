@@ -25,7 +25,7 @@ public abstract class BasicCommand : ICommand
         return false;
     }
 
-    public abstract Task<string> Execute(string[] args);
+    public abstract string Execute(string[] args);
     public abstract string GetHelp();
 
     /// <summary>

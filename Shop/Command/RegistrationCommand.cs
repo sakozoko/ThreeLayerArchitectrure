@@ -16,22 +16,17 @@ public class RegistrationCommand : BasicCommand
         _service = service;
     }
 
-    public override Task<string> Execute(string[] args)
+    public override string Execute(string[] args)
     {
-        return Task<string>.Factory.StartNew(() =>
+        if (!TryParseParameters(args)) return GetHelp();
+        var request = new AuthenticateRequest { Username = _name, Password = _password };
+        var response = _service.Factory.UserService.Registration(request);
+        if(response is null)
         {
-            if (!TryParseParameters(args)) return GetHelp();
-            var request = new AuthenticateRequest { Username = _name, Password = _password };
-            var response = _service.Factory.UserService.Registration(request);
-            if(response is null)
-            {
-                return "Args value incorrect";
-            }
-
-            Shop.AuthenticationData = response;
-            return $"{response.Name} welcome!";
-
-        });
+            return "Args value incorrect";
+        }
+        Shop.AuthenticationData = response;
+        return $"{response.Name} welcome!";
     }
 
     private bool TryParseParameters(string[] args)

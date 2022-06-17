@@ -9,9 +9,9 @@ public class IncorrectCommand : BasicCommand
     {
     }
 
-    public override Task<string> Execute(string[] args)
+    public override string Execute(string[] args)
     {
-        return Task<string>.Factory.StartNew(() => "Write h or help to help about commands");
+        return "Write h or help to help about commands";
     }
 
     public override string GetHelp()

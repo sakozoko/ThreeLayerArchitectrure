@@ -13,21 +13,18 @@ public class HelpCommand : BasicCommand
         _commands = commands;
     }
 
-    public override Task<string> Execute(string[] args)
+    public override string Execute(string[] args)
     {
-        return Task<string>.Factory.StartNew(() =>
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append("Name \t To invoke \t Args");
+        foreach (var command in _commands)
         {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.Append("Name \t To invoke \t Args");
-            foreach (var command in _commands)
-            {
-                var str = command.GetHelp();
-                stringBuilder.Append("\n" + str);
-            }
+            var str = command.GetHelp();
+            stringBuilder.Append("\n" + str);
+        }
 
-            stringBuilder.Append(GetHelp());
-            return stringBuilder.ToString();
-        });
+        stringBuilder.Append(GetHelp());
+        return stringBuilder.ToString();
     }
 
     public override string GetHelp()
