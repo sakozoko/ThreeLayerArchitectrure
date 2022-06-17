@@ -1,38 +1,29 @@
 ﻿using BLL.Helpers;
 using BLL.Logger;
-using Bll.Services;
+using BLL.Services.Interfaces;
 using DAL.Repositories;
 using Entities;
 
 namespace BLL.Services;
 
-public class UserService : IUserService
+public class UserService : BaseService<User>, IUserService
 {
-    private readonly ILogger _logger;
-    private readonly CustomTokenHandler _tokenHandler;
-    private readonly IRepository<User> _userRepository;
-    private const string Msg= "Do not have permission to it";
-    public UserService(IRepository<User> userRepository, CustomTokenHandler tokenHandler, ILogger logger)
-    {
-        _tokenHandler = tokenHandler;
-        _userRepository = userRepository;
-        _logger = logger;
-    }
 
+    public UserService(IRepository<User> repository, CustomTokenHandler tokenHandler, ILogger logger) : base(repository, tokenHandler, logger)
+    {
+    }
     public AuthenticateResponse Authenticate(AuthenticateRequest request)
     {
         if (request is null)
         {
-            const string msg = "Request is null";
-            _logger.LogException($"{nameof(UserService)}.{nameof(Authenticate)} throw exception. " + msg);
-            throw new ServiceException(nameof(UserService), msg);
+            LogAndThrowServiceException("Request is null");
         }
-        var user = _userRepository.GetAll().FirstOrDefault
+        var user = Repository.GetAll().FirstOrDefault
             (x => x.Name == request.Username && x.Password == request.Password);
         if (user is null) return null;
-        var token = _tokenHandler.GenerateToken(user);
+        var token = TokenHandler.GenerateToken(user);
         var response = new AuthenticateResponse(user, token);
-        _logger.Log($"{user.Name} signed in");
+        Logger.Log($"{user.Name} signed in");
         return response;
     }
 
@@ -40,75 +31,37 @@ public class UserService : IUserService
     {
         if (request is null)
         {
-            const string msg = "Request is null";
-            _logger.LogException($"{nameof(UserService)}.{nameof(Authenticate)} throw exception. " + msg);
-            throw new ServiceException(nameof(UserService), msg);
+            LogAndThrowServiceException("Request is null");
         }
         if (request.Username.Length < 4 || request.Password.Length < 6)
             return null;
-        if (_userRepository.GetAll().FirstOrDefault(x => x.Name == request.Username) != null)
+        if (Repository.GetAll().FirstOrDefault(x => x.Name == request.Username) != null)
         {
-            const string msg = "Name taken";
-            _logger.LogException($"{nameof(UserService)}.{nameof(Authenticate)} throw exception. " + msg);
-            throw new ServiceException(nameof(UserService), msg);
+            LogAndThrowServiceException("Name taken");
         }
         var user = new User{ Name = request.Username, Password = request.Password};
-        _userRepository.Add(user);
-        var token = _tokenHandler.GenerateToken(user);
+        Repository.Add(user);
+        var token = TokenHandler.GenerateToken(user);
         var response = new AuthenticateResponse(user, token);
-        _logger.Log($"{user.Name} registrated.");
+        Logger.Log($"{user.Name} registrated.");
         return response;
     }
-    public Task<User> GetByName(string token,string name)
-    {
-        return Task.Factory.StartNew(() =>
+    public Task<User> GetByName(string token,string name) =>
+        Task.Factory.StartNew(() =>
         {
-            if(_tokenHandler.ValidateToken(token))
-                return _userRepository.GetAll().ToList().Find(x => x.Name == name);
-            var msg = $"Token is bad \n{token}";
-            _logger.LogException($"{nameof(OrderService)}.{nameof(GetByName)} throw exception. " + msg);
-            throw new ServiceException(nameof(UserService), msg);
+            ThrowServiceExceptionIfUserIsNull(TokenHandler.GetUser(token));
+            
+            return Repository.GetAll().ToList().Find(x => x.Name == name);
         });
-    }
 
-    public Task<User> GetById(string token, int id)
-    {
-        if(_tokenHandler.ValidateToken(token))
-            return Task.Factory.StartNew(() => _userRepository.GetById(id));
-        const string msg = $"Token is bad ";
-        _logger.LogException($"{nameof(OrderService)}.{nameof(GetByName)} throw exception. " + msg);
-        throw new ServiceException(nameof(UserService), msg);
-    }
-
-    private bool ChangeProperty(string token,  Action<User> act, User user = null)
-    {
-        var requestUser = _tokenHandler.GetUser(token);
-        if (requestUser is not null)
+    public Task<User> GetById(string token, int id) =>
+        Task.Factory.StartNew(() =>
         {
-            if (user is null)
-            {
-                act.Invoke(requestUser);
-                return true;
-            }
+            ThrowServiceExceptionIfUserIsNull(TokenHandler.GetUser(token));
+            
+            return Repository.GetById(id);
+        });
 
-            if (user == requestUser)
-            {
-                act.Invoke(user);
-                return true;
-            }
-
-            if (requestUser.IsAdmin)
-            {
-                act.Invoke(user);
-                _logger.Log($"Admin {requestUser.Name} changed property for user id {user.Id}");
-                return true;
-            }
-            _logger.LogException($"{nameof(UserService)}.{nameof(ChangeProperty)} throw exception. " + Msg);
-            throw new ServiceException(nameof(UserService), Msg);
-        }
-        _logger.LogException($"{nameof(UserService)}.{nameof(ChangeProperty)} throw exception. Token is bad");
-        throw new ServiceException(nameof(UserService), "Token is bad"); 
-    }
     public Task<bool> ChangePassword(string token, string value,User user=null) => 
         Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Password = value, user));
 
@@ -117,55 +70,63 @@ public class UserService : IUserService
 
     public Task<bool> ChangeSurname(string token, string value, User user=null) =>
         Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Surname = value, user));
-
-    public Task<bool> ChangeIsAdmin(string token, bool value,User user)
+    private bool ChangeProperty(string token, Action<User> act, User user = null)
     {
-        return Task<bool>.Factory.StartNew(() =>
+        var requestUser = TokenHandler.GetUser(token);
+
+        ThrowServiceExceptionIfUserIsNull(requestUser);
+
+        if (user is not null && user != requestUser)
         {
-            var requestUser = _tokenHandler.GetUser(token);
-            if (requestUser is {IsAdmin:true})
-            {
-                if (user is null) return false;
-                user.IsAdmin = value;
-                _logger.Log($"Admin {requestUser.Name} changed IsAdmin status for user id {user.Id}");
-                return false;
-            }
+            ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+            Logger.Log($"Admin {requestUser.Name} changed property for user id {user.Id}");
+        }
 
-            if (requestUser is not null)
-            {
-                _logger.LogException($"{nameof(UserService)}.{nameof(ChangeIsAdmin)} throw exception. " + Msg);
-                throw new ServiceException(nameof(UserService), Msg);
-            }
-            _logger.LogException($"{nameof(UserService)}.{nameof(ChangeIsAdmin)} throw exception. Token is bad");
-            throw new ServiceException(nameof(UserService), "Token is bad");
-        });
-    }
-    
-
-
-    public Task<IEnumerable<User>> GetAllUsers(string token)
-    {
-        return Task.Factory.StartNew(() =>
-        {
-            var user = _tokenHandler.GetUser(token);
-            if (user is { IsAdmin: true })
-            {
-                _logger.Log($"Admin {user.Name} invoked to get all users");
-                return _userRepository.GetAll();
-            }
-            _logger.LogException($"{nameof(UserService)}.{nameof(GetAllUsers)} throw exception. " + Msg);
-            throw new ServiceException(nameof(UserService), Msg);
-        });
+        user ??= requestUser;
+        act.Invoke(user);
+        return true;
     }
 
-    public Task<bool> Delete(string token,User user=null)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<bool> ChangeIsAdmin(string token, bool value,User user) =>
+        Task<bool>.Factory.StartNew(() =>
         {
             if (user is null)
+            {
                 return false;
-            _userRepository.Delete(user);
+            }
+            var requestUser = TokenHandler.GetUser(token);
+            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            if (requestUser == user)
+            {
+                return false;
+            }
+            if (user.Id == 1) 
+            { 
+                return false;
+            }
+            user.IsAdmin = value;
+            Logger.Log($"Admin {requestUser.Name} changed IsAdmin status for user id {user.Id}");
             return true;
         });
-    }
+
+    public Task<IEnumerable<User>> GetAll(string token) =>
+        Task.Factory.StartNew(() =>
+        {
+            var requestUser = TokenHandler.GetUser(token);
+            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            Logger.Log($"Admin {requestUser.Name} invoked get all users");
+            return Repository.GetAll();
+        });
+
+    public Task<bool> Remove(string token, User entity) => 
+        Task<bool>.Factory.StartNew(() => entity is not null && Remove(token, entity.Id).Result);
+
+    public Task<bool> Remove(string token, int id) =>
+        Task<bool>.Factory.StartNew(() =>
+        {
+            var requestUser = TokenHandler.GetUser(token);
+            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            Logger.Log($"Admin {requestUser.Name} invoked remove user with id {id}");
+            return requestUser.Id != id && Repository.Delete(Repository.GetById(id));
+        });
 }

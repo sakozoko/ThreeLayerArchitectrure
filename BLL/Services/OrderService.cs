@@ -1,152 +1,162 @@
 ﻿using BLL.Helpers;
 using BLL.Logger;
-using BLL.Services;
+using BLL.Services.Interfaces;
 using DAL.Repositories;
 using Entities;
 using Entities.Goods;
 
-namespace Bll.Services;
+namespace BLL.Services;
 
-public class OrderService : IOrderService
+public class OrderService : BaseService<Order>, IOrderService
 {
-    private readonly ILogger _logger;
-    private readonly IRepository<Order> _orderRepository;
-    private readonly CustomTokenHandler _tokenHandler;
-    private const string Msg = "Token is bad";
-    public OrderService(IRepository<Order> repository, CustomTokenHandler tokenHandler, ILogger logger)
+    public OrderService(IRepository<Order> repository, CustomTokenHandler tokenHandler, ILogger logger):
+        base(repository, tokenHandler, logger)
     {
-        _orderRepository = repository;
-        _tokenHandler = tokenHandler;
-        _logger = logger;
+        
     }
 
-    public Task<Order> GetOrderById(int id, string token)
-    {
-        return Task<Order>.Factory.StartNew(() =>
+    public Task<Order> GetById(int id, string token) =>
+        Task<Order>.Factory.StartNew(() =>
         {
-            var order = _orderRepository.GetById(id);
-            var requestUser = _tokenHandler.GetUser(token);
-            if (order is not null && order.Owner == requestUser) return order;
-
-            if (requestUser is { IsAdmin: true })
+            var order = Repository.GetById(id);
+            if (order is null)
             {
-                return order;
+                return null;
             }
+            var requestUser = TokenHandler.GetUser(token);
+            ThrowServiceExceptionIfUserIsNull(requestUser);
 
-            var msg = $"{requestUser?.Name} do not have permission";
-            _logger.Log($"{nameof(OrderService)}.{nameof(GetOrderById)} throw exception." + msg);
-            throw new ServiceException(nameof(OrderService), msg);
-        });
-    }
-
-    public Task<int> CreateOrder(string token, string desc, Product product, User user = null)
-    {
-        return Task<int>.Factory.StartNew(() =>
-        {
-            var requestUser = _tokenHandler.GetUser(token);
-            if (user is not null)
+            if (order.Owner != requestUser)
             {
-                if (requestUser is { IsAdmin: true })
-                {
-                    var order = new Order { Description = desc, Owner = user, Products = new List<Product>() };
-                    if (product != null)
-                        order.Products.Add(product);
-                    var id = _orderRepository.Add(order);
-                    _logger.Log($"Admin {requestUser.Name} created new order with id {id} to user id {user.Id}");
-                    return id;
-                }
-            }
-            else if (requestUser is not null)
-            {
-                var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
-                if (product != null)
-                    order.Products.Add(product);
-                return _orderRepository.Add(order);
+                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
             }
             
-            _logger.LogException($"{nameof(OrderService)}.{nameof(CreateOrder)} throw exception. " + Msg);
-            throw new ServiceException(nameof(OrderService), Msg);
+            return order;
         });
-    }
 
-    public Task<IEnumerable<Order>> GetAllOrders(string token)
-    {
-        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
+    public Task<int> Create(string token, string desc, Product product, User user = null) =>
+        Task<int>.Factory.StartNew(() =>
         {
-            var user = _tokenHandler.GetUser(token);
-            if (user is { IsAdmin: true })
+            var requestUser = TokenHandler.GetUser(token);
+            
+            ThrowServiceExceptionIfUserIsNull(requestUser);
+            
+            var order = new Order{Description = desc, Owner=requestUser, Products = new List<Product>()};
+            
+            if (user is not null)
             {
-                _logger.Log($"Admin {user.Name} invoked to get all order");
-                return _orderRepository.GetAll();
+                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                order.Owner = user;
+                Logger.Log($"Admin {requestUser.Name} created new order to user id {user.Id}");
             }
 
-            var msg = $"{user?.Name} do not have permission";
-            _logger.LogException($"{nameof(OrderService)}.{nameof(GetAllOrders)} throw exception." + msg);
-            throw new ServiceException(nameof(OrderService), msg);
-        });
-    }
-
-    public Task<IEnumerable<Order>> GetUserOrders(string token, User user = null)
-    {
-        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
-        {
-            var requestUser = _tokenHandler.GetUser(token);
-            if (user is null)
-            {
-                if (requestUser is not null)
-                    return _orderRepository.GetAll().Where(x => x.Owner == requestUser);
-                _logger.LogException($"{nameof(OrderService)}.{nameof(GetUserOrders)} throw exception." + Msg);
-                throw new ServiceException(nameof(OrderService), Msg);
-            }
-
-            if (requestUser is { IsAdmin: true })
-            {
-                _logger.Log($"Admin {requestUser.Name} viewed orders of user with id {user.Id}");
-                return _orderRepository.GetAll().Where(x => x.Owner == user);
-            }
-            _logger.LogException($"{nameof(OrderService)}.{nameof(GetUserOrders)} throw exception." + Msg);
-            throw new ServiceException(nameof(OrderService), Msg);
-        });
-    }
-
-    public Task<bool> AddProduct(Order order, Product product, string token)
-    {
-        return Task<bool>.Factory.StartNew(() =>
-        {
-            if (order is null || product is null)
-                return false;
-            var requestUser = _tokenHandler.GetUser(token);
-
-            if (order.Owner.Equals(requestUser))
+            if (product is not null)
             {
                 order.Products.Add(product);
-                return true;
             }
-
-            _logger.Log(
-                $"Order owner don't equal token user, Owner.Id: {order.Owner.Id} Token.Id: {requestUser?.Id}");
-            return false;
+            return Repository.Add(order);
         });
-    }
 
-    public Task<bool> DeleteProduct(Order order, Product product, string token)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<IEnumerable<Order>> GetAll(string token) =>
+        Task<IEnumerable<Order>>.Factory.StartNew(() =>
+        {
+            var requestUser = TokenHandler.GetUser(token);
+            
+            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+
+            Logger.Log($"Admin {requestUser.Name} invoke to get all order");
+            return Repository.GetAll();
+        });
+
+    public Task<IEnumerable<Order>> GetUserOrders(string token, User user = null) =>
+        Task<IEnumerable<Order>>.Factory.StartNew(() =>
+        {
+            var requestUser = TokenHandler.GetUser(token);
+            ThrowServiceExceptionIfUserIsNull(requestUser);
+            Func<Order, bool> func = x => x.Owner == requestUser;
+            if (user is not null)
+            {
+                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                func = x => x.Owner == user;
+                Logger.Log($"Admin {requestUser.Name} review orders of user with id {user.Id}");
+            }
+            
+            return Repository.GetAll().Where(func);
+        });
+
+    public Task<bool> AddProduct(string token, Product product, Order order) =>
+        Task<bool>.Factory.StartNew(() =>
         {
             if (order is null || product is null)
                 return false;
-            var requestUser = _tokenHandler.GetUser(token);
-            if (order.Owner.Equals(requestUser) || requestUser is { IsAdmin: true })
+            var requestUser = TokenHandler.GetUser(token);
+            
+            ThrowServiceExceptionIfUserIsNull(requestUser);
+
+            if (order.Owner != requestUser)
             {
-                if (requestUser is { IsAdmin: true })
-                    _logger.Log($"Admin {requestUser.Name} removed product with id {product.Id} from order " +
-                                $"with id {order.Id}");
-                return order.Products.Remove(product);
+                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                Logger.Log($"Admin {requestUser.Name} added product with id {product.Id} from order with id {order.Id}");
             }
 
-            _logger.Log(
-                $"Order owner don't equal token user, Owner.Id: {order.Owner.Id} Token.Id: {requestUser?.Id}");
-            return false;
+            order.Products.Add(product);
+            
+            return true;
         });
+
+    public Task<bool> DeleteProduct(string token, Product product, Order order) =>
+        Task<bool>.Factory.StartNew(() =>
+        {
+            if (order is null || product is null)
+                return false;
+            var requestUser = TokenHandler.GetUser(token);
+         
+            ThrowServiceExceptionIfUserIsNull(requestUser);
+            
+            if (order.Owner != requestUser)
+            {
+                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                Logger.Log($"Admin {requestUser.Name} removed product with id {product.Id} from order with id {order.Id}");
+            }
+            
+            return order.Products.Remove(product);
+        });
+
+    public Task<bool> ChangeDescription(string token, string desc, Order order) =>
+        Task<bool>.Factory.StartNew(() => !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, order, x => x.Description = desc));
+
+    public Task<bool> ChangeOrderStatus(string token, OrderStatus status,Order order) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, order, x =>
+        {
+            if (TokenHandler.GetUser(token) is { IsAdmin: false }
+                && status == OrderStatus.CanceledByUser
+                && order.OrderStatus == OrderStatus.Received)
+            {
+                x.OrderStatus = OrderStatus.CanceledByUser;
+            }
+
+            if (TokenHandler.GetUser(token) is { IsAdmin: true })
+            {
+                x.OrderStatus = status;
+            }
+        }));
+
+    private bool ChangeProperty(string token, Order order, Action<Order> act)
+    {
+        if (order is null)
+        {
+            return false;
+        }
+
+        var requestUser = TokenHandler.GetUser(token);
+        
+        ThrowServiceExceptionIfUserIsNull(requestUser);
+        if (order.Owner != requestUser)
+        {
+            ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+            Logger.Log($"Admin {requestUser.Name} change property for order with id{order.Id}");
+        }
+        act.Invoke(order);
+        return true;
     }
 }

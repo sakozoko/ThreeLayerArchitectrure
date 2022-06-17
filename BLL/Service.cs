@@ -22,8 +22,6 @@ public class Service
         _tokenHandler = new CustomTokenHandler(_unitOfWork.UserRepository, _logger);
     }
 
-    public IServiceFactory Factory
-    {
-        get { return _serviceFactory ??= new ServiceFactory(_unitOfWork, _tokenHandler, _logger); }
-    }
+    public IServiceFactory Factory =>
+        _serviceFactory ??= new ServiceFactory(_unitOfWork, _tokenHandler, _logger);
 }

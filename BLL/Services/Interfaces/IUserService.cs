@@ -1,6 +1,6 @@
 ﻿using Entities;
 
-namespace BLL.Services;
+namespace BLL.Services.Interfaces;
 
 public interface IUserService
 {
@@ -12,5 +12,7 @@ public interface IUserService
     public Task<bool> ChangeName(string token, string newName, User user = null);
     public Task<bool> ChangeSurname(string token, string newSurname, User user = null);
     public Task<bool> ChangeIsAdmin(string token, bool value,User user);
-    public Task<IEnumerable<User>> GetAllUsers(string token);
+    public Task<IEnumerable<User>> GetAll(string token);
+    public Task<bool> Remove(string token, int id);
+    public Task<bool> Remove(string token, User entity);
 }

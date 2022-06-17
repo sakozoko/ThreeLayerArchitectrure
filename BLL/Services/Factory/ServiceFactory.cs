@@ -1,6 +1,6 @@
 ﻿using BLL.Helpers;
 using BLL.Logger;
-using Bll.Services;
+using BLL.Services.Interfaces;
 using DAL;
 
 namespace BLL.Services.Factory;
@@ -13,6 +13,7 @@ public class ServiceFactory : IServiceFactory
     private IOrderService _orderService;
     private IProductService _productService;
     private IUserService _userService;
+    private ICategoryService _categoryService;
 
     public ServiceFactory(IUnitOfWork unitOfWork, CustomTokenHandler tokenHandler, ILogger logger)
     {
@@ -29,4 +30,8 @@ public class ServiceFactory : IServiceFactory
 
     public IOrderService OrderService =>
         _orderService ??= new OrderService(_unitOfWork.OrderRepository, _tokenHandler, _logger);
+    
+
+    public ICategoryService CategoryService =>
+        _categoryService ??= new CategoryService(_unitOfWork.CategoryRepository, _tokenHandler, _logger);
 }
