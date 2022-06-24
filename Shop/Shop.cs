@@ -25,6 +25,7 @@ public class Shop
             new OrderCreatingCommand(_service),
             new OrderHistoryViewCommand(_service),
             new RegistrationCommand(_service),
+            new ModifyingOrderCommand(_service),
             IncorrectCommand
         };
 
@@ -62,10 +63,7 @@ public class Shop
         catch (AggregateException ae)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            if (ae.InnerException is AuthenticationException)
-            {
-                Console.WriteLine(ae.InnerException.Message);
-            }
+            if (ae.InnerException is AuthenticationException) Console.WriteLine(ae.InnerException.Message);
 
             Console.ForegroundColor = ConsoleColor.Gray;
         }
