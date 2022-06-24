@@ -29,32 +29,32 @@ public class DbContext
         };
     }
 
-    public List<Category> Categories => new()
+    public IList<Category> Categories { get; } = new List<Category>
     {
-        new Category { Id = 1, Name = "First" },
-        new Category { Id = 2, Name = "Second" },
-        new Category { Id = 3, Name = "Third" },
-        new Category { Id = 4, Name = "Fourth" },
-        new Category { Id = 5, Name = "Fifth" }
+        new() { Id = 1, Name = "First" },
+        new() { Id = 2, Name = "Second" },
+        new() { Id = 3, Name = "Third" },
+        new() { Id = 4, Name = "Fourth" },
+        new() { Id = 5, Name = "Fifth" }
     };
 
-    public List<Order> Orders { get; }
+    public IList<Order> Orders { get; }
 
-    public List<Product> Products { get; }
+    public IList<Product> Products { get; }
 
-    public List<User> Users => new()
+    public IList<User> Users { get; } = new List<User>
     {
-        new User { Id = 1, Name = "Admin", IsAdmin = true, Password = "123123" },
-        new User { Id = 2, Name = "Alex", Surname = "John", IsAdmin = false, Password = "332211" }
+        new() { Id = 1, Name = "Admin", IsAdmin = true, Password = "123123" },
+        new() { Id = 2, Name = "Alex", Surname = "John", IsAdmin = false, Password = "332211" }
     };
 
-    public IEnumerable<T> Set<T>()
+    public IList<T> Set<T>()
     {
         var properties = GetType().GetProperties();
         foreach (var propertyInfo in properties)
-            if (propertyInfo.PropertyType == typeof(List<T>))
-                return (IEnumerable<T>)propertyInfo.GetValue(this);
-        throw new ArgumentException($"Not found field with type List<{nameof(T)}>");
+            if (propertyInfo.PropertyType == typeof(IList<T>))
+                return propertyInfo.GetValue(this) as IList<T>;
+        throw new ArgumentException($"Not found field with type IList<{nameof(T)}>");
     }
 
     public Task Save()
