@@ -2,7 +2,7 @@
 
 namespace Shop.Command;
 
-public class OrderCreatingCommand : BasicCommand
+public class OrderCreatingCommand : BaseCommand
 {
     private static readonly string[] Names = { "cno", "order", "createno" };
     private static readonly string[] Parameters = { "-d", "-p", "-u" };

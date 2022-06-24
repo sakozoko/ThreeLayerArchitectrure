@@ -1,6 +1,6 @@
 ﻿namespace Shop.Command;
 
-public class LogoutCommand : BasicCommand
+public class LogoutCommand : BaseCommand
 {
     private static readonly string[] Names = { "logout", "lo" };
 

@@ -5,7 +5,7 @@ namespace BLL.Services.Interfaces;
 
 public interface IOrderService
 {
-    public Task<Order> GetById(int id, string token);
+    public Task<Order> GetById(string token, int id);
     public Task<IEnumerable<Order>> GetAll(string token);
     public Task<IEnumerable<Order>> GetUserOrders(string token, User user = null);
     public Task<int> Create(string token, string desc, Product product, User user = null);

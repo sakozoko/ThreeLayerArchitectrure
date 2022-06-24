@@ -14,7 +14,7 @@ public class OrderService : BaseService<Order>, IOrderService
     {
     }
 
-    public Task<Order> GetById(int id, string token)
+    public Task<Order> GetById(string token, int id)
     {
         return Task<Order>.Factory.StartNew(() =>
         {
@@ -71,6 +71,7 @@ public class OrderService : BaseService<Order>, IOrderService
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
             Func<Order, bool> func = x => x.Owner == requestUser;
+
             if (user is not null)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
@@ -137,9 +138,11 @@ public class OrderService : BaseService<Order>, IOrderService
         return Task<bool>.Factory.StartNew(() => ChangeProperty(token, order, x =>
         {
             if (TokenHandler.GetUser(token) is { IsAdmin: false }
-                && status == OrderStatus.CanceledByUser
-                && order.OrderStatus == OrderStatus.Received)
-                x.OrderStatus = OrderStatus.CanceledByUser;
+                && ((status == OrderStatus.CanceledByUser
+                     && order.OrderStatus == OrderStatus.Received)
+                    || (status == OrderStatus.Received
+                        && order.OrderStatus == OrderStatus.Completed)))
+                x.OrderStatus = status;
 
             if (TokenHandler.GetUser(token) is { IsAdmin: true }) x.OrderStatus = status;
         }));
@@ -155,7 +158,7 @@ public class OrderService : BaseService<Order>, IOrderService
         if (order.Owner != requestUser)
         {
             ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-            Logger.Log($"Admin {requestUser.Name} change property for order with id{order.Id}");
+            Logger.Log($"Admin {requestUser.Name} change property for order with id {order.Id}");
         }
 
         act.Invoke(order);

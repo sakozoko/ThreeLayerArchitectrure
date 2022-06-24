@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace Shop.Command;
 
-public abstract class BasicCommand : ICommand
+public abstract class BaseCommand : ICommand
 {
     private readonly string[] _names;
     private readonly string[] _params;
 
-    protected BasicCommand(string[] names, string[] parameters = null)
+    protected BaseCommand(string[] names, string[] parameters = null)
     {
         _names = names;
         _params = parameters;

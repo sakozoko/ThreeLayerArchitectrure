@@ -6,7 +6,7 @@ using Entities;
 
 namespace Shop.Command;
 
-public class OrderHistoryViewCommand : BasicCommand
+public class OrderHistoryViewCommand : BaseCommand
 {
     private static readonly string[] Names = { "view orders", "vo" };
     private static readonly string[] Parameters = { "-u" };

@@ -34,10 +34,11 @@ public class BaseService<T> where T : BaseEntity
         throw ex;
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(User requestUser, [CallerMemberName] string callerName = "")
+    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(User requestUser,
+        [CallerMemberName] string callerName = "")
     {
         ThrowAuthenticationExceptionIfUserIsNull(requestUser, callerName);
-        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser,callerName);
+        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser, callerName);
     }
 
     protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUser, [CallerMemberName] string callerName = "")
@@ -45,7 +46,8 @@ public class BaseService<T> where T : BaseEntity
         if (requestUser is null) LogAndThrowAuthenticationException("Token is bad", callerName);
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(User requestUser, [CallerMemberName] string callerName = "")
+    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(User requestUser,
+        [CallerMemberName] string callerName = "")
     {
         if (!requestUser.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);
     }

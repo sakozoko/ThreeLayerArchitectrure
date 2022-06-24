@@ -5,8 +5,7 @@ namespace BLL.Services.Exception;
 [Serializable]
 public class AuthenticationException : System.Exception
 {
-
-    public AuthenticationException(string msg) : 
+    public AuthenticationException(string msg) :
         base(msg)
     {
     }

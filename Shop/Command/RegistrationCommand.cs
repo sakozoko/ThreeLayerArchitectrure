@@ -3,7 +3,7 @@ using Entities;
 
 namespace Shop.Command;
 
-public class RegistrationCommand : BasicCommand
+public class RegistrationCommand : BaseCommand
 {
     private static readonly string[] Names = { "reg", "r", "rg" };
     private static readonly string[] Parameters = { "-n", "-p" };

@@ -2,7 +2,7 @@
 
 namespace Shop.Command;
 
-public class IncorrectCommand : BasicCommand
+public class IncorrectCommand : BaseCommand
 {
     public IncorrectCommand() : base(Array.Empty<string>())
     {

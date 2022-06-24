@@ -20,6 +20,7 @@ public class DebugLogger : ILogger
                 var type = exception.Data["type"] as Type;
                 sb.Append(type.FullName);
             }
+
             if (exception.Data.Contains("callerName"))
             {
                 var callerName = exception.Data["callerName"] as string;
@@ -27,8 +28,7 @@ public class DebugLogger : ILogger
             }
 
             sb.Append($": {exception.Message} - {exception.GetType().FullName}");
-            Debug.WriteLine(sb.ToString(),"Exception");
+            Debug.WriteLine(sb.ToString(), "Exception");
         });
-
     }
 }

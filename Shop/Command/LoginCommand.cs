@@ -3,7 +3,7 @@ using Entities;
 
 namespace Shop.Command;
 
-public class LoginCommand : BasicCommand
+public class LoginCommand : BaseCommand
 {
     private static readonly string[] Names = { "li", "login" };
     private static readonly string[] Parameters = { "-n", "-p" };

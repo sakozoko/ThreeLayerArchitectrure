@@ -7,7 +7,7 @@ using Entities.Goods;
 
 namespace Shop.Command;
 
-public class ProductsViewCommand : BasicCommand
+public class ProductsViewCommand : BaseCommand
 {
     private static readonly string[] Names = { "view product", "vp" };
     private static readonly string[] Parameters = { "-g", "-n" };

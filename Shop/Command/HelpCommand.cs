@@ -2,7 +2,7 @@
 
 namespace Shop.Command;
 
-public class HelpCommand : BasicCommand
+public class HelpCommand : BaseCommand
 {
     private static readonly string[] Names = { "h", "help" };
     private readonly ICommand[] _commands;
