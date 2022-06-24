@@ -15,7 +15,7 @@ public class UserService : BaseService<User>, IUserService
 
     public AuthenticateResponse Authenticate(AuthenticateRequest request)
     {
-        if (request is null) LogAndThrowServiceException("Request is null");
+        if (request is null) LogAndThrowAuthenticationException("Request is null");
         var user = Repository.GetAll().FirstOrDefault
             (x => x.Name == request.Username && x.Password == request.Password);
         if (user is null) return null;
@@ -27,11 +27,11 @@ public class UserService : BaseService<User>, IUserService
 
     public AuthenticateResponse Registration(AuthenticateRequest request)
     {
-        if (request is null) LogAndThrowServiceException("Request is null");
+        if (request is null) LogAndThrowAuthenticationException("Request is null");
         if (request.Username.Length < 4 || request.Password.Length < 6)
             return null;
         if (Repository.GetAll().FirstOrDefault(x => x.Name == request.Username) != null)
-            LogAndThrowServiceException("Name taken");
+            LogAndThrowAuthenticationException("Name taken");
         var user = new User { Name = request.Username, Password = request.Password };
         Repository.Add(user);
         var token = TokenHandler.GenerateToken(user);
@@ -44,7 +44,7 @@ public class UserService : BaseService<User>, IUserService
     {
         return Task.Factory.StartNew(() =>
         {
-            ThrowServiceExceptionIfUserIsNull(TokenHandler.GetUser(token));
+            ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
             return Repository.GetAll().ToList().Find(x => x.Name == name);
         });
@@ -54,7 +54,7 @@ public class UserService : BaseService<User>, IUserService
     {
         return Task.Factory.StartNew(() =>
         {
-            ThrowServiceExceptionIfUserIsNull(TokenHandler.GetUser(token));
+            ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
             return Repository.GetById(id);
         });
@@ -81,7 +81,7 @@ public class UserService : BaseService<User>, IUserService
         {
             if (user is null) return false;
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             if (requestUser == user) return false;
             if (user.Id == 1) return false;
             user.IsAdmin = value;
@@ -95,7 +95,7 @@ public class UserService : BaseService<User>, IUserService
         return Task.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} invoked get all users");
             return Repository.GetAll();
         });
@@ -111,7 +111,7 @@ public class UserService : BaseService<User>, IUserService
         return Task<bool>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} invoked remove user with id {id}");
             return requestUser.Id != id && Repository.Delete(Repository.GetById(id));
         });
@@ -121,11 +121,11 @@ public class UserService : BaseService<User>, IUserService
     {
         var requestUser = TokenHandler.GetUser(token);
 
-        ThrowServiceExceptionIfUserIsNull(requestUser);
+        ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
         if (user is not null && user != requestUser)
         {
-            ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} changed property for user id {user.Id}");
         }
 

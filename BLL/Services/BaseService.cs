@@ -11,7 +11,6 @@ public class BaseService<T> where T : BaseEntity
 {
     protected readonly ILogger Logger;
     protected readonly IRepository<T> Repository;
-    protected readonly string[] StandardExceptionMessages = { "Token is bad", "Do not have permission" };
     protected readonly CustomTokenHandler TokenHandler;
 
     protected BaseService(IRepository<T> repository, CustomTokenHandler tokenHandler, ILogger logger)
@@ -21,26 +20,33 @@ public class BaseService<T> where T : BaseEntity
         Logger = logger;
     }
 
-    protected void LogAndThrowServiceException(string msg, [CallerMemberName] string callerName = "")
+    protected void LogAndThrowAuthenticationException(string msg, [CallerMemberName] string callerName = "")
     {
-        var ex = new ServiceException(msg, GetType(), callerName);
+        var ex = new AuthenticationException(msg)
+        {
+            Data =
+            {
+                ["type"] = GetType(),
+                ["callerName"] = callerName
+            }
+        };
         Logger.Log(ex);
         throw ex;
     }
 
-    protected void ThrowServiceExceptionIfUserIsNullOrNotAdmin(User requestUser)
+    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(User requestUser, [CallerMemberName] string callerName = "")
     {
-        ThrowServiceExceptionIfUserIsNull(requestUser);
-        ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+        ThrowAuthenticationExceptionIfUserIsNull(requestUser, callerName);
+        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser,callerName);
     }
 
-    protected void ThrowServiceExceptionIfUserIsNull(User requestUser)
+    protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUser, [CallerMemberName] string callerName = "")
     {
-        if (requestUser is null) LogAndThrowServiceException(StandardExceptionMessages[0]);
+        if (requestUser is null) LogAndThrowAuthenticationException("Token is bad", callerName);
     }
 
-    protected void ThrowServiceExceptionIfUserIsNotAdmin(User requestUser)
+    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(User requestUser, [CallerMemberName] string callerName = "")
     {
-        if (!requestUser.IsAdmin) LogAndThrowServiceException(StandardExceptionMessages[1]);
+        if (!requestUser.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);
     }
 }

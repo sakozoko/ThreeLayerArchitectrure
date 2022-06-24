@@ -21,7 +21,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
             if (string.IsNullOrWhiteSpace(name))
                 return -1;
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             var nameIsUnique = Repository.GetAll().FirstOrDefault(x => x.Name == name) == null;
             if (!nameIsUnique) return -1;
             var category = new Category { Name = name };
@@ -37,7 +37,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             return Repository.GetAll();
         });
@@ -49,7 +49,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
             Logger.Log($"Admin {requestUser.Name} reviewed category by name {name}");
 
@@ -63,7 +63,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             return Repository.GetById(id);
         });
@@ -80,7 +80,7 @@ public class CategoryService : BaseService<Category>, ICategoryService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
             return Repository.Delete(entity);
         });

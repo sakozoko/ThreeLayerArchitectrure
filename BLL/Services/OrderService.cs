@@ -21,9 +21,9 @@ public class OrderService : BaseService<Order>, IOrderService
             var order = Repository.GetById(id);
             if (order is null) return null;
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            if (order.Owner != requestUser) ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+            if (order.Owner != requestUser) ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
 
             return order;
         });
@@ -35,13 +35,13 @@ public class OrderService : BaseService<Order>, IOrderService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
 
             if (user is not null)
             {
-                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 order.Owner = user;
                 Logger.Log($"Admin {requestUser.Name} created new order to user id {user.Id}");
             }
@@ -57,7 +57,7 @@ public class OrderService : BaseService<Order>, IOrderService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
             Logger.Log($"Admin {requestUser.Name} invoke to get all order");
             return Repository.GetAll();
@@ -69,11 +69,11 @@ public class OrderService : BaseService<Order>, IOrderService
         return Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
             Func<Order, bool> func = x => x.Owner == requestUser;
             if (user is not null)
             {
-                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 func = x => x.Owner == user;
                 Logger.Log($"Admin {requestUser.Name} review orders of user with id {user.Id}");
             }
@@ -90,11 +90,11 @@ public class OrderService : BaseService<Order>, IOrderService
                 return false;
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             if (order.Owner != requestUser)
             {
-                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 Logger.Log(
                     $"Admin {requestUser.Name} added product with id {product.Id} from order with id {order.Id}");
             }
@@ -113,11 +113,11 @@ public class OrderService : BaseService<Order>, IOrderService
                 return false;
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             if (order.Owner != requestUser)
             {
-                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 Logger.Log(
                     $"Admin {requestUser.Name} removed product with id {product.Id} from order with id {order.Id}");
             }
@@ -151,10 +151,10 @@ public class OrderService : BaseService<Order>, IOrderService
 
         var requestUser = TokenHandler.GetUser(token);
 
-        ThrowServiceExceptionIfUserIsNull(requestUser);
+        ThrowAuthenticationExceptionIfUserIsNull(requestUser);
         if (order.Owner != requestUser)
         {
-            ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} change property for order with id{order.Id}");
         }
 

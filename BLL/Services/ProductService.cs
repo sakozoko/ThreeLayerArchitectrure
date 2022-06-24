@@ -23,7 +23,7 @@ public class ProductService : BaseService<Product>, IProductService
     {
         return Task<Product>.Factory.StartNew(() =>
         {
-            ThrowServiceExceptionIfUserIsNull(TokenHandler.GetUser(token));
+            ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
             return Repository.GetById(id);
         });
     }
@@ -33,7 +33,7 @@ public class ProductService : BaseService<Product>, IProductService
         return Task<IEnumerable<Product>>.Factory.StartNew(
             () =>
             {
-                ThrowServiceExceptionIfUserIsNull(TokenHandler.GetUser(token));
+                ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
                 return Repository.GetAll();
             });
     }
@@ -69,7 +69,7 @@ public class ProductService : BaseService<Product>, IProductService
         return Task<bool>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
-            ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} invoked remove product with id {id}");
             return Repository.Delete(Repository.GetById(id));
         });
@@ -83,11 +83,11 @@ public class ProductService : BaseService<Product>, IProductService
                 return null;
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowServiceExceptionIfUserIsNull(requestUser);
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             if (order.Owner != requestUser)
             {
-                ThrowServiceExceptionIfUserIsNotAdmin(requestUser);
+                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 Logger.Log($"Admin {requestUser.Name} invoked to get products from order id {order.Id}");
             }
 
@@ -101,7 +101,7 @@ public class ProductService : BaseService<Product>, IProductService
             return false;
         var requestUser = TokenHandler.GetUser(token);
 
-        ThrowServiceExceptionIfUserIsNullOrNotAdmin(requestUser);
+        ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
         act.Invoke(product);
         Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
