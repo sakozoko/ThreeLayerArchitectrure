@@ -6,13 +6,13 @@ namespace DAL.Repositories;
 public class GenericRepository<T> : IRepository<T> where T : BaseEntity
 {
     private readonly DbContext _dbContext;
-    private readonly List<T> _entities;
+    private readonly IList<T> _entities;
     private int _lastId;
 
     public GenericRepository(DbContext dbContext)
     {
         _dbContext = dbContext;
-        _entities = dbContext.Set<T>().ToList();
+        _entities = dbContext.Set<T>();
         _lastId = _entities.Count;
     }
 
