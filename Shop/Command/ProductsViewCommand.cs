@@ -14,6 +14,7 @@ public class ProductsViewCommand : BasicCommand
     private readonly Service _service;
     private bool _isGroupBy;
     private string _name;
+
     public ProductsViewCommand(Service service) : base(Names, Parameters)
     {
         _service = service;
@@ -23,9 +24,9 @@ public class ProductsViewCommand : BasicCommand
     {
         var stringBuilder = new StringBuilder();
         TryParseGroupKeyAndName(args);
-        var task = string.IsNullOrEmpty(_name) ? 
-            _service.Factory.ProductService.GetAll(Shop.AuthenticationData?.Token) : 
-            _service.Factory.ProductService.GetByName(_name);
+        var task = string.IsNullOrEmpty(_name)
+            ? _service.Factory.ProductService.GetAll(Shop.AuthenticationData?.Token)
+            : _service.Factory.ProductService.GetByName(_name);
         stringBuilder.Append("# Name \t \t Product category \t Product cost \t Product description");
         stringBuilder.Append(_isGroupBy ? ViewProductsGroupedByCategory(task) : ViewProducts(task));
         return stringBuilder.ToString();
@@ -35,9 +36,8 @@ public class ProductsViewCommand : BasicCommand
     {
         var stringBuilder = new StringBuilder();
         foreach (var product in task.Result)
-        {
-            stringBuilder.Append($"\n {product.Id} \t {product.Name} \t {product.Category.Name} \t {product.Cost} \t {product.Description}");
-        }
+            stringBuilder.Append(
+                $"\n {product.Id} \t {product.Name} \t {product.Category.Name} \t {product.Cost} \t {product.Description}");
         return stringBuilder.ToString();
     }
 
@@ -49,10 +49,10 @@ public class ProductsViewCommand : BasicCommand
         {
             var productsOfGroup = group.Select(x => x);
             foreach (var product in productsOfGroup)
-            {
-                stringBuilder.Append($"\n {product.Id} \t {product.Name} \t {product.Category.Name} \t {product.Cost} \t {product.Description}");
-            }
+                stringBuilder.Append(
+                    $"\n {product.Id} \t {product.Name} \t {product.Category.Name} \t {product.Cost} \t {product.Description}");
         }
+
         return stringBuilder.ToString();
     }
 

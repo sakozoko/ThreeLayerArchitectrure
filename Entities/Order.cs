@@ -2,7 +2,7 @@
 
 namespace Entities;
 
-public class Order: BaseEntity
+public class Order : BaseEntity
 {
     public User Owner { get; set; }
     public virtual List<Product> Products { get; set; }

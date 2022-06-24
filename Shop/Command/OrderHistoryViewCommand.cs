@@ -34,9 +34,7 @@ public class OrderHistoryViewCommand : BasicCommand
         }
 
         foreach (var order in res.Result)
-        {
             stringBuilder.Append($"\n {order.Id} \t {order.Description} \t {order.OrderStatus}");
-        }
 
         return stringBuilder.ToString();
     }

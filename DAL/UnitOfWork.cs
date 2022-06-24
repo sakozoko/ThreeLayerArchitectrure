@@ -22,9 +22,6 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<Order> OrderRepository =>
         _orderRepository ??= new GenericRepository<Order>(_context);
 
-    public IRepository<Category> CategoryRepository => 
+    public IRepository<Category> CategoryRepository =>
         _categoryRepository ??= new GenericRepository<Category>(_context);
-    
-
-
 }

@@ -3,7 +3,7 @@ using Entities;
 
 namespace DAL.Repositories;
 
-public class GenericRepository<T>:IRepository<T> where T:BaseEntity
+public class GenericRepository<T> : IRepository<T> where T : BaseEntity
 {
     private readonly DbContext _dbContext;
     private readonly List<T> _entities;
@@ -15,6 +15,7 @@ public class GenericRepository<T>:IRepository<T> where T:BaseEntity
         _entities = dbContext.Set<T>().ToList();
         _lastId = _entities.Count;
     }
+
     public int Add(T entity)
     {
         entity.Id = ++_lastId;

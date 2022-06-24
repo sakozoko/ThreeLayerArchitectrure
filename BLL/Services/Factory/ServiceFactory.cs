@@ -10,10 +10,10 @@ public class ServiceFactory : IServiceFactory
     private readonly ILogger _logger;
     private readonly CustomTokenHandler _tokenHandler;
     private readonly IUnitOfWork _unitOfWork;
+    private ICategoryService _categoryService;
     private IOrderService _orderService;
     private IProductService _productService;
     private IUserService _userService;
-    private ICategoryService _categoryService;
 
     public ServiceFactory(IUnitOfWork unitOfWork, CustomTokenHandler tokenHandler, ILogger logger)
     {
@@ -30,7 +30,7 @@ public class ServiceFactory : IServiceFactory
 
     public IOrderService OrderService =>
         _orderService ??= new OrderService(_unitOfWork.OrderRepository, _tokenHandler, _logger);
-    
+
 
     public ICategoryService CategoryService =>
         _categoryService ??= new CategoryService(_unitOfWork.CategoryRepository, _tokenHandler, _logger);

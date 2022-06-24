@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Shop.Command;
 
@@ -35,8 +34,6 @@ public abstract class BasicCommand : ICommand
     /// <returns></returns>
     private Dictionary<string, string> ParseArgs(string[] args)
     {
-        if (_params == null)
-            throw new NullReferenceException("Params is null");
         if (args == null)
             throw new ArgumentNullException(nameof(args));
 

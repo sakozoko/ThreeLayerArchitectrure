@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Shop.Command;
+﻿namespace Shop.Command;
 
 public interface ICommand
 {

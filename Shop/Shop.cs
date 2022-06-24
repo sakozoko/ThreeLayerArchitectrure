@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using BLL;
 using Entities;
 using Shop.Command;
@@ -10,7 +9,6 @@ namespace Shop;
 public class Shop
 {
     private static readonly ICommand IncorrectCommand = new IncorrectCommand();
-    public static AuthenticateResponse AuthenticationData;
     private readonly ICommand[] _commands;
     private readonly Service _service = new();
 
@@ -33,6 +31,8 @@ public class Shop
 
         #endregion
     }
+
+    public static AuthenticateResponse AuthenticationData { get; set; }
 
     private ICommand CorrectCommand(string name)
     {

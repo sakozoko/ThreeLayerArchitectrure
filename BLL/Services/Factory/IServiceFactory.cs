@@ -8,5 +8,4 @@ public interface IServiceFactory
     public IUserService UserService { get; }
     public IOrderService OrderService { get; }
     public ICategoryService CategoryService { get; }
-    
 }

@@ -2,11 +2,11 @@
 
 public enum OrderStatus
 {
-New,
-CanceledByTheAdministrator,
-PaymentReceived,
-Sent,
-Completed,
-Received,
-CanceledByUser
+    New,
+    CanceledByTheAdministrator,
+    PaymentReceived,
+    Sent,
+    Completed,
+    Received,
+    CanceledByUser
 }

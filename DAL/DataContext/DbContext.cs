@@ -1,30 +1,10 @@
-﻿using System.Reflection;
-using Entities;
+﻿using Entities;
 using Entities.Goods;
 
 namespace DAL.DataContext;
 
 public class DbContext
 {
-    public List<Category> Categories => new()
-    {
-        new Category { Id = 1, Name = "First" },
-        new Category { Id = 2, Name = "Second" },
-        new Category { Id = 3, Name = "Third" },
-        new Category { Id = 4, Name = "Fourth" },
-        new Category { Id = 5, Name = "Fifth" }
-    };
-
-    public  List<Order> Orders { get; }
-
-    public List<Product> Products { get; }
-
-    public List<User> Users => new()
-    {
-        new User { Id = 1, Name = "Admin", IsAdmin = true, Password = "123123" },
-        new User { Id = 2, Name = "Alex", Surname = "John", IsAdmin = false, Password = "332211" }
-    };
-
     public DbContext()
     {
         Products = new List<Product>
@@ -49,16 +29,31 @@ public class DbContext
         };
     }
 
+    public List<Category> Categories => new()
+    {
+        new Category { Id = 1, Name = "First" },
+        new Category { Id = 2, Name = "Second" },
+        new Category { Id = 3, Name = "Third" },
+        new Category { Id = 4, Name = "Fourth" },
+        new Category { Id = 5, Name = "Fifth" }
+    };
+
+    public List<Order> Orders { get; }
+
+    public List<Product> Products { get; }
+
+    public List<User> Users => new()
+    {
+        new User { Id = 1, Name = "Admin", IsAdmin = true, Password = "123123" },
+        new User { Id = 2, Name = "Alex", Surname = "John", IsAdmin = false, Password = "332211" }
+    };
+
     public IEnumerable<T> Set<T>()
     {
         var properties = GetType().GetProperties();
         foreach (var propertyInfo in properties)
-        {
             if (propertyInfo.PropertyType == typeof(List<T>))
-            {
                 return (IEnumerable<T>)propertyInfo.GetValue(this);
-            }
-        }
         throw new ArgumentException($"Not found field with type List<{nameof(T)}>");
     }
 

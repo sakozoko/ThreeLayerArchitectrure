@@ -1,6 +1,6 @@
 ﻿namespace Entities;
 
-public class AuthenticateResponse :BaseEntity
+public class AuthenticateResponse : BaseEntity
 {
     public AuthenticateResponse(User user, string token)
     {
@@ -10,6 +10,7 @@ public class AuthenticateResponse :BaseEntity
         IsAdmin = user.IsAdmin;
         Token = token;
     }
+
     public string Name { get; set; }
     public string Surname { get; set; }
     public bool IsAdmin { get; set; }
