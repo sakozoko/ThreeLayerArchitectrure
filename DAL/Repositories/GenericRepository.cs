@@ -36,4 +36,9 @@ public class GenericRepository<T>:IRepository<T> where T:BaseEntity
     {
         return _entities.Remove(entity);
     }
+
+    public async Task Save()
+    {
+        await _dbContext.Save();
+    }
 }
