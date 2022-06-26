@@ -5,21 +5,24 @@ using DAL;
 
 namespace BLL.Services.Factory;
 
-public class ServiceFactory : IServiceFactory
+public class ServiceContainer : IServiceContainer
 {
     private readonly ILogger _logger;
     private readonly CustomTokenHandler _tokenHandler;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork = new UnitOfWork();
     private ICategoryService _categoryService;
     private IOrderService _orderService;
     private IProductService _productService;
     private IUserService _userService;
 
-    public ServiceFactory(IUnitOfWork unitOfWork, CustomTokenHandler tokenHandler, ILogger logger)
+    public ServiceContainer() : this(new DebugLogger())
     {
-        _tokenHandler = tokenHandler;
-        _unitOfWork = unitOfWork;
+    }
+
+    public ServiceContainer(ILogger logger)
+    {
         _logger = logger;
+        _tokenHandler = new CustomTokenHandler(_unitOfWork.UserRepository, _logger);
     }
 
     public IUserService UserService =>

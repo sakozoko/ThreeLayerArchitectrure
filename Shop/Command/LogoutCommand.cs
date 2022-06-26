@@ -11,9 +11,9 @@ public class LogoutCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
-        if (Shop.AuthenticationData is null) return "Error";
-        var str = $"{Shop.AuthenticationData.Name}, bye bye!";
-        Shop.AuthenticationData = null;
+        if (ConsoleUserInterface.AuthenticationData is null) return "Error";
+        var str = $"{ConsoleUserInterface.AuthenticationData.Name}, bye bye!";
+        ConsoleUserInterface.AuthenticationData = null;
         return str;
     }
 

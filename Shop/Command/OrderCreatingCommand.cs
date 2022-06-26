@@ -1,4 +1,5 @@
 ﻿using BLL;
+using BLL.Services.Factory;
 
 namespace Shop.Command;
 
@@ -6,14 +7,14 @@ public class OrderCreatingCommand : BaseCommand
 {
     private static readonly string[] Names = { "cno", "order", "createno" };
     private static readonly string[] Parameters = { "-d", "-p", "-u" };
-    private readonly Service _service;
+    private readonly IServiceContainer _serviceContainer;
     private string _desc;
     private int _id;
     private int _product;
 
-    public OrderCreatingCommand(Service service) : base(Names, Parameters)
+    public OrderCreatingCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
     {
-        _service = service;
+        _serviceContainer = serviceContainer;
     }
 
 
@@ -21,9 +22,9 @@ public class OrderCreatingCommand : BaseCommand
     {
         if (!TryParseParameters(args)) return GetHelp();
         var productTask =
-            _service.Factory.ProductService.GetById(Shop.AuthenticationData?.Token, _product);
-        var userTask = _service.Factory.UserService.GetById(Shop.AuthenticationData?.Token, _id);
-        var id = _service.Factory.OrderService.Create(Shop.AuthenticationData?.Token, _desc,
+            _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _product);
+        var userTask = _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id);
+        var id = _serviceContainer.OrderService.Create(ConsoleUserInterface.AuthenticationData?.Token, _desc,
             productTask.Result, userTask.Result);
         return $"Successful! Id your order is {id.Result}";
     }

@@ -2,7 +2,7 @@
 
 namespace BLL.Services.Factory;
 
-public interface IServiceFactory
+public interface IServiceContainer
 {
     public IProductService ProductService { get; }
     public IUserService UserService { get; }

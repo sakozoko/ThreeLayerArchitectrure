@@ -1,19 +1,20 @@
 ﻿using System;
 using BLL;
 using BLL.Services.Exception;
+using BLL.Services.Factory;
 using Entities;
 using Shop.Command;
 using Shop.Helpers;
 
 namespace Shop;
 
-public class Shop
+public class ConsoleUserInterface
 {
     private static readonly ICommand IncorrectCommand = new IncorrectCommand();
     private readonly ICommand[] _commands;
-    private readonly Service _service = new();
+    private readonly IServiceContainer _service = new ServiceContainer();
 
-    public Shop()
+    public ConsoleUserInterface()
     {
         #region SetCommands
 
@@ -56,20 +57,30 @@ public class Shop
         try
         {
             var result = command.Execute(args);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(result);
-            Console.ForegroundColor = ConsoleColor.Gray;
+            WriteMessage(result);
         }
         catch (AggregateException ae)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            if (ae.InnerException is AuthenticationException) Console.WriteLine(ae.InnerException.Message);
-
-            Console.ForegroundColor = ConsoleColor.Gray;
+            WriteAuthenticationException(ae);
         }
     }
 
-    private string[] SplitString(string str)
+    private static void WriteMessage(string msg)
+    {
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(msg);
+        Console.ForegroundColor = ConsoleColor.Gray;
+    }
+
+    private static void WriteAuthenticationException(AggregateException e)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        if (e.InnerException is AuthenticationException) 
+            Console.WriteLine(e.InnerException.Message);
+        Console.ForegroundColor = ConsoleColor.Gray;
+    }
+
+    private static string[] SplitString(string str)
     {
         return ParseStringHelper.SplitStringWithQuotes(str);
     }

@@ -1,4 +1,5 @@
 ﻿using BLL;
+using BLL.Services.Factory;
 using Entities;
 
 namespace Shop.Command;
@@ -7,22 +8,22 @@ public class LoginCommand : BaseCommand
 {
     private static readonly string[] Names = { "li", "login" };
     private static readonly string[] Parameters = { "-n", "-p" };
-    private readonly Service _service;
+    private readonly IServiceContainer _serviceContainer;
     private string _name;
     private string _password;
 
-    public LoginCommand(Service service) : base(Names, Parameters)
+    public LoginCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
     {
-        _service = service;
+        _serviceContainer = serviceContainer;
     }
 
     public override string Execute(string[] args)
     {
         if (!TryParseLoginAndPassword(args)) return GetHelp();
         var authenticateRequest = new AuthenticateRequest { Username = _name, Password = _password };
-        var response = _service.Factory.UserService.Authenticate(authenticateRequest);
+        var response = _serviceContainer.UserService.Authenticate(authenticateRequest);
         if (response is null) return "Name or password is incorrect";
-        Shop.AuthenticationData = response;
+        ConsoleUserInterface.AuthenticationData = response;
         return $"{response.Name}, hi!";
     }
 

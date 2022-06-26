@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL;
+using BLL.Services.Factory;
 using Entities.Goods;
 
 namespace Shop.Command;
@@ -11,13 +12,13 @@ public class ProductsViewCommand : BaseCommand
 {
     private static readonly string[] Names = { "view product", "vp" };
     private static readonly string[] Parameters = { "-g", "-n" };
-    private readonly Service _service;
+    private readonly IServiceContainer _serviceContainer;
     private bool _isGroupBy;
     private string _name;
 
-    public ProductsViewCommand(Service service) : base(Names, Parameters)
+    public ProductsViewCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
     {
-        _service = service;
+        _serviceContainer = serviceContainer;
     }
 
     public override string Execute(string[] args)
@@ -25,8 +26,8 @@ public class ProductsViewCommand : BaseCommand
         var stringBuilder = new StringBuilder();
         TryParseGroupKeyAndName(args);
         var task = string.IsNullOrEmpty(_name)
-            ? _service.Factory.ProductService.GetAll(Shop.AuthenticationData?.Token)
-            : _service.Factory.ProductService.GetByName(_name);
+            ? _serviceContainer.ProductService.GetAll(ConsoleUserInterface.AuthenticationData?.Token)
+            : _serviceContainer.ProductService.GetByName(_name);
         stringBuilder.Append("# Name \t \t Product category \t Product cost \t Product description");
         stringBuilder.Append(_isGroupBy ? ViewProductsGroupedByCategory(task) : ViewProducts(task));
         return stringBuilder.ToString();

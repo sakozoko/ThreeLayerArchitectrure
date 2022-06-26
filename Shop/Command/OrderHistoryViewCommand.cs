@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using BLL;
+using BLL.Services.Factory;
 using Entities;
 
 namespace Shop.Command;
@@ -10,12 +11,12 @@ public class OrderHistoryViewCommand : BaseCommand
 {
     private static readonly string[] Names = { "view orders", "vo" };
     private static readonly string[] Parameters = { "-u" };
-    private readonly Service _service;
+    private readonly IServiceContainer _serviceContainer;
     private int _id;
 
-    public OrderHistoryViewCommand(Service service) : base(Names, Parameters)
+    public OrderHistoryViewCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
     {
-        _service = service;
+        _serviceContainer = serviceContainer;
     }
 
     public override string Execute(string[] args)
@@ -25,12 +26,12 @@ public class OrderHistoryViewCommand : BaseCommand
         Task<IEnumerable<Order>> res;
         if (TryParseId(args))
         {
-            var taskUser = _service.Factory.UserService.GetById(Shop.AuthenticationData?.Token, _id);
-            res = _service.Factory.OrderService.GetUserOrders(Shop.AuthenticationData?.Token, taskUser.Result);
+            var taskUser = _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id);
+            res = _serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, taskUser.Result);
         }
         else
         {
-            res = _service.Factory.OrderService.GetUserOrders(Shop.AuthenticationData?.Token);
+            res = _serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token);
         }
 
         foreach (var order in res.Result)

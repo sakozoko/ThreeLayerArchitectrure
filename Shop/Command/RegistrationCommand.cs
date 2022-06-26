@@ -1,4 +1,4 @@
-﻿using BLL;
+﻿using BLL.Services.Factory;
 using Entities;
 
 namespace Shop.Command;
@@ -7,22 +7,22 @@ public class RegistrationCommand : BaseCommand
 {
     private static readonly string[] Names = { "reg", "r", "rg" };
     private static readonly string[] Parameters = { "-n", "-p" };
-    private readonly Service _service;
+    private readonly IServiceContainer _serviceContainer;
     private string _name;
     private string _password;
 
-    public RegistrationCommand(Service service) : base(Names, Parameters)
+    public RegistrationCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
     {
-        _service = service;
+        _serviceContainer = serviceContainer;
     }
 
     public override string Execute(string[] args)
     {
         if (!TryParseParameters(args)) return GetHelp();
         var request = new AuthenticateRequest { Username = _name, Password = _password };
-        var response = _service.Factory.UserService.Registration(request);
+        var response = _serviceContainer.UserService.Registration(request);
         if (response is null) return "Args value incorrect";
-        Shop.AuthenticationData = response;
+        ConsoleUserInterface.AuthenticationData = response;
         return $"{response.Name} welcome!";
     }
 

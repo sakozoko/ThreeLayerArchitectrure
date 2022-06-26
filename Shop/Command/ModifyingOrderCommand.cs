@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BLL;
+using BLL.Services.Factory;
 using Entities;
 
 namespace Shop.Command;
@@ -8,12 +9,12 @@ public class ModifyingOrderCommand : BaseCommand
 {
     private static readonly string[] Names = { "mo", "modifyorder" };
     private static readonly string[] Parameters = { "-o", "-p", "-a", "-r", "-d", "-s" };
-    private readonly Service _service;
+    private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public ModifyingOrderCommand(Service service) : base(Names, Parameters)
+    public ModifyingOrderCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
     {
-        _service = service;
+        _serviceContainer = serviceContainer;
     }
 
     public override string Execute(string[] args)
@@ -24,7 +25,7 @@ public class ModifyingOrderCommand : BaseCommand
 
         if (!int.TryParse(stringOrderId, out var orderId)) return GetHelp();
 
-        var ord = _service.Factory.OrderService.GetById(Shop.AuthenticationData.Token, orderId);
+        var ord = _serviceContainer.OrderService.GetById(ConsoleUserInterface.AuthenticationData.Token, orderId);
 
         if (ord.Result is null) return "Order not found";
 
@@ -43,14 +44,14 @@ public class ModifyingOrderCommand : BaseCommand
         if (_dict.ContainsKey(Parameters[5])) orderStatus = GetOrderStatusFromArgumentsDictionary();
 
         if (orderStatus.HasValue)
-            _service.Factory.OrderService.ChangeOrderStatus(Shop.AuthenticationData.Token, orderStatus.Value, ord);
+            _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token, orderStatus.Value, ord);
     }
 
     private void ModifyDesc(Order ord)
     {
         _dict.TryGetValue(Parameters[4], out var desc);
         if (string.IsNullOrWhiteSpace(desc)) return;
-        _service.Factory.OrderService.ChangeDescription(Shop.AuthenticationData.Token, desc, ord);
+        _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc, ord);
     }
 
     public override string GetHelp()
@@ -65,7 +66,7 @@ public class ModifyingOrderCommand : BaseCommand
         if (!int.TryParse(stringProductId, out var productId)) return;
         if (productId <= 0) return;
 
-        var product = _service.Factory.ProductService.GetById(Shop.AuthenticationData.Token, productId);
+        var product = _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId);
         bool? addProduct = null;
 
         if (_dict.ContainsKey(Parameters[2])) addProduct = true;
@@ -74,10 +75,10 @@ public class ModifyingOrderCommand : BaseCommand
 
         if (!addProduct.HasValue || product.Result is null) return;
         if (addProduct.Value)
-            _service.Factory.OrderService.AddProduct(Shop.AuthenticationData.Token, product.Result,
+            _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token, product.Result,
                 ord);
         else
-            _service.Factory.OrderService.DeleteProduct(Shop.AuthenticationData.Token, product.Result,
+            _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token, product.Result,
                 ord);
     }
 

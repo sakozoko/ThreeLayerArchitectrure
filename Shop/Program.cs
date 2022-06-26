@@ -4,7 +4,7 @@ namespace Shop;
 
 public static class Program
 {
-    private static readonly Shop Shop = new();
+    private static readonly ConsoleUserInterface ConsoleUserInterface = new();
 
     private static void Main(string[] args)
     {
@@ -13,7 +13,7 @@ public static class Program
         {
             try
             {
-                Shop.ExecuteCommand(k);
+                ConsoleUserInterface.ExecuteCommand(k);
             }
             catch (AggregateException)
             {
