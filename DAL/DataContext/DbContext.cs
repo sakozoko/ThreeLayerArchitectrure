@@ -3,9 +3,26 @@ using Entities.Goods;
 
 namespace DAL.DataContext;
 
-public class DbContext
+internal class DbContext
 {
-    public DbContext()
+    private static readonly object Obj = new ();
+    private static DbContext _instance;
+    public static DbContext Instance
+    {
+        get
+        {
+            if(_instance is null)
+            {
+                lock (Obj)
+                {
+                    _instance ??= new DbContext();
+                }
+            }
+            return _instance;
+        }
+    }
+
+    protected DbContext()
     {
         Products = new List<Product>
         {

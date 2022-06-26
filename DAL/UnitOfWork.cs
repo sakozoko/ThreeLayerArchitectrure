@@ -7,7 +7,7 @@ namespace DAL;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly DbContext _context = new();
+    private readonly DbContext _context = DbContext.Instance;
     private IRepository<Category> _categoryRepository;
     private IRepository<Order> _orderRepository;
     private IRepository<Product> _productRepository;
