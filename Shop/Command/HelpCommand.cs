@@ -1,13 +1,14 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Shop.Command;
 
 public class HelpCommand : BaseCommand
 {
     private static readonly string[] Names = { "h", "help" };
-    private readonly ICommand[] _commands;
+    private readonly IEnumerable<ICommand> _commands;
 
-    public HelpCommand(ICommand[] commands) : base(Names)
+    public HelpCommand(IEnumerable<ICommand> commands) : base(Names)
     {
         _commands = commands;
     }
@@ -18,7 +19,7 @@ public class HelpCommand : BaseCommand
         stringBuilder.Append("Name \t To invoke \t Args");
         foreach (var command in _commands)
         {
-            var str = command.GetHelp();
+            var str = (command as BaseCommand)?.GetHelp();
             stringBuilder.Append("\n" + str);
         }
 
