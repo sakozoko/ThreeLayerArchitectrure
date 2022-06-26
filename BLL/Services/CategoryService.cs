@@ -1,4 +1,4 @@
-﻿using BLL.Helpers;
+﻿using BLL.Helpers.Token;
 using BLL.Logger;
 using BLL.Services.Interfaces;
 using DAL.Repositories;
@@ -8,7 +8,7 @@ namespace BLL.Services;
 
 public class CategoryService : BaseService<Category>, ICategoryService
 {
-    public CategoryService(IRepository<Category> repository, CustomTokenHandler tokenHandler, ILogger logger) : base(
+    public CategoryService(IRepository<Category> repository, ITokenHandler tokenHandler, ILogger logger) : base(
         repository, tokenHandler, logger)
     {
     }

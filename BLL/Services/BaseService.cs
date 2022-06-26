@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using BLL.Helpers;
+using BLL.Helpers.Token;
 using BLL.Logger;
 using BLL.Services.Exception;
 using DAL.Repositories;
@@ -11,9 +11,9 @@ public class BaseService<T> where T : BaseEntity
 {
     protected readonly ILogger Logger;
     protected readonly IRepository<T> Repository;
-    protected readonly CustomTokenHandler TokenHandler;
+    protected readonly ITokenHandler TokenHandler;
 
-    protected BaseService(IRepository<T> repository, CustomTokenHandler tokenHandler, ILogger logger)
+    protected BaseService(IRepository<T> repository, ITokenHandler tokenHandler, ILogger logger)
     {
         Repository = repository;
         TokenHandler = tokenHandler;

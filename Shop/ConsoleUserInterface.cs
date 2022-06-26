@@ -61,7 +61,8 @@ public class ConsoleUserInterface
         }
         catch (AggregateException ae)
         {
-            WriteAuthenticationException(ae);
+            if (ae.InnerException is AuthenticationException e) 
+                WriteException(e);
         }
     }
 
@@ -72,11 +73,10 @@ public class ConsoleUserInterface
         Console.ForegroundColor = ConsoleColor.Gray;
     }
 
-    private static void WriteAuthenticationException(AggregateException e)
+    private static void WriteException(Exception e)
     {
         Console.ForegroundColor = ConsoleColor.Red;
-        if (e.InnerException is AuthenticationException) 
-            Console.WriteLine(e.InnerException.Message);
+        Console.WriteLine(e.Message);
         Console.ForegroundColor = ConsoleColor.Gray;
     }
 

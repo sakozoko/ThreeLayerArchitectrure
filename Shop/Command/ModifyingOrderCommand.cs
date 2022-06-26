@@ -39,9 +39,9 @@ public class ModifyingOrderCommand : BaseCommand
     private void ModifyOrderStatus(Order ord)
     {
         OrderStatus? orderStatus = null;
-
-
-        if (_dict.ContainsKey(Parameters[5])) orderStatus = GetOrderStatusFromArgumentsDictionary();
+        
+        if (_dict.ContainsKey(Parameters[5])) 
+            orderStatus = GetOrderStatusFromArgumentsDictionary();
 
         if (orderStatus.HasValue)
             _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token, orderStatus.Value, ord);
@@ -50,7 +50,9 @@ public class ModifyingOrderCommand : BaseCommand
     private void ModifyDesc(Order ord)
     {
         _dict.TryGetValue(Parameters[4], out var desc);
+        
         if (string.IsNullOrWhiteSpace(desc)) return;
+        
         _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc, ord);
     }
 

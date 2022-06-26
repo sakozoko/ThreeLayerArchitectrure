@@ -3,9 +3,9 @@ using BLL.Logger;
 using DAL.Repositories;
 using Entities;
 
-namespace BLL.Helpers;
+namespace BLL.Helpers.Token;
 
-public class CustomTokenHandler
+public class CustomTokenHandler :ITokenHandler
 {
     private readonly ILogger _logger;
     private readonly IRepository<User> _userRepository;

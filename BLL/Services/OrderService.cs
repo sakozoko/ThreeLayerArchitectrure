@@ -1,4 +1,4 @@
-﻿using BLL.Helpers;
+﻿using BLL.Helpers.Token;
 using BLL.Logger;
 using BLL.Services.Interfaces;
 using DAL.Repositories;
@@ -9,7 +9,7 @@ namespace BLL.Services;
 
 public class OrderService : BaseService<Order>, IOrderService
 {
-    public OrderService(IRepository<Order> repository, CustomTokenHandler tokenHandler, ILogger logger) :
+    public OrderService(IRepository<Order> repository, ITokenHandler tokenHandler, ILogger logger) :
         base(repository, tokenHandler, logger)
     {
     }

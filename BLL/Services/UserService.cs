@@ -1,4 +1,4 @@
-﻿using BLL.Helpers;
+﻿using BLL.Helpers.Token;
 using BLL.Logger;
 using BLL.Services.Interfaces;
 using DAL.Repositories;
@@ -8,7 +8,7 @@ namespace BLL.Services;
 
 public class UserService : BaseService<User>, IUserService
 {
-    public UserService(IRepository<User> repository, CustomTokenHandler tokenHandler, ILogger logger) : base(repository,
+    public UserService(IRepository<User> repository, ITokenHandler tokenHandler, ILogger logger) : base(repository,
         tokenHandler, logger)
     {
     }
