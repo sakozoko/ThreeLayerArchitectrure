@@ -3,9 +3,10 @@ using Entities;
 
 namespace DAL.Repositories;
 
-public class GenericRepository<T> : IRepository<T> where T : BaseEntity
+internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
 {
     private readonly DbContext _dbContext;
+
     private readonly IList<T> _entities;
     private int _lastId;
 
@@ -18,24 +19,39 @@ public class GenericRepository<T> : IRepository<T> where T : BaseEntity
 
     public int Add(T entity)
     {
-        entity.Id = ++_lastId;
-        _entities.Add(entity);
-        return _lastId;
+        
+        lock (Obj)
+        {
+            entity.Id = ++_lastId;
+            _entities.Add(entity);
+            return _lastId;
+        }
+
+        
     }
 
     public IEnumerable<T> GetAll()
     {
-        return _entities;
+        lock (Obj)
+        {
+            return _entities;
+        }
     }
 
     public T GetById(int id)
     {
-        return _entities.FirstOrDefault(x => x.Id == id);
+        lock (Obj)
+        {
+            return _entities.FirstOrDefault(x => x.Id == id);
+        }
     }
 
     public bool Delete(T entity)
     {
-        return _entities.Remove(entity);
+        lock (Obj)
+        {
+            return _entities.Remove(entity); 
+        }
     }
 
     public async Task Save()
