@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BLL.Util;
+using BLL;
 using Entities.Goods;
 
 namespace MarketUI.Util.Command;

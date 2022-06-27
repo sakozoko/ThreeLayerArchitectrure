@@ -2,7 +2,7 @@
 using Entities;
 using Entities.Goods;
 
-namespace DAL.Util;
+namespace DAL;
 
 public interface IUnitOfWork
 {

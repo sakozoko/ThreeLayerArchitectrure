@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using BLL.Util;
+using BLL;
 using Entities;
 
 namespace MarketUI.Util.Command;

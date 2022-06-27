@@ -2,9 +2,9 @@
 using BLL.Util.Logger;
 using BLL.Util.Services;
 using BLL.Util.Services.Interfaces;
-using DAL.Util;
+using DAL;
 
-namespace BLL.Util;
+namespace BLL;
 
 public class ServiceContainer : IServiceContainer
 {

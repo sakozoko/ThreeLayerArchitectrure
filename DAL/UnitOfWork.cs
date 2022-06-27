@@ -3,7 +3,7 @@ using DAL.Util.Repositories;
 using Entities;
 using Entities.Goods;
 
-namespace DAL.Util;
+namespace DAL;
 
 public class UnitOfWork : IUnitOfWork
 {
