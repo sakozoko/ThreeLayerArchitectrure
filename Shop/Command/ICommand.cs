@@ -2,6 +2,5 @@
 
 public interface ICommand
 {
-    public bool ItsMe(string commandName);
     public string Execute(string[] args);
 }

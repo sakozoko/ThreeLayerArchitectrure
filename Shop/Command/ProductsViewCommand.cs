@@ -9,16 +9,17 @@ namespace Shop.Command;
 
 public class ProductsViewCommand : BaseCommand
 {
-    private static readonly string[] Names = { "view product", "vp" };
     private static readonly string[] Parameters = { "-g", "-n" };
     private readonly IServiceContainer _serviceContainer;
     private bool _isGroupBy;
     private string _name;
 
-    public ProductsViewCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
+    public ProductsViewCommand(IServiceContainer serviceContainer) : base(Parameters)
     {
         _serviceContainer = serviceContainer;
     }
+
+    public override string[] Names { get; }= { "view product", "vp" };
 
     public override string Execute(string[] args)
     {

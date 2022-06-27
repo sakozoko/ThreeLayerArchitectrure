@@ -6,15 +6,16 @@ namespace Shop.Command;
 
 public class ModifyingOrderCommand : BaseCommand
 {
-    private static readonly string[] Names = { "mo", "modifyorder" };
     private static readonly string[] Parameters = { "-o", "-p", "-a", "-r", "-d", "-s" };
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public ModifyingOrderCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
+    public ModifyingOrderCommand(IServiceContainer serviceContainer) : base(Parameters)
     {
         _serviceContainer = serviceContainer;
     }
+
+    public override string[] Names { get; } = { "mo", "modifyorder" };
 
     public override string Execute(string[] args)
     {

@@ -5,16 +5,17 @@ namespace Shop.Command;
 
 public class LoginCommand : BaseCommand
 {
-    private static readonly string[] Names = { "li", "login" };
     private static readonly string[] Parameters = { "-n", "-p" };
     private readonly IServiceContainer _serviceContainer;
     private string _name;
     private string _password;
 
-    public LoginCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
+    public LoginCommand(IServiceContainer serviceContainer) : base(Parameters)
     {
         _serviceContainer = serviceContainer;
     }
+
+    public override string[] Names { get; } = { "li", "login" };
 
     public override string Execute(string[] args)
     {

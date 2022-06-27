@@ -8,15 +8,16 @@ namespace Shop.Command;
 
 public class OrderHistoryViewCommand : BaseCommand
 {
-    private static readonly string[] Names = { "view orders", "vo" };
     private static readonly string[] Parameters = { "-u" };
     private readonly IServiceContainer _serviceContainer;
     private int _id;
 
-    public OrderHistoryViewCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
+    public OrderHistoryViewCommand(IServiceContainer serviceContainer) : base(Parameters)
     {
         _serviceContainer = serviceContainer;
     }
+
+    public override string[] Names { get; } = { "view orders", "vo" };
 
     public override string Execute(string[] args)
     {

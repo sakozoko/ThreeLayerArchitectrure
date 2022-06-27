@@ -1,6 +1,5 @@
 ﻿using System;
 using BLL.Services.Exception;
-using BLL.Services.Factory;
 using Entities;
 using Shop.Command;
 using Shop.Helpers;
@@ -9,50 +8,18 @@ namespace Shop;
 
 public class ConsoleUserInterface
 {
-    private static readonly ICommand IncorrectCommand = new IncorrectCommand();
-    private readonly ICommand[] _commands;
-    private readonly IServiceContainer _service = new ServiceContainer();
-
-    public ConsoleUserInterface()
+    private readonly ICommandFactory _commandFactory;
+    public ConsoleUserInterface(ICommandFactory commandFactory)
     {
-        #region SetCommands
-
-        _commands = new[]
-        {
-            new ProductsViewCommand(_service),
-            new LoginCommand(_service),
-            new LogoutCommand(),
-            new OrderCreatingCommand(_service),
-            new OrderHistoryViewCommand(_service),
-            new RegistrationCommand(_service),
-            new ModifyingOrderCommand(_service),
-            IncorrectCommand
-        };
-
-        _commands[^1] = new HelpCommand(_commands);
-
-        #endregion
+        _commandFactory = commandFactory;
     }
 
     public static AuthenticateResponse AuthenticationData { get; set; }
-
-    private ICommand CorrectCommand(string name)
-    {
-        var correctCommand = IncorrectCommand;
-        foreach (var command in _commands)
-        {
-            if (!command.ItsMe(name)) continue;
-            correctCommand = command;
-            break;
-        }
-
-        return correctCommand;
-    }
-
+    
     public void ExecuteCommand(string commandString)
     {
         var args = SplitString(commandString);
-        var command = CorrectCommand(args[0]);
+        var command = _commandFactory.GetCommand(args[0]);
         try
         {
             var result = command.Execute(args);

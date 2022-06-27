@@ -5,13 +5,14 @@ namespace Shop.Command;
 
 public class HelpCommand : BaseCommand
 {
-    private static readonly string[] Names = { "h", "help" };
     private readonly IEnumerable<ICommand> _commands;
 
-    public HelpCommand(IEnumerable<ICommand> commands) : base(Names)
+    public HelpCommand(IEnumerable<ICommand> commands)
     {
         _commands = commands;
     }
+
+    public override string[] Names { get; } = { "h", "help" };
 
     public override string Execute(string[] args)
     {

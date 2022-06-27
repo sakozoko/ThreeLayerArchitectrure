@@ -4,18 +4,19 @@ namespace Shop.Command;
 
 public class OrderCreatingCommand : BaseCommand
 {
-    private static readonly string[] Names = { "cno", "order", "createno" };
     private static readonly string[] Parameters = { "-d", "-p", "-u" };
     private readonly IServiceContainer _serviceContainer;
     private string _desc;
     private int _id;
     private int _product;
 
-    public OrderCreatingCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
+    public OrderCreatingCommand(IServiceContainer serviceContainer) : base(Parameters)
     {
         _serviceContainer = serviceContainer;
     }
 
+
+    public override string[] Names { get; } = { "cno", "order", "createno" };
 
     public override string Execute(string[] args)
     {

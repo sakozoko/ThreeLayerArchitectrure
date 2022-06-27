@@ -1,27 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shop.Command;
 
 public abstract class BaseCommand : ICommand
 {
-    private readonly string[] _names;
+    public abstract string[] Names { get; }
     private readonly string[] _params;
 
-    protected BaseCommand(string[] names, string[] parameters = null)
+    protected BaseCommand(string[] parameters = null)
     {
-        _names = names;
         _params = parameters;
-    }
-
-    public bool ItsMe(string commandName)
-    {
-        if (_names is not null)
-            return _names.Any(name =>
-                commandName.Equals(name,
-                    StringComparison.OrdinalIgnoreCase));
-        return false;
     }
 
     public abstract string Execute(string[] args);

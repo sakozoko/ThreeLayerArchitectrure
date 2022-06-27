@@ -4,7 +4,7 @@ namespace Shop;
 
 public static class Program
 {
-    private static readonly ConsoleUserInterface ConsoleUserInterface = new();
+    private static readonly ConsoleUserInterface ConsoleUserInterface = new(new Command.CommandFactory());
 
     private static void Main(string[] args)
     {

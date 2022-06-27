@@ -10,4 +10,8 @@
         <ProjectReference Include="..\BLL\BLL.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="CommandFactory" />
+    </ItemGroup>
+
 </Project>

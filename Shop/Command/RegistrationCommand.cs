@@ -5,16 +5,17 @@ namespace Shop.Command;
 
 public class RegistrationCommand : BaseCommand
 {
-    private static readonly string[] Names = { "reg", "r", "rg" };
     private static readonly string[] Parameters = { "-n", "-p" };
     private readonly IServiceContainer _serviceContainer;
     private string _name;
     private string _password;
 
-    public RegistrationCommand(IServiceContainer serviceContainer) : base(Names, Parameters)
+    public RegistrationCommand(IServiceContainer serviceContainer) : base(Parameters)
     {
         _serviceContainer = serviceContainer;
     }
+
+    public override string[] Names { get; } = { "registration", "r"};
 
     public override string Execute(string[] args)
     {
@@ -34,6 +35,6 @@ public class RegistrationCommand : BaseCommand
 
     public override string GetHelp()
     {
-        return "Registration \t reg, rg, r \t -n -p ";
+        return "Registration \t registration, r \t -n -p ";
     }
 }

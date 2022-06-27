@@ -2,12 +2,7 @@
 
 public class LogoutCommand : BaseCommand
 {
-    private static readonly string[] Names = { "logout", "lo" };
-
-    public LogoutCommand() : base(Names)
-    {
-    }
-
+    public override string[] Names { get; }= { "logout", "lo" };
 
     public override string Execute(string[] args)
     {
