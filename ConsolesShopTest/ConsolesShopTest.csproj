@@ -23,7 +23,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\ConsolesShop\ConsolesShop.csproj"/>
-        <ProjectReference Include="..\Shop\Shop.csproj"/>
+        <ProjectReference Include="..\MarketUI\MarketUI.csproj"/>
     </ItemGroup>
 
 </Project>

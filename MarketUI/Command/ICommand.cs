@@ -1,4 +1,4 @@
-﻿namespace Shop.Command;
+﻿namespace MarketUI.Util.Command;
 
 public interface ICommand
 {

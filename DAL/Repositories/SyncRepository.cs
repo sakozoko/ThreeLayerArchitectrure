@@ -1,4 +1,4 @@
-﻿namespace DAL.Repositories;
+﻿namespace DAL.Util.Repositories;
 
 internal class SyncRepository
 {
@@ -6,7 +6,5 @@ internal class SyncRepository
 
     protected SyncRepository()
     {
-        
     }
-
 }

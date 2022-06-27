@@ -1,17 +1,22 @@
-﻿using DAL.DataContext;
-using DAL.Repositories;
+﻿using DAL.Util.DataContext;
+using DAL.Util.Repositories;
 using Entities;
 using Entities.Goods;
 
-namespace DAL;
+namespace DAL.Util;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly DbContext _context = DbContext.Instance;
+    private readonly IDbContext _context;
     private IRepository<Category> _categoryRepository;
     private IRepository<Order> _orderRepository;
     private IRepository<Product> _productRepository;
     private IRepository<User> _userRepository;
+
+    public UnitOfWork(IDbContext context)
+    {
+        _context = context;
+    }
 
     public IRepository<User> UserRepository =>
         _userRepository ??= new GenericRepository<User>(_context);

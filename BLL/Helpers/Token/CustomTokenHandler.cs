@@ -1,18 +1,19 @@
 ﻿using System.Text.Json;
-using BLL.Logger;
-using DAL.Repositories;
+using BLL.Util.Helpers.Token;
+using BLL.Util.Logger;
+using DAL.Util;
 using Entities;
 
 namespace BLL.Helpers.Token;
 
-public class CustomTokenHandler :ITokenHandler
+public class CustomTokenHandler : ITokenHandler
 {
     private readonly ILogger _logger;
-    private readonly IRepository<User> _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CustomTokenHandler(IRepository<User> userRepository, ILogger logger)
+    public CustomTokenHandler(IUnitOfWork unitOfWork, ILogger logger)
     {
-        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
@@ -33,7 +34,7 @@ public class CustomTokenHandler :ITokenHandler
         try
         {
             var obj = JsonSerializer.Deserialize<User>(token);
-            var parseUser = _userRepository.GetById(obj.Id);
+            var parseUser = _unitOfWork.UserRepository.GetById(obj.Id);
             return parseUser;
         }
         catch (JsonException e)

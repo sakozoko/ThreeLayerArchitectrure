@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shop.Helpers;
+namespace MarketUI.Util.Helpers;
 
 public static class ParseStringHelper
 {

@@ -1,7 +1,7 @@
 ﻿using Entities;
 using Entities.Goods;
 
-namespace BLL.Services.Interfaces;
+namespace BLL.Util.Services.Interfaces;
 
 public interface IOrderService
 {

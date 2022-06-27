@@ -1,6 +1,6 @@
-﻿using BLL.Services.Interfaces;
+﻿using BLL.Util.Services.Interfaces;
 
-namespace BLL.Services.Factory;
+namespace BLL.Util;
 
 public interface IServiceContainer
 {

@@ -1,6 +1,6 @@
 ﻿using Entities;
 
-namespace DAL.Repositories;
+namespace DAL.Util.Repositories;
 
 public interface IRepository<T> where T : BaseEntity
 {

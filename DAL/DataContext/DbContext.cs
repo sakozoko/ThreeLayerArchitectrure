@@ -1,28 +1,11 @@
 ﻿using Entities;
 using Entities.Goods;
 
-namespace DAL.DataContext;
+namespace DAL.Util.DataContext;
 
-internal class DbContext
+public class DbContext : IDbContext
 {
-    private static readonly object Obj = new ();
-    private static DbContext _instance;
-    public static DbContext Instance
-    {
-        get
-        {
-            if(_instance is null)
-            {
-                lock (Obj)
-                {
-                    _instance ??= new DbContext();
-                }
-            }
-            return _instance;
-        }
-    }
-
-    protected DbContext()
+    public DbContext()
     {
         Products = new List<Product>
         {

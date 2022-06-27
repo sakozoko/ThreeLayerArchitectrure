@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public abstract class BaseCommand : ICommand
 {
-    public abstract string[] Names { get; }
     private readonly string[] _params;
 
     protected BaseCommand(string[] parameters = null)
     {
         _params = parameters;
     }
+
+    public abstract string[] Names { get; }
 
     public abstract string Execute(string[] args);
     public abstract string GetHelp();

@@ -1,6 +1,6 @@
 ﻿using Entities;
 
-namespace BLL.Services.Interfaces;
+namespace BLL.Util.Services.Interfaces;
 
 public interface IUserService
 {

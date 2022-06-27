@@ -1,32 +1,34 @@
 ﻿using System.Linq;
-using BLL.Services.Factory;
+using BLL.Util;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
-public class CommandFactory :ICommandFactory
+public class CommandFactory : ICommandFactory
 {
     private static readonly ICommand IncorrectCommand = new IncorrectCommand();
     private readonly ICommand[] _commands;
-    private readonly IServiceContainer _service = new ServiceContainer();
 
-    public CommandFactory()
+    public CommandFactory(IServiceContainer service)
     {
         #region SetCommands
+
         _commands = new[]
         {
-            new ProductsViewCommand(_service),
-            new LoginCommand(_service),
+            new ProductsViewCommand(service),
+            new LoginCommand(service),
             new LogoutCommand(),
-            new OrderCreatingCommand(_service),
-            new OrderHistoryViewCommand(_service),
-            new RegistrationCommand(_service),
-            new ModifyingOrderCommand(_service),
+            new OrderCreatingCommand(service),
+            new OrderHistoryViewCommand(service),
+            new RegistrationCommand(service),
+            new ModifyingOrderCommand(service),
             IncorrectCommand
         };
 
         _commands[^1] = new HelpCommand(_commands);
+
         #endregion
     }
+
     public ICommand GetCommand(string name)
     {
         var returnCommand = IncorrectCommand;
@@ -36,6 +38,7 @@ public class CommandFactory :ICommandFactory
             returnCommand = command;
             break;
         }
+
         return returnCommand;
     }
 }

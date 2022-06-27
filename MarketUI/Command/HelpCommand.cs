@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public class HelpCommand : BaseCommand
 {

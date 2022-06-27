@@ -1,28 +1,26 @@
-﻿using BLL.Helpers.Token;
-using BLL.Logger;
-using BLL.Services.Interfaces;
-using DAL;
+﻿using BLL.Util.Helpers.Token;
+using BLL.Util.Logger;
+using BLL.Util.Services;
+using BLL.Util.Services.Interfaces;
+using DAL.Util;
 
-namespace BLL.Services.Factory;
+namespace BLL.Util;
 
 public class ServiceContainer : IServiceContainer
 {
     private readonly ILogger _logger;
-    private readonly CustomTokenHandler _tokenHandler;
-    private readonly IUnitOfWork _unitOfWork = new UnitOfWork();
+    private readonly ITokenHandler _tokenHandler;
+    private readonly IUnitOfWork _unitOfWork;
     private ICategoryService _categoryService;
     private IOrderService _orderService;
     private IProductService _productService;
     private IUserService _userService;
 
-    public ServiceContainer() : this(new DebugLogger())
+    public ServiceContainer(IUnitOfWork unitOfWork, ILogger logger, ITokenHandler tokenHandler)
     {
-    }
-
-    public ServiceContainer(ILogger logger)
-    {
+        _unitOfWork = unitOfWork;
         _logger = logger;
-        _tokenHandler = new CustomTokenHandler(_unitOfWork.UserRepository, _logger);
+        _tokenHandler = tokenHandler;
     }
 
     public IUserService UserService =>

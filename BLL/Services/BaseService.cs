@@ -1,11 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
-using BLL.Helpers.Token;
-using BLL.Logger;
-using BLL.Services.Exception;
-using DAL.Repositories;
+using BLL.Util.Helpers.Token;
+using BLL.Util.Logger;
+using BLL.Util.Services.Exception;
+using DAL.Util.Repositories;
 using Entities;
 
-namespace BLL.Services;
+namespace BLL.Util.Services;
 
 public class BaseService<T> where T : BaseEntity
 {

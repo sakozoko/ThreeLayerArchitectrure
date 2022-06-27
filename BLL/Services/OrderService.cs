@@ -1,11 +1,11 @@
-﻿using BLL.Helpers.Token;
-using BLL.Logger;
-using BLL.Services.Interfaces;
-using DAL.Repositories;
+﻿using BLL.Util.Helpers.Token;
+using BLL.Util.Logger;
+using BLL.Util.Services.Interfaces;
+using DAL.Util.Repositories;
 using Entities;
 using Entities.Goods;
 
-namespace BLL.Services;
+namespace BLL.Util.Services;
 
 public class OrderService : BaseService<Order>, IOrderService
 {

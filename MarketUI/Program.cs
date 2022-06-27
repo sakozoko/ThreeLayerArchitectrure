@@ -1,19 +1,27 @@
 ﻿using System;
+using Autofac;
 
-namespace Shop;
+namespace MarketUI.Util;
 
 public static class Program
 {
-    private static readonly ConsoleUserInterface ConsoleUserInterface = new(new Command.CommandFactory());
+    private static ConsoleUserInterface _consoleUserInterface;
 
     private static void Main(string[] args)
+    {
+        var container = AppConfiguration.Configure();
+        _consoleUserInterface = container.Resolve<ConsoleUserInterface>();
+        Start();
+    }
+
+    private static void Start()
     {
         var k = Console.ReadLine();
         while (k != "exit")
         {
             try
             {
-                ConsoleUserInterface.ExecuteCommand(k);
+                _consoleUserInterface.ExecuteCommand(k);
             }
             catch (AggregateException)
             {

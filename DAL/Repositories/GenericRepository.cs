@@ -1,16 +1,16 @@
-﻿using DAL.DataContext;
+﻿using DAL.Util.DataContext;
 using Entities;
 
-namespace DAL.Repositories;
+namespace DAL.Util.Repositories;
 
 internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
 {
-    private readonly DbContext _dbContext;
+    private readonly IDbContext _dbContext;
 
     private readonly IList<T> _entities;
     private int _lastId;
 
-    public GenericRepository(DbContext dbContext)
+    public GenericRepository(IDbContext dbContext)
     {
         _dbContext = dbContext;
         _entities = dbContext.Set<T>();
@@ -19,15 +19,12 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
 
     public int Add(T entity)
     {
-        
         lock (Obj)
         {
             entity.Id = ++_lastId;
             _entities.Add(entity);
             return _lastId;
         }
-
-        
     }
 
     public IEnumerable<T> GetAll()
@@ -50,7 +47,7 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
     {
         lock (Obj)
         {
-            return _entities.Remove(entity); 
+            return _entities.Remove(entity);
         }
     }
 

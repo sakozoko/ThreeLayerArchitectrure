@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using BLL.Services.Factory;
+using BLL.Util;
 using Entities;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public class ModifyingOrderCommand : BaseCommand
 {
@@ -39,20 +39,21 @@ public class ModifyingOrderCommand : BaseCommand
     private void ModifyOrderStatus(Order ord)
     {
         OrderStatus? orderStatus = null;
-        
-        if (_dict.ContainsKey(Parameters[5])) 
+
+        if (_dict.ContainsKey(Parameters[5]))
             orderStatus = GetOrderStatusFromArgumentsDictionary();
 
         if (orderStatus.HasValue)
-            _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token, orderStatus.Value, ord);
+            _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
+                orderStatus.Value, ord);
     }
 
     private void ModifyDesc(Order ord)
     {
         _dict.TryGetValue(Parameters[4], out var desc);
-        
+
         if (string.IsNullOrWhiteSpace(desc)) return;
-        
+
         _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc, ord);
     }
 
@@ -68,7 +69,8 @@ public class ModifyingOrderCommand : BaseCommand
         if (!int.TryParse(stringProductId, out var productId)) return;
         if (productId <= 0) return;
 
-        var product = _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId);
+        var product =
+            _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId);
         bool? addProduct = null;
 
         if (_dict.ContainsKey(Parameters[2])) addProduct = true;

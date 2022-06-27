@@ -1,8 +1,8 @@
-﻿namespace Shop.Command;
+﻿namespace MarketUI.Util.Command;
 
 public class LogoutCommand : BaseCommand
 {
-    public override string[] Names { get; }= { "logout", "lo" };
+    public override string[] Names { get; } = { "logout", "lo" };
 
     public override string Execute(string[] args)
     {

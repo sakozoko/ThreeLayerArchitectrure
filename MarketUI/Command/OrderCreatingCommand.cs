@@ -1,6 +1,6 @@
-﻿using BLL.Services.Factory;
+﻿using BLL.Util;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public class OrderCreatingCommand : BaseCommand
 {

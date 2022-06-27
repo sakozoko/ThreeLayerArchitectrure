@@ -1,8 +1,8 @@
-﻿using DAL.Repositories;
+﻿using DAL.Util.Repositories;
 using Entities;
 using Entities.Goods;
 
-namespace DAL;
+namespace DAL.Util;
 
 public interface IUnitOfWork
 {

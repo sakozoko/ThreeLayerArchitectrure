@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using BLL.Services.Factory;
+using BLL.Util;
 using Entities;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public class OrderHistoryViewCommand : BaseCommand
 {
@@ -27,7 +27,8 @@ public class OrderHistoryViewCommand : BaseCommand
         if (TryParseId(args))
         {
             var taskUser = _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id);
-            res = _serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, taskUser.Result);
+            res = _serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token,
+                taskUser.Result);
         }
         else
         {

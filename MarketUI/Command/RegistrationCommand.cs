@@ -1,7 +1,7 @@
-﻿using BLL.Services.Factory;
+﻿using BLL.Util;
 using Entities;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public class RegistrationCommand : BaseCommand
 {
@@ -15,7 +15,7 @@ public class RegistrationCommand : BaseCommand
         _serviceContainer = serviceContainer;
     }
 
-    public override string[] Names { get; } = { "registration", "r"};
+    public override string[] Names { get; } = { "registration", "r" };
 
     public override string Execute(string[] args)
     {

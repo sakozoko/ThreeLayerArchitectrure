@@ -1,6 +1,6 @@
 ﻿using Entities;
 
-namespace BLL.Helpers.Token;
+namespace BLL.Util.Helpers.Token;
 
 public interface ITokenHandler
 {

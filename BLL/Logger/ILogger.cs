@@ -1,4 +1,4 @@
-﻿namespace BLL.Logger;
+﻿namespace BLL.Util.Logger;
 
 public interface ILogger
 {

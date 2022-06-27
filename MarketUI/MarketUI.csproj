@@ -4,14 +4,11 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <LangVersion>latest</LangVersion>
+        <RootNamespace>Shop</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BLL\BLL.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="CommandFactory" />
+        <ProjectReference Include="..\BLL\BLL.csproj"/>
     </ItemGroup>
 
 </Project>

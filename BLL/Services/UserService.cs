@@ -1,10 +1,10 @@
-﻿using BLL.Helpers.Token;
-using BLL.Logger;
-using BLL.Services.Interfaces;
-using DAL.Repositories;
+﻿using BLL.Util.Helpers.Token;
+using BLL.Util.Logger;
+using BLL.Util.Services.Interfaces;
+using DAL.Util.Repositories;
 using Entities;
 
-namespace BLL.Services;
+namespace BLL.Util.Services;
 
 public class UserService : BaseService<User>, IUserService
 {

@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BLL.Services.Factory;
+using BLL.Util;
 using Entities.Goods;
 
-namespace Shop.Command;
+namespace MarketUI.Util.Command;
 
 public class ProductsViewCommand : BaseCommand
 {
@@ -19,7 +19,7 @@ public class ProductsViewCommand : BaseCommand
         _serviceContainer = serviceContainer;
     }
 
-    public override string[] Names { get; }= { "view product", "vp" };
+    public override string[] Names { get; } = { "view product", "vp" };
 
     public override string Execute(string[] args)
     {

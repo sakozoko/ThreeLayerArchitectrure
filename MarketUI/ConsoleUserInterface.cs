@@ -1,21 +1,22 @@
 ﻿using System;
-using BLL.Services.Exception;
+using BLL.Util.Services.Exception;
 using Entities;
-using Shop.Command;
-using Shop.Helpers;
+using MarketUI.Util.Command;
+using MarketUI.Util.Helpers;
 
-namespace Shop;
+namespace MarketUI.Util;
 
 public class ConsoleUserInterface
 {
     private readonly ICommandFactory _commandFactory;
+
     public ConsoleUserInterface(ICommandFactory commandFactory)
     {
         _commandFactory = commandFactory;
     }
 
     public static AuthenticateResponse AuthenticationData { get; set; }
-    
+
     public void ExecuteCommand(string commandString)
     {
         var args = SplitString(commandString);
@@ -27,7 +28,7 @@ public class ConsoleUserInterface
         }
         catch (AggregateException ae)
         {
-            if (ae.InnerException is AuthenticationException e) 
+            if (ae.InnerException is AuthenticationException e)
                 WriteException(e);
         }
     }
