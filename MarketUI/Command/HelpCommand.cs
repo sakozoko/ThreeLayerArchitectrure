@@ -1,24 +1,24 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
+using Autofac;
+using MarketUI.Util;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class HelpCommand : BaseCommand
 {
-    private readonly IEnumerable<ICommand> _commands;
+    private readonly IContainer _container;
 
-    public HelpCommand(IEnumerable<ICommand> commands)
+    public HelpCommand(IContainer container)
     {
-        _commands = commands;
+        _container = container;
     }
-
-    public override string[] Names { get; } = { "h", "help" };
 
     public override string Execute(string[] args)
     {
+        var commands = _container.ResolveAll<ICommand>();
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("Name \t To invoke \t Args");
-        foreach (var command in _commands)
+        foreach (var command in commands)
         {
             var str = (command as BaseCommand)?.GetHelp();
             stringBuilder.Append("\n" + str);

@@ -1,4 +1,4 @@
-﻿namespace MarketUI.Util.Command;
+﻿namespace MarketUI.Command;
 
 public interface ICommand
 {

@@ -1,7 +1,8 @@
 ﻿using System;
 using Autofac;
+using MarketUI.Util;
 
-namespace MarketUI.Util;
+namespace MarketUI;
 
 public static class Program
 {

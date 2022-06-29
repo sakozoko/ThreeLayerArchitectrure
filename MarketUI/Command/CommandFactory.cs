@@ -1,44 +1,26 @@
-﻿using System.Linq;
-using BLL;
+﻿using Autofac;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class CommandFactory : ICommandFactory
 {
-    private static readonly ICommand IncorrectCommand = new IncorrectCommand();
-    private readonly ICommand[] _commands;
+    private readonly IContainer _container;
+    private readonly ICommand _helpCommand;
 
-    public CommandFactory(IServiceContainer service)
+    public CommandFactory(IContainer container)
     {
         #region SetCommands
 
-        _commands = new[]
-        {
-            new ProductsViewCommand(service),
-            new LoginCommand(service),
-            new LogoutCommand(),
-            new OrderCreatingCommand(service),
-            new OrderHistoryViewCommand(service),
-            new RegistrationCommand(service),
-            new ModifyingOrderCommand(service),
-            IncorrectCommand
-        };
-
-        _commands[^1] = new HelpCommand(_commands);
+        _container = container;
+        _helpCommand = new HelpCommand(_container);
 
         #endregion
     }
 
     public ICommand GetCommand(string name)
     {
-        var returnCommand = IncorrectCommand;
-        foreach (var command in _commands)
-        {
-            if (!((command as BaseCommand)?.Names?.Any(x => x.Contains(name)) ?? false)) continue;
-            returnCommand = command;
-            break;
-        }
-
-        return returnCommand;
+        return name == "h"
+            ? _helpCommand
+            : _container.ResolveOptionalNamed<ICommand>(name) ?? _container.Resolve<ICommand>();
     }
 }

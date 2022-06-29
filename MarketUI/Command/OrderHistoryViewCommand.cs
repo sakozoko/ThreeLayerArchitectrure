@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using BLL;
 using Entities;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class OrderHistoryViewCommand : BaseCommand
 {
@@ -16,8 +16,6 @@ public class OrderHistoryViewCommand : BaseCommand
     {
         _serviceContainer = serviceContainer;
     }
-
-    public override string[] Names { get; } = { "view orders", "vo" };
 
     public override string Execute(string[] args)
     {

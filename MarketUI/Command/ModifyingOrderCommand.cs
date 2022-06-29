@@ -2,7 +2,7 @@
 using BLL;
 using Entities;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class ModifyingOrderCommand : BaseCommand
 {
@@ -14,8 +14,6 @@ public class ModifyingOrderCommand : BaseCommand
     {
         _serviceContainer = serviceContainer;
     }
-
-    public override string[] Names { get; } = { "mo", "modifyorder" };
 
     public override string Execute(string[] args)
     {

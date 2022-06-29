@@ -1,18 +1,18 @@
 ﻿using System;
 using BLL.Util.Services.Exception;
 using Entities;
-using MarketUI.Util.Command;
-using MarketUI.Util.Helpers;
+using MarketUI.Command;
+using MarketUI.Helpers;
 
-namespace MarketUI.Util;
+namespace MarketUI;
 
 public class ConsoleUserInterface
 {
-    private readonly ICommandFactory _commandFactory;
+    private readonly ICommandFactory _factory;
 
-    public ConsoleUserInterface(ICommandFactory commandFactory)
+    public ConsoleUserInterface(ICommandFactory factory)
     {
-        _commandFactory = commandFactory;
+        _factory = factory;
     }
 
     public static AuthenticateResponse AuthenticationData { get; set; }
@@ -20,10 +20,9 @@ public class ConsoleUserInterface
     public void ExecuteCommand(string commandString)
     {
         var args = SplitString(commandString);
-        var command = _commandFactory.GetCommand(args[0]);
         try
         {
-            var result = command.Execute(args);
+            var result = _factory.GetCommand(args[0]).Execute(args);
             WriteMessage(result);
         }
         catch (AggregateException ae)

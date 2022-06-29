@@ -1,9 +1,7 @@
-﻿namespace MarketUI.Util.Command;
+﻿namespace MarketUI.Command;
 
 public class LogoutCommand : BaseCommand
 {
-    public override string[] Names { get; } = { "logout", "lo" };
-
     public override string Execute(string[] args)
     {
         if (ConsoleUserInterface.AuthenticationData is null) return "Error";

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public abstract class BaseCommand : ICommand
 {
@@ -11,8 +11,6 @@ public abstract class BaseCommand : ICommand
     {
         _params = parameters;
     }
-
-    public abstract string[] Names { get; }
 
     public abstract string Execute(string[] args);
     public abstract string GetHelp();

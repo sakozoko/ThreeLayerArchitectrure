@@ -1,7 +1,7 @@
 ﻿using BLL;
 using Entities;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class LoginCommand : BaseCommand
 {
@@ -14,8 +14,6 @@ public class LoginCommand : BaseCommand
     {
         _serviceContainer = serviceContainer;
     }
-
-    public override string[] Names { get; } = { "li", "login" };
 
     public override string Execute(string[] args)
     {

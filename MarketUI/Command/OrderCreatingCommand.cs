@@ -1,6 +1,6 @@
 ﻿using BLL;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class OrderCreatingCommand : BaseCommand
 {
@@ -14,9 +14,6 @@ public class OrderCreatingCommand : BaseCommand
     {
         _serviceContainer = serviceContainer;
     }
-
-
-    public override string[] Names { get; } = { "cno", "order", "createno" };
 
     public override string Execute(string[] args)
     {

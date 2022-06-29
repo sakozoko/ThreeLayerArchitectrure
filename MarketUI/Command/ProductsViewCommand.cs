@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BLL;
 using Entities.Goods;
 
-namespace MarketUI.Util.Command;
+namespace MarketUI.Command;
 
 public class ProductsViewCommand : BaseCommand
 {
@@ -18,8 +18,6 @@ public class ProductsViewCommand : BaseCommand
     {
         _serviceContainer = serviceContainer;
     }
-
-    public override string[] Names { get; } = { "view product", "vp" };
 
     public override string Execute(string[] args)
     {
