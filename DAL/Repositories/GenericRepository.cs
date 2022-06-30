@@ -1,7 +1,7 @@
-﻿using DAL.Util.DataContext;
+﻿using DAL.DataContext;
 using Entities;
 
-namespace DAL.Util.Repositories;
+namespace DAL.Repositories;
 
 internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
 {

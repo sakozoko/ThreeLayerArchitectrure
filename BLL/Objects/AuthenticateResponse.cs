@@ -1,10 +1,10 @@
-﻿namespace Entities;
+﻿
+namespace BLL.Objects;
 
-public class AuthenticateResponse : BaseEntity
+public class AuthenticateResponse
 {
     public AuthenticateResponse(User user, string token)
     {
-        Id = user.Id;
         Name = user.Name;
         Surname = user.Surname;
         IsAdmin = user.IsAdmin;

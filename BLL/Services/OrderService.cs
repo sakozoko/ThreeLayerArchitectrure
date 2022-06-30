@@ -1,29 +1,30 @@
-﻿using BLL.Util.Helpers.Token;
+﻿using BLL.Extension;
+using BLL.Helpers.Token;
+using BLL.Objects;
+using BLL.Services.Interfaces;
 using BLL.Util.Logger;
-using BLL.Util.Services.Interfaces;
-using DAL.Util.Repositories;
+using DAL.Repositories;
 using Entities;
-using Entities.Goods;
 
-namespace BLL.Util.Services;
+namespace BLL.Services;
 
-public class OrderService : BaseService<Order>, IOrderService
+public class OrderService : BaseService<OrderEntity>, IOrderService
 {
-    public OrderService(IRepository<Order> repository, ITokenHandler tokenHandler, ILogger logger) :
+    public OrderService(IRepository<OrderEntity> repository, ITokenHandler tokenHandler, ILogger logger) :
         base(repository, tokenHandler, logger)
     {
     }
 
-    public Task<Order> GetById(string token, int id)
+    public Task<Objects.Order> GetById(string token, int id)
     {
-        return Task<Order>.Factory.StartNew(() =>
+        return Task<Objects.Order>.Factory.StartNew(() =>
         {
-            var order = Repository.GetById(id);
+            var order = Repository.GetById(id).ToDomain();
             if (order is null) return null;
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            if (order.Owner != requestUser) ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
+            if (order.Owner.Id != requestUser.Id) ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
 
             return order;
         });
@@ -37,7 +38,7 @@ public class OrderService : BaseService<Order>, IOrderService
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
+            var order = new Objects.Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
 
             if (user is not null)
             {
@@ -47,39 +48,39 @@ public class OrderService : BaseService<Order>, IOrderService
             }
 
             if (product is not null) order.Products.Add(product);
-            return Repository.Add(order);
+            return Repository.Add(order.ToEntity());
         });
     }
 
-    public Task<IEnumerable<Order>> GetAll(string token)
+    public Task<IEnumerable<Objects.Order>> GetAll(string token)
     {
-        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
+        return Task<IEnumerable<Objects.Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
 
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
             Logger.Log($"Admin {requestUser.Name} invoke to get all order");
-            return Repository.GetAll();
+            return Repository.GetAll().ToDomain().ToList();
         });
     }
 
-    public Task<IEnumerable<Order>> GetUserOrders(string token, User user = null)
+    public Task<IEnumerable<Objects.Order>> GetUserOrders(string token, User user = null)
     {
-        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
+        return Task<IEnumerable<Objects.Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-            Func<Order, bool> func = x => x.Owner == requestUser;
+            Func<Objects.Order, bool> func = x => x.Owner.Id == requestUser.Id;
 
             if (user is not null)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-                func = x => x.Owner == user;
+                func = x => x.Owner.Id == user.Id;
                 Logger.Log($"Admin {requestUser.Name} review orders of user with id {user.Id}");
             }
 
-            return Repository.GetAll().Where(func);
+            return Repository.GetAll().ToDomain().Where(func);
         });
     }
 
@@ -106,7 +107,7 @@ public class OrderService : BaseService<Order>, IOrderService
         });
     }
 
-    public Task<bool> DeleteProduct(string token, Product product, Order order)
+    public Task<bool> DeleteProduct(string token, Product product, Objects.Order order)
     {
         return Task<bool>.Factory.StartNew(() =>
         {
@@ -127,13 +128,13 @@ public class OrderService : BaseService<Order>, IOrderService
         });
     }
 
-    public Task<bool> ChangeDescription(string token, string desc, Order order)
+    public Task<bool> ChangeDescription(string token, string desc, Objects.Order order)
     {
         return Task<bool>.Factory.StartNew(() =>
             !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, order, x => x.Description = desc));
     }
 
-    public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Order order)
+    public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Objects.Order order)
     {
         return Task<bool>.Factory.StartNew(() => ChangeProperty(token, order, x =>
         {
@@ -148,7 +149,7 @@ public class OrderService : BaseService<Order>, IOrderService
         }));
     }
 
-    private bool ChangeProperty(string token, Order order, Action<Order> act)
+    private bool ChangeProperty(string token, Objects.Order order, Action<Objects.Order> act)
     {
         if (order is null) return false;
 

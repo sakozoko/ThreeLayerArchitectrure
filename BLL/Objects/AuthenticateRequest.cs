@@ -1,4 +1,4 @@
-﻿namespace Entities;
+﻿namespace BLL.Objects;
 
 public class AuthenticateRequest
 {

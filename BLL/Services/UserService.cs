@@ -1,14 +1,16 @@
-﻿using BLL.Util.Helpers.Token;
+﻿using BLL.Extension;
+using BLL.Helpers.Token;
+using BLL.Objects;
+using BLL.Services.Interfaces;
 using BLL.Util.Logger;
-using BLL.Util.Services.Interfaces;
-using DAL.Util.Repositories;
+using DAL.Repositories;
 using Entities;
 
-namespace BLL.Util.Services;
+namespace BLL.Services;
 
-public class UserService : BaseService<User>, IUserService
+public class UserService : BaseService<UserEntity>, IUserService
 {
-    public UserService(IRepository<User> repository, ITokenHandler tokenHandler, ILogger logger) : base(repository,
+    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger) : base(repository,
         tokenHandler, logger)
     {
     }
@@ -17,7 +19,7 @@ public class UserService : BaseService<User>, IUserService
     {
         if (request is null) LogAndThrowAuthenticationException("Request is null");
         var user = Repository.GetAll().FirstOrDefault
-            (x => x.Name == request.Username && x.Password == request.Password);
+            (x => x.Name == request.Username && x.Password == request.Password).ToDomain();
         if (user is null) return null;
         var token = TokenHandler.GenerateToken(user);
         var response = new AuthenticateResponse(user, token);
@@ -33,7 +35,7 @@ public class UserService : BaseService<User>, IUserService
         if (Repository.GetAll().FirstOrDefault(x => x.Name == request.Username) != null)
             LogAndThrowAuthenticationException("Name taken");
         var user = new User { Name = request.Username, Password = request.Password };
-        Repository.Add(user);
+        Repository.Add(user.ToEntity());
         var token = TokenHandler.GenerateToken(user);
         var response = new AuthenticateResponse(user, token);
         Logger.Log($"{user.Name} registrated.");
@@ -46,7 +48,7 @@ public class UserService : BaseService<User>, IUserService
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
-            return Repository.GetAll().ToList().Find(x => x.Name == name);
+            return Repository.GetAll().ToList().Find(x => x.Name == name).ToDomain();
         });
     }
 
@@ -56,7 +58,7 @@ public class UserService : BaseService<User>, IUserService
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
-            return Repository.GetById(id);
+            return Repository.GetById(id).ToDomain();
         });
     }
 
@@ -97,7 +99,7 @@ public class UserService : BaseService<User>, IUserService
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} invoked get all users");
-            return Repository.GetAll();
+            return Repository.GetAll().ToDomain();
         });
     }
 

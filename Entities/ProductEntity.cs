@@ -1,9 +1,9 @@
-﻿namespace Entities.Goods;
+﻿namespace Entities;
 
-public class Product : BaseEntity
+public class ProductEntity : BaseEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }
     public decimal Cost { get; set; }
-    public Category Category { get; set; }
+    public CategoryEntity Category { get; set; }
 }

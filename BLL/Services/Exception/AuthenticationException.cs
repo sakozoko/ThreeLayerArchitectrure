@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace BLL.Util.Services.Exception;
+namespace BLL.Services.Exception;
 
 [Serializable]
 public class AuthenticationException : System.Exception

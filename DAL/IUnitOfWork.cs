@@ -1,13 +1,12 @@
-﻿using DAL.Util.Repositories;
+﻿using DAL.Repositories;
 using Entities;
-using Entities.Goods;
 
 namespace DAL;
 
 public interface IUnitOfWork
 {
-    public IRepository<User> UserRepository { get; }
-    public IRepository<Product> ProductRepository { get; }
-    public IRepository<Order> OrderRepository { get; }
-    public IRepository<Category> CategoryRepository { get; }
+    public IRepository<UserEntity> UserRepository { get; }
+    public IRepository<ProductEntity> ProductRepository { get; }
+    public IRepository<OrderEntity> OrderRepository { get; }
+    public IRepository<CategoryEntity> CategoryRepository { get; }
 }

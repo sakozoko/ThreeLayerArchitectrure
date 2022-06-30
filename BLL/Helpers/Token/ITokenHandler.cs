@@ -1,10 +1,10 @@
-﻿using Entities;
+﻿using BLL.Objects;
 
-namespace BLL.Util.Helpers.Token;
+namespace BLL.Helpers.Token;
 
 public interface ITokenHandler
 {
-    public string GenerateToken(User user);
+    public string GenerateToken(User userEntity);
     public bool ValidateToken(string token);
     public User GetUser(string token);
 }

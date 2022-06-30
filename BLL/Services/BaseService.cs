@@ -1,11 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
-using BLL.Util.Helpers.Token;
+using BLL.Helpers.Token;
+using BLL.Objects;
+using BLL.Services.Exception;
 using BLL.Util.Logger;
-using BLL.Util.Services.Exception;
-using DAL.Util.Repositories;
+using DAL.Repositories;
 using Entities;
+using User = BLL.Objects.User;
 
-namespace BLL.Util.Services;
+namespace BLL.Services;
 
 public class BaseService<T> where T : BaseEntity
 {
@@ -34,21 +36,21 @@ public class BaseService<T> where T : BaseEntity
         throw ex;
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(User requestUser,
+    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(User requestUserEntity,
         [CallerMemberName] string callerName = "")
     {
-        ThrowAuthenticationExceptionIfUserIsNull(requestUser, callerName);
-        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser, callerName);
+        ThrowAuthenticationExceptionIfUserIsNull(requestUserEntity, callerName);
+        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUserEntity, callerName);
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUser, [CallerMemberName] string callerName = "")
+    protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUserEntity, [CallerMemberName] string callerName = "")
     {
-        if (requestUser is null) LogAndThrowAuthenticationException("Token is bad", callerName);
+        if (requestUserEntity is null) LogAndThrowAuthenticationException("Token is bad", callerName);
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(User requestUser,
+    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(User requestUserEntity,
         [CallerMemberName] string callerName = "")
     {
-        if (!requestUser.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);
+        if (!requestUserEntity.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);
     }
 }

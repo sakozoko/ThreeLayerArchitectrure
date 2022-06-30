@@ -1,8 +1,8 @@
 ﻿using System;
-using BLL.Util.Services.Exception;
-using Entities;
+using BLL.Objects;
+using BLL.Services.Exception;
 using MarketUI.Command;
-using MarketUI.Helpers;
+using MarketUI.Extension;
 
 namespace MarketUI;
 
@@ -19,7 +19,7 @@ public class ConsoleUserInterface
 
     public void ExecuteCommand(string commandString)
     {
-        var args = SplitString(commandString);
+        var args = commandString.SplitStringWithQuotes();
         try
         {
             var result = _factory.GetCommand(args[0]).Execute(args);
@@ -44,10 +44,5 @@ public class ConsoleUserInterface
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(e.Message);
         Console.ForegroundColor = ConsoleColor.Gray;
-    }
-
-    private static string[] SplitString(string str)
-    {
-        return ParseStringHelper.SplitStringWithQuotes(str);
     }
 }

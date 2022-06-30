@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BLL;
-using Entities.Goods;
+using BLL.Objects;
 
 namespace MarketUI.Command;
 

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace MarketUI.Helpers;
+namespace MarketUI.Extension;
 
-public static class ParseStringHelper
+public static class StringParserExtension
 {
-    public static string[] SplitStringWithQuotes(string str)
+    public static string[] SplitStringWithQuotes(this string str)
     {
         str = str.Replace("  ", " ").Trim();
         if (str == "")

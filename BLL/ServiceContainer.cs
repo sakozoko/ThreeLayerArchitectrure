@@ -1,7 +1,7 @@
-﻿using BLL.Util.Helpers.Token;
+﻿using BLL.Helpers.Token;
+using BLL.Services;
+using BLL.Services.Interfaces;
 using BLL.Util.Logger;
-using BLL.Util.Services;
-using BLL.Util.Services.Interfaces;
 using DAL;
 
 namespace BLL;

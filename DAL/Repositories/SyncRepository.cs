@@ -1,4 +1,4 @@
-﻿namespace DAL.Util.Repositories;
+﻿namespace DAL.Repositories;
 
 internal class SyncRepository
 {

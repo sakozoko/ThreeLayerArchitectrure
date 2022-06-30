@@ -1,5 +1,5 @@
 ﻿using BLL;
-using Entities;
+using BLL.Objects;
 
 namespace MarketUI.Command;
 

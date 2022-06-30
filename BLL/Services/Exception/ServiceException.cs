@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
-namespace BLL.Util.Services.Exception;
+namespace BLL.Services.Exception;
 
 [Serializable]
 public class ServiceException : System.Exception

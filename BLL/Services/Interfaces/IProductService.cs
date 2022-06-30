@@ -1,7 +1,6 @@
-﻿using Entities;
-using Entities.Goods;
+﻿using BLL.Objects;
 
-namespace BLL.Util.Services.Interfaces;
+namespace BLL.Services.Interfaces;
 
 public interface IProductService
 {
@@ -14,5 +13,5 @@ public interface IProductService
     public Task<bool> ChangeCost(string token, decimal value, Product product);
     public Task<bool> ChangeCategory(string token, Category category, Product product);
     public Task<bool> Remove(string token, int id);
-    public Task<bool> Remove(string token, Product entity);
+    public Task<bool> Remove(string token, Product product);
 }

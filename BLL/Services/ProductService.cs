@@ -1,22 +1,23 @@
-﻿using BLL.Util.Helpers.Token;
+﻿using BLL.Extension;
+using BLL.Helpers.Token;
+using BLL.Objects;
+using BLL.Services.Interfaces;
 using BLL.Util.Logger;
-using BLL.Util.Services.Interfaces;
-using DAL.Util.Repositories;
+using DAL.Repositories;
 using Entities;
-using Entities.Goods;
 
-namespace BLL.Util.Services;
+namespace BLL.Services;
 
-public class ProductService : BaseService<Product>, IProductService
+public class ProductService : BaseService<ProductEntity>, IProductService
 {
-    public ProductService(IRepository<Product> repository, ITokenHandler tokenHandler, ILogger logger) :
+    public ProductService(IRepository<ProductEntity> repository, ITokenHandler tokenHandler, ILogger logger) :
         base(repository, tokenHandler, logger)
     {
     }
 
     public Task<IEnumerable<Product>> GetByName(string name)
     {
-        return Task<IEnumerable<Product>>.Factory.StartNew(() => Repository.GetAll().Where(x => x.Name == name));
+        return Task<IEnumerable<Product>>.Factory.StartNew(() => Repository.GetAll().ToDomain().Where(x => x.Name == name));
     }
 
     public Task<Product> GetById(string token, int id)
@@ -24,7 +25,7 @@ public class ProductService : BaseService<Product>, IProductService
         return Task<Product>.Factory.StartNew(() =>
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
-            return Repository.GetById(id);
+            return Repository.GetById(id).ToDomain();
         });
     }
 
@@ -34,7 +35,7 @@ public class ProductService : BaseService<Product>, IProductService
             () =>
             {
                 ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
-                return Repository.GetAll();
+                return Repository.GetAll().ToDomain();
             });
     }
 
@@ -59,9 +60,9 @@ public class ProductService : BaseService<Product>, IProductService
             category is not null && ChangeProperty(token, x => x.Category = category, product));
     }
 
-    public Task<bool> Remove(string token, Product entity)
+    public Task<bool> Remove(string token, Product product)
     {
-        return Task<bool>.Factory.StartNew(() => entity != null && Remove(token, entity.Id).Result);
+        return Task<bool>.Factory.StartNew(() => product != null && Remove(token, product.Id).Result);
     }
 
     public Task<bool> Remove(string token, int id)
@@ -85,7 +86,7 @@ public class ProductService : BaseService<Product>, IProductService
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            if (order.Owner != requestUser)
+            if (order.Owner.Id != requestUser.Id)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 Logger.Log($"Admin {requestUser.Name} invoked to get products from order id {order.Id}");
@@ -95,16 +96,16 @@ public class ProductService : BaseService<Product>, IProductService
         });
     }
 
-    private bool ChangeProperty(string token, Action<Product> act, Product product)
+    private bool ChangeProperty(string token, Action<Product> act, Product productEntity)
     {
-        if (product is null)
+        if (productEntity is null)
             return false;
         var requestUser = TokenHandler.GetUser(token);
 
         ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
-        act.Invoke(product);
-        Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
+        act.Invoke(productEntity);
+        Logger.Log($"Admin {requestUser.Name} changed property for product id {productEntity.Id}");
         return true;
     }
 }

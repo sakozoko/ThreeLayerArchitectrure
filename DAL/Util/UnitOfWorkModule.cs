@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using DAL.Util.DataContext;
+using DAL.DataContext;
 
 namespace DAL.Util;
 

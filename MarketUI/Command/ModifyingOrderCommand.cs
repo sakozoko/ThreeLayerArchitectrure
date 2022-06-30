@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BLL;
+using BLL.Objects;
 using Entities;
 
 namespace MarketUI.Command;
