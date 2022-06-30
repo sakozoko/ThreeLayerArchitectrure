@@ -10,7 +10,8 @@ namespace BLL.Services;
 
 public class UserService : BaseService<UserEntity>, IUserService
 {
-    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger) : base(repository,
+    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger) : base(
+        repository,
         tokenHandler, logger)
     {
     }

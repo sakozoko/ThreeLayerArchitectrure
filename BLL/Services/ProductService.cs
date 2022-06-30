@@ -17,7 +17,8 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
     public Task<IEnumerable<Product>> GetByName(string name)
     {
-        return Task<IEnumerable<Product>>.Factory.StartNew(() => Repository.GetAll().ToDomain().Where(x => x.Name == name));
+        return Task<IEnumerable<Product>>.Factory.StartNew(() =>
+            Repository.GetAll().ToDomain().Where(x => x.Name == name));
     }
 
     public Task<Product> GetById(string token, int id)

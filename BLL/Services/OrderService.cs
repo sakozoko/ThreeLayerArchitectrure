@@ -15,9 +15,9 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
     {
     }
 
-    public Task<Objects.Order> GetById(string token, int id)
+    public Task<Order> GetById(string token, int id)
     {
-        return Task<Objects.Order>.Factory.StartNew(() =>
+        return Task<Order>.Factory.StartNew(() =>
         {
             var order = Repository.GetById(id).ToDomain();
             if (order is null) return null;
@@ -38,7 +38,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            var order = new Objects.Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
+            var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
 
             if (user is not null)
             {
@@ -52,9 +52,9 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         });
     }
 
-    public Task<IEnumerable<Objects.Order>> GetAll(string token)
+    public Task<IEnumerable<Order>> GetAll(string token)
     {
-        return Task<IEnumerable<Objects.Order>>.Factory.StartNew(() =>
+        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
 
@@ -65,13 +65,13 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         });
     }
 
-    public Task<IEnumerable<Objects.Order>> GetUserOrders(string token, User user = null)
+    public Task<IEnumerable<Order>> GetUserOrders(string token, User user = null)
     {
-        return Task<IEnumerable<Objects.Order>>.Factory.StartNew(() =>
+        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-            Func<Objects.Order, bool> func = x => x.Owner.Id == requestUser.Id;
+            Func<Order, bool> func = x => x.Owner.Id == requestUser.Id;
 
             if (user is not null)
             {
@@ -107,7 +107,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         });
     }
 
-    public Task<bool> DeleteProduct(string token, Product product, Objects.Order order)
+    public Task<bool> DeleteProduct(string token, Product product, Order order)
     {
         return Task<bool>.Factory.StartNew(() =>
         {
@@ -128,13 +128,13 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         });
     }
 
-    public Task<bool> ChangeDescription(string token, string desc, Objects.Order order)
+    public Task<bool> ChangeDescription(string token, string desc, Order order)
     {
         return Task<bool>.Factory.StartNew(() =>
             !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, order, x => x.Description = desc));
     }
 
-    public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Objects.Order order)
+    public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Order order)
     {
         return Task<bool>.Factory.StartNew(() => ChangeProperty(token, order, x =>
         {
@@ -149,7 +149,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         }));
     }
 
-    private bool ChangeProperty(string token, Objects.Order order, Action<Objects.Order> act)
+    private bool ChangeProperty(string token, Order order, Action<Order> act)
     {
         if (order is null) return false;
 

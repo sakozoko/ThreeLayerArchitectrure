@@ -1,6 +1,5 @@
 ﻿using BLL.Objects;
 
-
 namespace BLL.Services.Interfaces;
 
 public interface IOrderService

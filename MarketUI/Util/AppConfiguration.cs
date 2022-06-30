@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autofac;
-using Autofac.Core;
+﻿using Autofac;
 using BLL.Util;
 using MarketUI.Command;
 
@@ -61,5 +57,4 @@ public static class AppConfiguration
 
         return builder1.Build();
     }
-
 }

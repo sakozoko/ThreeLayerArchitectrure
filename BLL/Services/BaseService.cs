@@ -5,7 +5,6 @@ using BLL.Services.Exception;
 using BLL.Util.Logger;
 using DAL.Repositories;
 using Entities;
-using User = BLL.Objects.User;
 
 namespace BLL.Services;
 
@@ -43,7 +42,8 @@ public class BaseService<T> where T : BaseEntity
         ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUserEntity, callerName);
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUserEntity, [CallerMemberName] string callerName = "")
+    protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUserEntity,
+        [CallerMemberName] string callerName = "")
     {
         if (requestUserEntity is null) LogAndThrowAuthenticationException("Token is bad", callerName);
     }

@@ -1,5 +1,4 @@
-﻿
-namespace BLL.Objects;
+﻿namespace BLL.Objects;
 
 public class AuthenticateResponse
 {

@@ -19,12 +19,36 @@ public class DbContext : IDbContext
         };
         Orders = new List<OrderEntity>
         {
-            new() { Id = 1, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(), OrderStatus = "New"},
-            new() { Id = 2, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(), OrderStatus = "CanceledByTheAdministrator"},
-            new() { Id = 3, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(), OrderStatus = "CanceledByTheAdministrator" },
-            new() { Id = 4, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(), OrderStatus = "CanceledByTheAdministrator"  },
-            new() { Id = 5, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(), OrderStatus = "Sent" },
-            new() { Id = 6, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(), OrderStatus = "Received" }
+            new()
+            {
+                Id = 1, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(),
+                OrderStatus = "New"
+            },
+            new()
+            {
+                Id = 2, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(),
+                OrderStatus = "CanceledByTheAdministrator"
+            },
+            new()
+            {
+                Id = 3, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(),
+                OrderStatus = "CanceledByTheAdministrator"
+            },
+            new()
+            {
+                Id = 4, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(),
+                OrderStatus = "CanceledByTheAdministrator"
+            },
+            new()
+            {
+                Id = 5, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(),
+                OrderStatus = "Sent"
+            },
+            new()
+            {
+                Id = 6, Description = "Vishneva st. 34", Owner = Users[1], Products = new List<ProductEntity>(),
+                OrderStatus = "Received"
+            }
         };
     }
 
