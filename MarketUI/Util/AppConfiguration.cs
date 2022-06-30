@@ -53,7 +53,7 @@ public static class AppConfiguration
         var container = builder.Build();
 
         var builder1 = new ContainerBuilder();
-        builder1.Register(x => container).As<IContainer>().SingleInstance();
+        builder1.Register(_ => container).As<IContainer>().SingleInstance();
 
         builder1.RegisterType<CommandFactory>().As<ICommandFactory>();
 
@@ -62,14 +62,4 @@ public static class AppConfiguration
         return builder1.Build();
     }
 
-    public static T[] ResolveAll<T>(this IContainer self)
-    {
-        return self.Resolve<IEnumerable<T>>().ToArray();
-    }
-
-    public static object[] ResolveAll(this IContainer self, Type type)
-    {
-        var enumerableOfType = typeof(IEnumerable<>).MakeGenericType(type);
-        return (object[])self.ResolveService(new TypedService(enumerableOfType));
-    }
 }
