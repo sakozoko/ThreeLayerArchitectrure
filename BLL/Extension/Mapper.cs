@@ -1,10 +1,33 @@
-﻿using BLL.Objects;
+﻿using System.Reflection;
+using BLL.Objects;
 using Entities;
 
 namespace BLL.Extension;
 
 public static class Mapper
 {
+    public static TTo Map<TTo, TFrom>(TFrom from)
+        where TTo : BaseEntity
+        where TFrom : BaseDto
+    {
+        var to = (TTo)Activator.CreateInstance(typeof(TTo));
+        
+        to.SetProperty(from);
+
+        return to;
+    }
+    public static void SetProperty<TTo, TFrom>(this TTo to, TFrom from)
+        where TTo : BaseEntity
+        where TFrom : BaseDto
+    {
+        var toProperty = typeof(TTo).GetProperties();
+        var fromProperty = typeof(TFrom).GetProperties();
+        foreach (var propertyInfo in toProperty)
+        {
+            propertyInfo.SetValue(to, fromProperty.FirstOrDefault(x =>
+                x.PropertyType == propertyInfo.PropertyType && x.Name == propertyInfo.Name)?.GetValue(from));
+        }
+    }
     #region ToEntity
 
     public static CategoryEntity ToEntity(this Category category)

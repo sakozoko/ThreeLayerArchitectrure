@@ -1,8 +1,7 @@
 ﻿namespace BLL.Objects;
 
-public class Order
+public class Order:BaseDto
 {
-    public int Id { get; set; }
     public User Owner { get; set; }
     public virtual List<Product> Products { get; set; }
     public string Description { get; set; }
