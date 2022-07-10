@@ -6,15 +6,13 @@ namespace DAL.Repositories;
 internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
 {
     private readonly IDbContext _dbContext;
-
-    private readonly IList<T> _entities;
+    
     private int _lastId;
 
     public GenericRepository(IDbContext dbContext)
     {
         _dbContext = dbContext;
-        _entities = dbContext.Set<T>();
-        _lastId = _entities.Count;
+        _lastId = _dbContext.Set<T>().Count;
     }
 
     public int Add(T entity)
@@ -22,7 +20,7 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
         lock (Obj)
         {
             entity.Id = ++_lastId;
-            _entities.Add(entity);
+            _dbContext.Set<T>().Add(entity);
             return _lastId;
         }
     }
@@ -31,7 +29,7 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
     {
         lock (Obj)
         {
-            return _entities;
+            return _dbContext.Set<T>();
         }
     }
 
@@ -39,7 +37,7 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
     {
         lock (Obj)
         {
-            return _entities.FirstOrDefault(x => x.Id == id);
+            return _dbContext.Set<T>().FirstOrDefault(x => x.Id == id);
         }
     }
 
@@ -47,12 +45,15 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
     {
         lock (Obj)
         {
-            return _entities.Remove(entity);
+            return _dbContext.Set<T>().Remove(entity);
         }
     }
 
-    public async Task Save()
+    public void Update(T entity)
     {
-        await _dbContext.Save();
+        if (_dbContext.Set<T>().FirstOrDefault(x => x.Equals(entity))==null)
+        {
+            throw new ArgumentException(nameof(entity));
+        }
     }
 }
