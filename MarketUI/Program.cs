@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+using System;
+using System.Diagnostics;
+using System.Text;
 using Autofac;
 using MarketUI.Util;
 
@@ -12,12 +15,23 @@ public static class Program
     {
         var container = AppConfiguration.Configure();
         _consoleUserInterface = container.Resolve<ConsoleUserInterface>();
-        Start();
+        Start(args);
     }
-
-    private static void Start()
+    private static string ConcatWithSeparator(this string[] args, string separator)
     {
-        var k = Console.ReadLine();
+        var stringBuilder = new StringBuilder();
+        foreach (var arg in args)
+        {
+            stringBuilder.Append(arg);
+            stringBuilder.Append(separator);
+        }
+
+        return stringBuilder.ToString();
+    }
+    private static void Start(string[] args)
+    {
+        var k = args.ConcatWithSeparator(" ") ?? Console.ReadLine();
+
         while (k != "exit")
         {
             try
