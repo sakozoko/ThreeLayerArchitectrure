@@ -3,8 +3,6 @@ using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
-using BLL.Util;
-using BLL.Util.Interface;
 using BLL.Util.Logger;
 using DAL.Repositories;
 using Entities;
@@ -13,6 +11,10 @@ namespace BLL.Services;
 
 public class OrderService : BaseService<OrderEntity>, IOrderService
 {
+    public OrderService(IRepository<OrderEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
+        : base(repository, tokenHandler, logger, mapper)
+    {
+    }
 
 
     public Task<Order> GetById(string token, int id)
@@ -123,7 +125,8 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                 Logger.Log(
                     $"Admin {requestUser.Name} removed product with id {product.Id} from order with id {order.Id}");
             }
-            var result=order.Products.Remove(product);
+
+            var result = order.Products.Remove(product);
             Repository.InsertOrUpdate(order, Mapper);
             return result;
         });
@@ -166,9 +169,5 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         act.Invoke(order);
         Repository.InsertOrUpdate(order, Mapper);
         return true;
-    }
-
-    public OrderService(IRepository<OrderEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
-    {
     }
 }

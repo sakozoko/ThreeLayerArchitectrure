@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
-using BLL.Util.Interface;
 using BLL.Util.Logger;
 using DAL.Repositories;
 using Entities;
@@ -12,7 +10,10 @@ namespace BLL.Services;
 
 public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 {
-
+    public CategoryService(IRepository<CategoryEntity> repository, ITokenHandler tokenHandler, ILogger logger,
+        IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    {
+    }
 
 
     public Task<int> Create(string token, string name)
@@ -85,9 +86,5 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 
             return Repository.Delete(Mapper.Map<CategoryEntity>(category));
         });
-    }
-
-    public CategoryService(IRepository<CategoryEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
-    {
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace BLL.Objects;
 
-public class User :BaseDto
+public class User : BaseDto
 {
     public string Name { get; set; }
     public string Surname { get; set; }

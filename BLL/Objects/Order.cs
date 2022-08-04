@@ -1,6 +1,6 @@
 ﻿namespace BLL.Objects;
 
-public class Order:BaseDto
+public class Order : BaseDto
 {
     public User Owner { get; set; }
     public List<Product> Products { get; set; }

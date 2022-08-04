@@ -11,6 +11,11 @@ namespace BLL.Services;
 
 public class UserService : BaseService<UserEntity>, IUserService
 {
+    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) :
+        base(repository, tokenHandler, logger, mapper)
+    {
+    }
+
     public AuthenticateResponse Authenticate(AuthenticateRequest request)
     {
         if (request is null) LogAndThrowAuthenticationException("Request is null");
@@ -44,7 +49,7 @@ public class UserService : BaseService<UserEntity>, IUserService
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
-            return Mapper.Map<User>(Repository.GetAll().FirstOrDefault(x=>x.Name==name));
+            return Mapper.Map<User>(Repository.GetAll().FirstOrDefault(x => x.Name == name));
         });
     }
 
@@ -131,9 +136,5 @@ public class UserService : BaseService<UserEntity>, IUserService
         act.Invoke(user);
         Repository.InsertOrUpdate(user, Mapper);
         return true;
-    }
-
-    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
-    {
     }
 }

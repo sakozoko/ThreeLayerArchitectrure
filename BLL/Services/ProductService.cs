@@ -11,7 +11,11 @@ namespace BLL.Services;
 
 public class ProductService : BaseService<ProductEntity>, IProductService
 {
- 
+    public ProductService(IRepository<ProductEntity> repository, ITokenHandler tokenHandler, ILogger logger,
+        IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    {
+    }
+
 
     public Task<IEnumerable<Product>> GetByName(string name)
     {
@@ -105,11 +109,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         act.Invoke(product);
         Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
-        Repository.InsertOrUpdate(product,Mapper);
+        Repository.InsertOrUpdate(product, Mapper);
         return true;
-    }
-
-    public ProductService(IRepository<ProductEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
-    {
     }
 }

@@ -7,19 +7,14 @@ namespace BLL.Extension;
 
 public static class Repository
 {
-    public static void InsertOrUpdate<TTo, TFrom>(this IRepository<TTo> repository, TFrom from, IMapper mapper) 
+    public static void InsertOrUpdate<TTo, TFrom>(this IRepository<TTo> repository, TFrom from, IMapper mapper)
         where TTo : BaseEntity
         where TFrom : BaseDto
     {
         var exp = repository.GetById(from.Id);
         if (exp is not null)
-        {
-            repository.Update(mapper.Map<TFrom,TTo>(from));
-        }
+            repository.Update(mapper.Map<TFrom, TTo>(from));
         else
-        {
-            repository.Add(mapper.Map<TFrom,TTo>(from));
-        }
-        
+            repository.Add(mapper.Map<TFrom, TTo>(from));
     }
 }

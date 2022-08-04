@@ -10,14 +10,14 @@ namespace BLL.Helpers.Token;
 public class CustomTokenHandler : ITokenHandler
 {
     private readonly ILogger _logger;
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CustomTokenHandler(IUnitOfWork unitOfWork, ILogger logger, IMapperHandler mapper)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _mapper= mapper.GetMapper();
+        _mapper = mapper.GetMapper();
     }
 
     public string GenerateToken(User userEntity)
