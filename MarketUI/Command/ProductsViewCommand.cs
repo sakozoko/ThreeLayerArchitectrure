@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL;
 using BLL.Objects;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
@@ -14,7 +15,8 @@ public class ProductsViewCommand : BaseCommand
     private bool _isGroupBy;
     private string _name;
 
-    public ProductsViewCommand(IServiceContainer serviceContainer) : base(Parameters)
+    public ProductsViewCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) :
+        base(mapperHandler,Parameters)
     {
         _serviceContainer = serviceContainer;
     }

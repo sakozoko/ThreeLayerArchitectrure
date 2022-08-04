@@ -1,5 +1,6 @@
 ﻿using BLL;
 using BLL.Objects;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
@@ -10,7 +11,8 @@ public class LoginCommand : BaseCommand
     private string _name;
     private string _password;
 
-    public LoginCommand(IServiceContainer serviceContainer) : base(Parameters)
+    public LoginCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) : 
+        base(mapperHandler, Parameters)
     {
         _serviceContainer = serviceContainer;
     }

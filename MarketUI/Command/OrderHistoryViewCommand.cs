@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BLL;
 using BLL.Objects;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
@@ -12,7 +13,8 @@ public class OrderHistoryViewCommand : BaseCommand
     private readonly IServiceContainer _serviceContainer;
     private int _id;
 
-    public OrderHistoryViewCommand(IServiceContainer serviceContainer) : base(Parameters)
+    public OrderHistoryViewCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) : 
+        base(mapperHandler,Parameters)
     {
         _serviceContainer = serviceContainer;
     }

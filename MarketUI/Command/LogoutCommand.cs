@@ -1,4 +1,6 @@
-﻿namespace MarketUI.Command;
+﻿using MarketUI.Util.Interface;
+
+namespace MarketUI.Command;
 
 public class LogoutCommand : BaseCommand
 {
@@ -13,5 +15,9 @@ public class LogoutCommand : BaseCommand
     public override string GetHelp()
     {
         return "Logout \t logout or lo \t none";
+    }
+
+    public LogoutCommand(IUserInterfaceMapperHandler mapperHandler) : base(mapperHandler)
+    {
     }
 }

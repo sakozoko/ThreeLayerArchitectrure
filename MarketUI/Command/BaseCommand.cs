@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoMapper;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
 public abstract class BaseCommand : ICommand
 {
     private readonly string[] _params;
+    protected IMapper Mapper { get; }
 
-    protected BaseCommand(string[] parameters = null)
+    protected BaseCommand(IUserInterfaceMapperHandler mapperHandler,string[] parameters = null)
     {
         _params = parameters;
+        Mapper=mapperHandler.GetMapper();
     }
 
     public abstract string Execute(string[] args);

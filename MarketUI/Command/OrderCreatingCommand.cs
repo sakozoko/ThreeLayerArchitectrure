@@ -1,4 +1,5 @@
 ﻿using BLL;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
@@ -10,7 +11,8 @@ public class OrderCreatingCommand : BaseCommand
     private int _id;
     private int _product;
 
-    public OrderCreatingCommand(IServiceContainer serviceContainer) : base(Parameters)
+    public OrderCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) : 
+        base(mapperHandler, Parameters)
     {
         _serviceContainer = serviceContainer;
     }

@@ -1,16 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BLL;
 using BLL.Objects;
+using MarketUI.Models;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
 public class ModifyingOrderCommand : BaseCommand
 {
-    private static readonly string[] Parameters = { "-o", "-p", "-a", "-r", "-d", "-s" };
+    private static readonly string[] Parameters = { "-o", "-p",  "-r", "-d", "-s" };
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public ModifyingOrderCommand(IServiceContainer serviceContainer) : base(Parameters)
+    public ModifyingOrderCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) :
+        base(mapperHandler, Parameters)
     {
         _serviceContainer = serviceContainer;
     }
@@ -23,85 +27,71 @@ public class ModifyingOrderCommand : BaseCommand
 
         if (!int.TryParse(stringOrderId, out var orderId)) return GetHelp();
 
-        var ord = _serviceContainer.OrderService.GetById(ConsoleUserInterface.AuthenticationData.Token, orderId);
+        var task = _serviceContainer.OrderService.GetById(ConsoleUserInterface.AuthenticationData.Token, orderId);
+        var orderModel = Mapper.Map<OrderModel>(task.Result);
+        if (orderModel is null) return "Order not found";
 
-        if (ord.Result is null) return "Order not found";
-
-        ModifyOrderProducts(ord.Result);
-        ModifyDesc(ord.Result);
-        ModifyOrderStatus(ord.Result);
-
-        return $"Order with id {orderId} updated";
+        ModifyOrderProducts(orderModel);
+        ModifyDesc(orderModel);
+        ModifyOrderStatus(orderModel);
+        
+        return SaveOrder(orderModel) ? $"Order with id {orderId} updated" :
+            $"Order with id {orderId} not updated";
     }
 
-    private void ModifyOrderStatus(Order ord)
+    private void ModifyOrderStatus(OrderModel orderModel)
     {
-        OrderStatus? orderStatus = null;
-
-        if (_dict.ContainsKey(Parameters[5]))
-            orderStatus = GetOrderStatusFromArgumentsDictionary();
-
-        if (orderStatus.HasValue)
-            _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
-                orderStatus.Value, ord);
+        if (_dict.TryGetValue(Parameters[4], out var stringOrderStatus))
+        {
+            orderModel.OrderStatus = stringOrderStatus ?? "New";
+        }
     }
 
-    private void ModifyDesc(Order ord)
+    private void ModifyDesc(OrderModel orderModel)
     {
-        _dict.TryGetValue(Parameters[4], out var desc);
-
+        _dict.TryGetValue(Parameters[3], out var desc);
         if (string.IsNullOrWhiteSpace(desc)) return;
+        orderModel.Description = desc;
+     }
 
-        _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc, ord);
-    }
-
-    public override string GetHelp()
-    {
-        return "Modyfing order \t mo or modifyorder \t -o, -p, -a, -r, -d, -s";
-    }
-
-    private void ModifyOrderProducts(Order ord)
+    private void ModifyOrderProducts(OrderModel orderModel)
     {
         _dict.TryGetValue(Parameters[1], out var stringProductId);
 
         if (!int.TryParse(stringProductId, out var productId)) return;
-        if (productId <= 0) return;
 
-        var product =
+        var task =
             _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId);
-        bool? addProduct = null;
+        var addProduct = !_dict.ContainsKey(Parameters[2]);
 
-        if (_dict.ContainsKey(Parameters[2])) addProduct = true;
+        var productModel = Mapper.Map<ProductModel>(task.Result);
+        
+        if (productModel is null) return;
 
-        if (_dict.ContainsKey(Parameters[3])) addProduct = false;
-
-        if (!addProduct.HasValue || product.Result is null) return;
-        if (addProduct.Value)
-            _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token, product.Result,
-                ord);
+        if (addProduct)
+        {
+            orderModel.Products.Add(productModel);
+        }
         else
-            _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token, product.Result,
-                ord);
+        {
+            ///todo remove concrete product from order, identify him not by product.Id
+            orderModel.Products.Remove(orderModel.Products.FirstOrDefault(x => x.Id == productId));
+        }
     }
 
-    private OrderStatus? GetOrderStatusFromArgumentsDictionary()
+    private bool SaveOrder(OrderModel order)
     {
-        var status = _dict[Parameters[5]];
-        return status switch
-        {
-            nameof(OrderStatus.New) => OrderStatus.New,
-            nameof(OrderStatus.CanceledByTheAdministrator) => OrderStatus.CanceledByTheAdministrator,
-            nameof(OrderStatus.PaymentReceived) => OrderStatus.PaymentReceived,
-            nameof(OrderStatus.Sent) => OrderStatus.Sent,
-            nameof(OrderStatus.Completed) => OrderStatus.Completed,
-            nameof(OrderStatus.Received) => OrderStatus.Received,
-            nameof(OrderStatus.CanceledByUser) => OrderStatus.CanceledByTheAdministrator,
-            _ => null
-        };
+        return _serviceContainer.OrderService.
+            SaveOrder(ConsoleUserInterface.AuthenticationData.Token, 
+                Mapper.Map<Order>(order));
     }
 
     private bool ArgumentsContainsOrderId(string[] args)
     {
         return TryParseArgs(args, out _dict) && _dict.ContainsKey(Parameters[0]);
+    }
+    public override string GetHelp()
+    {
+        return "Modyfing order \t mo or modifyorder \t -o, -p,  -r, -d, -s";
     }
 }

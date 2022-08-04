@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using BLL.Util;
 using MarketUI.Command;
+using MarketUI.Util.Interface;
 
 namespace MarketUI.Util;
 
@@ -11,6 +12,7 @@ public static class AppConfiguration
         var builder = new ContainerBuilder();
 
         builder.RegisterModule(new ServiceContainerModule());
+        builder.RegisterType<AutoMapperHandler>().As<IUserInterfaceMapperHandler>();
 
         #region RegistrationCommands
 
