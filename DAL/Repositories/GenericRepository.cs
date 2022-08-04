@@ -6,7 +6,7 @@ namespace DAL.Repositories;
 internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
 {
     private readonly IDbContext _dbContext;
-    
+
     private int _lastId;
 
     public GenericRepository(IDbContext dbContext)
@@ -51,9 +51,16 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
 
     public void Update(T entity)
     {
-        if (_dbContext.Set<T>().FirstOrDefault(x => x.Equals(entity))==null)
+        var value = _dbContext.Set<T>().FirstOrDefault(x => x.Id == entity.Id);
+        if (value is null)
         {
             throw new ArgumentException(nameof(entity));
+        }
+
+        lock (Obj)
+        {
+            _dbContext.Set<T>().Remove(value);
+            _dbContext.Set<T>().Add(entity);
         }
     }
 }
