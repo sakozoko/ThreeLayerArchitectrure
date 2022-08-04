@@ -5,7 +5,7 @@ using Entities;
 
 namespace BLL.Util;
 
-public class AutoMapperHandler : IMapperHandler
+public class AutoMapperHandler : IDomainMapperHandler
 {
     public IMapper GetMapper()
     {

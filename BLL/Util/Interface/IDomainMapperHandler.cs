@@ -2,7 +2,7 @@
 
 namespace BLL.Util.Interface;
 
-public interface IMapperHandler
+public interface IDomainMapperHandler
 {
     IMapper GetMapper();
 }

@@ -20,12 +20,12 @@ public class ServiceContainer : IServiceContainer
     private IUserService _userService;
 
     public ServiceContainer(IUnitOfWork unitOfWork, ILogger logger, ITokenHandler tokenHandler,
-        IMapperHandler mapperHandler)
+        IDomainMapperHandler domainMapperHandler)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _tokenHandler = tokenHandler;
-        _mapper = mapperHandler.GetMapper();
+        _mapper = domainMapperHandler.GetMapper();
     }
 
     public IUserService UserService =>
