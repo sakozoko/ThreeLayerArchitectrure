@@ -4,7 +4,7 @@ using MarketUI.Extension;
 
 namespace MarketUI.Command;
 
-public class HelpCommand : BaseCommand
+public class HelpCommand :ICommand
 {
     private readonly IContainer _container;
 
@@ -13,7 +13,7 @@ public class HelpCommand : BaseCommand
         _container = container;
     }
 
-    public override string Execute(string[] args)
+    public string Execute(string[] args)
     {
         var commands = _container.ResolveAll<ICommand>();
         var stringBuilder = new StringBuilder();
@@ -24,12 +24,7 @@ public class HelpCommand : BaseCommand
             stringBuilder.Append("\n" + str);
         }
 
-        stringBuilder.Append(GetHelp());
+        stringBuilder.Append("Help \t h or help \t none");
         return stringBuilder.ToString();
-    }
-
-    public override string GetHelp()
-    {
-        return "Help \t h or help \t none";
     }
 }
