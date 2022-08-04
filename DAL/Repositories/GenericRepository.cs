@@ -56,8 +56,8 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
 
         lock (Obj)
         {
-            _dbContext.Set<T>().Remove(value);
-            _dbContext.Set<T>().Add(entity);
+            var index = _dbContext.Set<T>().IndexOf(value);
+            _dbContext.Set<T>()[index] = entity;
         }
     }
 }
