@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
@@ -88,48 +89,15 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
     public Task<bool> AddProduct(string token, Product product, Order order)
     {
-        return Task<bool>.Factory.StartNew(() =>
-        {
-            if (order is null || product is null)
-                return false;
-            var requestUser = TokenHandler.GetUser(token);
+        return Task<bool>.Factory.StartNew(() => 
+            product is not null && ChangeProperty(token,order,x=>x.Products.Add(product)));
 
-            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
-            if (order.Owner.Id != requestUser.Id)
-            {
-                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-                Logger.Log(
-                    $"Admin {requestUser.Name} added product with id {product.Id} from order with id {order.Id}");
-            }
-
-            order.Products.Add(product);
-            Repository.InsertOrUpdate(order, Mapper);
-            return true;
-        });
     }
 
     public Task<bool> DeleteProduct(string token, Product product, Order order)
     {
-        return Task<bool>.Factory.StartNew(() =>
-        {
-            if (order is null || product is null)
-                return false;
-            var requestUser = TokenHandler.GetUser(token);
-
-            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
-            if (order.Owner != requestUser)
-            {
-                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-                Logger.Log(
-                    $"Admin {requestUser.Name} removed product with id {product.Id} from order with id {order.Id}");
-            }
-
-            var result = order.Products.Remove(product);
-            Repository.InsertOrUpdate(order, Mapper);
-            return result;
-        });
+        return Task<bool>.Factory.StartNew(() => 
+            product is not null && ChangeProperty(token,order,x=>x.Products.Remove(product)));
     }
 
     public Task<bool> ChangeDescription(string token, string desc, Order order)
@@ -153,21 +121,33 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         }));
     }
 
-    private bool ChangeProperty(string token, Order order, Action<Order> act)
+    private bool ValidPermissionForModifyOrder(string token, Order order)
     {
         if (order is null) return false;
-
+        
         var requestUser = TokenHandler.GetUser(token);
-
+        
         ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-        if (order.Owner != requestUser)
-        {
-            ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-            Logger.Log($"Admin {requestUser.Name} change property for order with id {order.Id}");
-        }
+        
+        if (order.Owner.Id == requestUser.Id) return true;
+        
+        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
+        
+        Logger.Log($"Admin {requestUser.Name} change property for order with id {order.Id}");
 
-        act.Invoke(order);
+        return true;
+    }
+    public bool SaveOrder(string token, Order order)
+    {
+        if (!ValidPermissionForModifyOrder(token, order)) return false;
         Repository.InsertOrUpdate(order, Mapper);
+        return true;
+    }
+
+    private bool ChangeProperty(string token, Order order, Action<Order> act)
+    {
+        if (!ValidPermissionForModifyOrder(token, order)) return false;
+        act?.Invoke(order);
         return true;
     }
 }
