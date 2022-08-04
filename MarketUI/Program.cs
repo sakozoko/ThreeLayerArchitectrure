@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Text;
 using Autofac;
 using MarketUI.Util;
@@ -17,6 +15,7 @@ public static class Program
         _consoleUserInterface = container.Resolve<ConsoleUserInterface>();
         Start(args);
     }
+
     private static string ConcatWithSeparator(this string[] args, string separator)
     {
         var stringBuilder = new StringBuilder();
@@ -28,6 +27,7 @@ public static class Program
 
         return stringBuilder.ToString();
     }
+
     private static void Start(string[] args)
     {
         var k = args.ConcatWithSeparator(" ") ?? Console.ReadLine();

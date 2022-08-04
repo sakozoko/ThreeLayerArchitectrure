@@ -41,7 +41,7 @@ public class OrderHistoryViewCommand : BaseCommand
                 stringBuilder.Append($"\n {orderProduct.Name} \t {orderProduct.Cost} \t {orderProduct.Category.Name}");
             stringBuilder.Append("\n-------------------------------------------------------");
         }
-            
+
 
         return stringBuilder.ToString();
     }
