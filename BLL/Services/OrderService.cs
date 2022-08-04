@@ -1,7 +1,10 @@
-﻿using BLL.Extension;
+﻿using AutoMapper;
+using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
+using BLL.Util;
+using BLL.Util.Interface;
 using BLL.Util.Logger;
 using DAL.Repositories;
 using Entities;
@@ -10,16 +13,13 @@ namespace BLL.Services;
 
 public class OrderService : BaseService<OrderEntity>, IOrderService
 {
-    public OrderService(IRepository<OrderEntity> repository, ITokenHandler tokenHandler, ILogger logger) :
-        base(repository, tokenHandler, logger)
-    {
-    }
+
 
     public Task<Order> GetById(string token, int id)
     {
         return Task<Order>.Factory.StartNew(() =>
         {
-            var order = Repository.GetById(id).ToDomain();
+            var order = Mapper.Map<Order>(Repository.GetById(id));
             if (order is null) return null;
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
@@ -48,7 +48,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             }
 
             if (product is not null) order.Products.Add(product);
-            return Repository.Add(order.ToEntity());
+            return Repository.Add(Mapper.Map<OrderEntity>(order));
         });
     }
 
@@ -61,7 +61,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
             Logger.Log($"Admin {requestUser.Name} invoke to get all order");
-            return Repository.GetAll().ToDomain().ToList();
+            return Mapper.Map<IEnumerable<Order>>(Repository.GetAll());
         });
     }
 
@@ -80,7 +80,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                 Logger.Log($"Admin {requestUser.Name} review orders of user with id {user.Id}");
             }
 
-            return Repository.GetAll().ToDomain().Where(func);
+            return Mapper.Map<IEnumerable<Order>>(Repository.GetAll()).Where(func);
         });
     }
 
@@ -94,7 +94,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            if (order.Owner != requestUser)
+            if (order.Owner.Id != requestUser.Id)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 Logger.Log(
@@ -102,7 +102,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             }
 
             order.Products.Add(product);
-
+            Repository.InsertOrUpdate(order, Mapper);
             return true;
         });
     }
@@ -123,8 +123,9 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                 Logger.Log(
                     $"Admin {requestUser.Name} removed product with id {product.Id} from order with id {order.Id}");
             }
-
-            return order.Products.Remove(product);
+            var result=order.Products.Remove(product);
+            Repository.InsertOrUpdate(order, Mapper);
+            return result;
         });
     }
 
@@ -163,6 +164,11 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         }
 
         act.Invoke(order);
+        Repository.InsertOrUpdate(order, Mapper);
         return true;
+    }
+
+    public OrderService(IRepository<OrderEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    {
     }
 }

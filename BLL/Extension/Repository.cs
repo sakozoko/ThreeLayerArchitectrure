@@ -1,4 +1,5 @@
-﻿using BLL.Objects;
+﻿using AutoMapper;
+using BLL.Objects;
 using DAL.Repositories;
 using Entities;
 
@@ -6,19 +7,18 @@ namespace BLL.Extension;
 
 public static class Repository
 {
-    public static void InsertOrUpdate<TTo, TFrom>(this IRepository<TTo> repository, TFrom from) 
+    public static void InsertOrUpdate<TTo, TFrom>(this IRepository<TTo> repository, TFrom from, IMapper mapper) 
         where TTo : BaseEntity
         where TFrom : BaseDto
     {
         var exp = repository.GetById(from.Id);
         if (exp is not null)
         {
-            exp.SetProperty(from);
-            repository.Update(exp);
+            repository.Update(mapper.Map<TFrom,TTo>(from));
         }
         else
         {
-            repository.Add(Mapper.Map<TTo,TFrom>(from));
+            repository.Add(mapper.Map<TFrom,TTo>(from));
         }
         
     }

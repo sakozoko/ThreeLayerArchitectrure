@@ -1,4 +1,5 @@
-﻿using BLL.Extension;
+﻿using AutoMapper;
+using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
@@ -10,15 +11,12 @@ namespace BLL.Services;
 
 public class ProductService : BaseService<ProductEntity>, IProductService
 {
-    public ProductService(IRepository<ProductEntity> repository, ITokenHandler tokenHandler, ILogger logger) :
-        base(repository, tokenHandler, logger)
-    {
-    }
+ 
 
     public Task<IEnumerable<Product>> GetByName(string name)
     {
         return Task<IEnumerable<Product>>.Factory.StartNew(() =>
-            Repository.GetAll().ToDomain().Where(x => x.Name == name));
+            Mapper.Map<IEnumerable<Product>>(Repository.GetAll()).Where(x => x.Name == name));
     }
 
     public Task<Product> GetById(string token, int id)
@@ -26,7 +24,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         return Task<Product>.Factory.StartNew(() =>
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
-            return Repository.GetById(id).ToDomain();
+            return Mapper.Map<Product>(Repository.GetById(id));
         });
     }
 
@@ -36,7 +34,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
             () =>
             {
                 ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
-                return Repository.GetAll().ToDomain();
+                return Mapper.Map<IEnumerable<Product>>(Repository.GetAll());
             });
     }
 
@@ -97,16 +95,21 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         });
     }
 
-    private bool ChangeProperty(string token, Action<Product> act, Product productEntity)
+    private bool ChangeProperty(string token, Action<Product> act, Product product)
     {
-        if (productEntity is null)
+        if (product is null)
             return false;
         var requestUser = TokenHandler.GetUser(token);
 
         ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
-        act.Invoke(productEntity);
-        Logger.Log($"Admin {requestUser.Name} changed property for product id {productEntity.Id}");
+        act.Invoke(product);
+        Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
+        Repository.InsertOrUpdate(product,Mapper);
         return true;
+    }
+
+    public ProductService(IRepository<ProductEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    {
     }
 }

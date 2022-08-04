@@ -1,7 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using AutoMapper;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Exception;
+using BLL.Util.Interface;
 using BLL.Util.Logger;
 using DAL.Repositories;
 using Entities;
@@ -13,12 +15,13 @@ public class BaseService<T> where T : BaseEntity
     protected readonly ILogger Logger;
     protected readonly IRepository<T> Repository;
     protected readonly ITokenHandler TokenHandler;
-
-    protected BaseService(IRepository<T> repository, ITokenHandler tokenHandler, ILogger logger)
+    protected readonly IMapper Mapper;
+    protected BaseService(IRepository<T> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
     {
         Repository = repository;
         TokenHandler = tokenHandler;
         Logger = logger;
+        Mapper = mapper;
     }
 
     protected void LogAndThrowAuthenticationException(string msg, [CallerMemberName] string callerName = "")

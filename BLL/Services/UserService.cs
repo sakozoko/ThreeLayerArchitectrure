@@ -1,4 +1,5 @@
-﻿using BLL.Extension;
+﻿using AutoMapper;
+using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
@@ -10,17 +11,11 @@ namespace BLL.Services;
 
 public class UserService : BaseService<UserEntity>, IUserService
 {
-    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger) : base(
-        repository,
-        tokenHandler, logger)
-    {
-    }
-
     public AuthenticateResponse Authenticate(AuthenticateRequest request)
     {
         if (request is null) LogAndThrowAuthenticationException("Request is null");
-        var user = Repository.GetAll().FirstOrDefault
-            (x => x.Name == request.Username && x.Password == request.Password).ToDomain();
+        var user = Mapper.Map<User>(Repository.GetAll().FirstOrDefault
+            (x => x.Name == request.Username && x.Password == request.Password));
         if (user is null) return null;
         var token = TokenHandler.GenerateToken(user);
         var response = new AuthenticateResponse(user, token);
@@ -36,7 +31,7 @@ public class UserService : BaseService<UserEntity>, IUserService
         if (Repository.GetAll().FirstOrDefault(x => x.Name == request.Username) != null)
             LogAndThrowAuthenticationException("Name taken");
         var user = new User { Name = request.Username, Password = request.Password };
-        Repository.Add(user.ToEntity());
+        Repository.Add(Mapper.Map<UserEntity>(user));
         var token = TokenHandler.GenerateToken(user);
         var response = new AuthenticateResponse(user, token);
         Logger.Log($"{user.Name} registrated.");
@@ -49,7 +44,7 @@ public class UserService : BaseService<UserEntity>, IUserService
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
-            return Repository.GetAll().ToList().Find(x => x.Name == name).ToDomain();
+            return Mapper.Map<User>(Repository.GetAll().FirstOrDefault(x=>x.Name==name));
         });
     }
 
@@ -59,7 +54,7 @@ public class UserService : BaseService<UserEntity>, IUserService
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
 
-            return Repository.GetById(id).ToDomain();
+            return Mapper.Map<User>(Repository.GetById(id));
         });
     }
 
@@ -100,7 +95,7 @@ public class UserService : BaseService<UserEntity>, IUserService
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} invoked get all users");
-            return Repository.GetAll().ToDomain();
+            return Mapper.Map<IEnumerable<User>>(Repository.GetAll());
         });
     }
 
@@ -134,6 +129,11 @@ public class UserService : BaseService<UserEntity>, IUserService
 
         user ??= requestUser;
         act.Invoke(user);
+        Repository.InsertOrUpdate(user, Mapper);
         return true;
+    }
+
+    public UserService(IRepository<UserEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    {
     }
 }

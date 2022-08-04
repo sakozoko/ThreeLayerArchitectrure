@@ -9,5 +9,5 @@ public interface ICategoryService
     public Task<Category> GetByName(string token, string name);
     public Task<Category> GetById(string token, int id);
     public Task<bool> Remove(string token, int id);
-    public Task<bool> Remove(string token, Category entity);
+    public Task<bool> Remove(string token, Category category);
 }

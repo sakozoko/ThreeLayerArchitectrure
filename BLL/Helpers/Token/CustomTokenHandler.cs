@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
-using BLL.Extension;
+using AutoMapper;
 using BLL.Objects;
+using BLL.Util.Interface;
 using BLL.Util.Logger;
 using DAL;
 
@@ -10,11 +11,13 @@ public class CustomTokenHandler : ITokenHandler
 {
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public CustomTokenHandler(IUnitOfWork unitOfWork, ILogger logger)
+    public CustomTokenHandler(IUnitOfWork unitOfWork, ILogger logger, IMapperHandler mapper)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _mapper= mapper.GetMapper();
     }
 
     public string GenerateToken(User userEntity)
@@ -34,7 +37,7 @@ public class CustomTokenHandler : ITokenHandler
         try
         {
             var obj = JsonSerializer.Deserialize<User>(token);
-            var parseUser = _unitOfWork.UserRepository.GetById(obj.Id).ToDomain();
+            var parseUser = _mapper.Map<User>(_unitOfWork.UserRepository.GetById(obj.Id));
             return parseUser;
         }
         catch (JsonException e)
