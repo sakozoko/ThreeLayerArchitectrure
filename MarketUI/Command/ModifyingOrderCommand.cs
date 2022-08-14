@@ -43,7 +43,7 @@ public class ModifyingOrderCommand : BaseCommand
     {
         if (_dict.TryGetValue(Parameters[4], out var stringOrderStatus))
         {
-            orderModel.OrderStatus = stringOrderStatus ?? "New";
+            orderModel.OrderStatus = stringOrderStatus?.Replace(" ","") ?? "New";
         }
     }
 
@@ -74,7 +74,6 @@ public class ModifyingOrderCommand : BaseCommand
         }
         else
         {
-            ///todo remove concrete product from order, identify him not by product.Id
             orderModel.Products.Remove(orderModel.Products.FirstOrDefault(x => x.Id == productId));
         }
     }

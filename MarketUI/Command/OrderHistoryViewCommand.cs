@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using BLL;
-using BLL.Objects;
+using MarketUI.Models;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
@@ -23,25 +23,30 @@ public class OrderHistoryViewCommand : BaseCommand
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.Append("ID \t Description \t Status");
-        Task<IEnumerable<Order>> res;
+        IEnumerable<OrderModel> res;
         if (TryParseId(args))
         {
             var taskUser = _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id);
-            res = _serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token,
-                taskUser.Result);
+            res = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token,
+                taskUser.Result).Result);
         }
         else
         {
-            res = _serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token);
+            res = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService.GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token).Result);
         }
 
-        foreach (var order in res.Result)
+        foreach (var order in res)
         {
             stringBuilder.Append($"\n {order.Id} \t {order.Description} \t {order.OrderStatus}");
             stringBuilder.Append("\n\tProducts:");
-            foreach (var orderProduct in order.Products)
-                stringBuilder.Append($"\n {orderProduct.Name} \t {orderProduct.Cost} \t {orderProduct.Category.Name}");
+            
+            foreach (var orderProductGroup in order.Products.GroupBy(x => x.Id))
+            {
+                stringBuilder.Append($"\n {orderProductGroup.First().Name} \t  {orderProductGroup.Count()}\t  {orderProductGroup.Sum(x=>x.Cost)}");
+            }
+
             stringBuilder.Append("\n-------------------------------------------------------");
+            stringBuilder.Append("\n\tTotal: " + order.Total);
         }
 
 

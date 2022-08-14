@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
+using BLL.Objects;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
