@@ -139,12 +139,12 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
                 result = ChangeDescription(token, order.Description, repositoryOrder).Result;
             if(repositoryOrder.OrderStatus!=order.OrderStatus)
                 result = ChangeOrderStatus(token, order.OrderStatus, repositoryOrder).Result;
+            repositoryOrder.Products=order.Products;
+            Repository.Update(Mapper.Map<OrderEntity>(repositoryOrder));
         }
-
         if (result)
         {
-            repositoryOrder.Products=order.Products;
-            Repository.InsertOrUpdate(repositoryOrder, Mapper);
+            Repository.Add(Mapper.Map<OrderEntity>(order));
         }
 
         return result;
