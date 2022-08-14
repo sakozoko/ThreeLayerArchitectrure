@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using AutoMapper;
+﻿using AutoMapper;
 using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
@@ -108,17 +107,9 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
     public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Order order)
     {
-        return Task<bool>.Factory.StartNew(() => ChangeProperty(token, order, x =>
-        {
-            if (TokenHandler.GetUser(token) is { IsAdmin: false }
-                && ((status == OrderStatus.CanceledByUser
-                     && order.OrderStatus == OrderStatus.Received)
-                    || (status == OrderStatus.Received
-                        && order.OrderStatus == OrderStatus.Completed)))
-                x.OrderStatus = status;
-
-            if (TokenHandler.GetUser(token) is { IsAdmin: true }) x.OrderStatus = status;
-        }));
+        return Task<bool>.Factory.StartNew(() => (TokenHandler.GetUser(token) is { IsAdmin: true }
+                                                  || status == OrderStatus.CanceledByUser && order.OrderStatus != OrderStatus.Received) &&
+                                                 ChangeProperty(token, order, x => { x.OrderStatus = status; }));
     }
 
     private bool ValidPermissionForModifyOrder(string token, Order order)
@@ -139,9 +130,24 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
     }
     public bool SaveOrder(string token, Order order)
     {
+        var result = true;
         if (!ValidPermissionForModifyOrder(token, order)) return false;
-        Repository.InsertOrUpdate(order, Mapper);
-        return true;
+        var repositoryOrder = Mapper.Map<Order>(Repository.GetById(order.Id));
+        if (repositoryOrder is not null)
+        {
+            if(repositoryOrder.Description!=order.Description)
+                result = ChangeDescription(token, order.Description, repositoryOrder).Result;
+            if(repositoryOrder.OrderStatus!=order.OrderStatus)
+                result = ChangeOrderStatus(token, order.OrderStatus, repositoryOrder).Result;
+        }
+
+        if (result)
+        {
+            repositoryOrder.Products=order.Products;
+            Repository.InsertOrUpdate(repositoryOrder, Mapper);
+        }
+
+        return result;
     }
 
     private bool ChangeProperty(string token, Order order, Action<Order> act)
