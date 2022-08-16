@@ -24,9 +24,9 @@ public static class AppConfiguration
         builder.RegisterType<LogoutCommand>().Named<ICommand>("lo");
         builder.RegisterType<LogoutCommand>().Named<ICommand>("logout");
 
-        builder.RegisterType<ModifyingOrderCommand>().As<ICommand>();
-        builder.RegisterType<ModifyingOrderCommand>().Named<ICommand>("mo");
-        builder.RegisterType<ModifyingOrderCommand>().Named<ICommand>("modifyorder");
+        builder.RegisterType<OrderModifyingCommand>().As<ICommand>();
+        builder.RegisterType<OrderModifyingCommand>().Named<ICommand>("mo");
+        builder.RegisterType<OrderModifyingCommand>().Named<ICommand>("modifyorder");
 
         builder.RegisterType<OrderCreatingCommand>().As<ICommand>();
         builder.RegisterType<OrderCreatingCommand>().Named<ICommand>("co");
@@ -43,7 +43,11 @@ public static class AppConfiguration
         builder.RegisterType<RegistrationCommand>().As<ICommand>();
         builder.RegisterType<RegistrationCommand>().Named<ICommand>("r");
         builder.RegisterType<RegistrationCommand>().Named<ICommand>("registration");
-
+        
+        builder.RegisterType<PersonalInformationChangingCommand>().As<ICommand>();
+        builder.RegisterType<PersonalInformationChangingCommand>().Named<ICommand>("i");
+        builder.RegisterType<PersonalInformationChangingCommand>().Named<ICommand>("infochange");
+        
         builder.RegisterType<IncorrectCommand>().As<ICommand>();
 
         #endregion
