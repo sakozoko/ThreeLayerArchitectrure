@@ -7,13 +7,13 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
-public class ModifyingOrderCommand : BaseCommand
+public class OrderModifyingCommand : BaseCommand
 {
     private static readonly string[] Parameters = { "-o", "-p",  "-r", "-d", "-s" };
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public ModifyingOrderCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) :
+    public OrderModifyingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) :
         base(mapperHandler, Parameters)
     {
         _serviceContainer = serviceContainer;
@@ -21,15 +21,17 @@ public class ModifyingOrderCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
-        if (!ArgumentsContainsOrderId(args)) return GetHelp();
+        if (!ArgumentsAreValid(args)) return GetHelp();
 
         _dict.TryGetValue(Parameters[0], out var stringOrderId);
 
-        if (!int.TryParse(stringOrderId, out var orderId)) return GetHelp();
+        int.TryParse(stringOrderId, out var orderId);
 
         var task = _serviceContainer.OrderService.GetById(ConsoleUserInterface.AuthenticationData.Token, orderId);
-        var orderModel = Mapper.Map<OrderModel>(task.Result);
-        if (orderModel is null) return "Order not found";
+        var orderModel = Mapper.Map<OrderModel>(task.Result)?? new OrderModel()
+        {
+            Owner=Mapper.Map<UserModel>(_serviceContainer.UserService.GetByName(ConsoleUserInterface.AuthenticationData.Token, ConsoleUserInterface.AuthenticationData.Name).Result)
+        };
 
         ModifyOrderProducts(orderModel);
         ModifyDesc(orderModel);
@@ -85,9 +87,14 @@ public class ModifyingOrderCommand : BaseCommand
                 Mapper.Map<Order>(order));
     }
 
-    private bool ArgumentsContainsOrderId(string[] args)
+    private bool ArgumentsAreValid(string[] args)
     {
-        return TryParseArgs(args, out _dict) && _dict.ContainsKey(Parameters[0]);
+        return TrySetDictionary(args) && (_dict.ContainsKey(Parameters[0]) || (_dict.ContainsKey(Parameters[1]) && !_dict.ContainsKey(Parameters[2])));
+    }
+
+    private bool TrySetDictionary(string[] args)
+    {
+        return TryParseArgs(args, out _dict);
     }
     public override string GetHelp()
     {
