@@ -1,9 +1,13 @@
-﻿namespace BLL.Objects;
+﻿namespace MarketUI.Models;
 
-public class AuthenticateResponse
+public class AuthenticateResponseModel
 {
+    public AuthenticateResponseModel()
+    {
+        
+    }
 
-    public AuthenticateResponse(User user, string token)
+    public AuthenticateResponseModel(UserModel user, string token)
     {
         Name = user.Name;
         Surname = user.Surname;

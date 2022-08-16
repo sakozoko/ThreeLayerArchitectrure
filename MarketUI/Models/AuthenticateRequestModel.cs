@@ -1,6 +1,6 @@
-﻿namespace BLL.Objects;
+﻿namespace MarketUI.Models;
 
-public class AuthenticateRequest
+public class AuthenticateRequestModel
 {
     public string Name { get; set; }
     public string Surname { get; set; }

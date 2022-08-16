@@ -19,6 +19,8 @@ public class AutoMapperHandler : IUserInterfaceMapperHandler
             cfg.CreateMap<CategoryModel, Category>();
             cfg.CreateMap<Order, OrderModel>();
             cfg.CreateMap<OrderModel, Order>();
+            cfg.CreateMap<AuthenticateRequestModel, AuthenticateRequest>();
+            cfg.CreateMap<AuthenticateResponse, AuthenticateResponseModel>();
         });
         return config.CreateMapper();
     }

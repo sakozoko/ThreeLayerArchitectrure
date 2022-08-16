@@ -1,8 +1,8 @@
 ﻿using System;
-using BLL.Objects;
 using BLL.Services.Exception;
 using MarketUI.Command;
 using MarketUI.Extension;
+using MarketUI.Models;
 
 namespace MarketUI;
 
@@ -15,7 +15,8 @@ public class ConsoleUserInterface
         _factory = factory;
     }
 
-    public static AuthenticateResponse AuthenticationData { get; set; }
+    public static AuthenticateResponseModel AuthenticationData { get; set; }
+    
 
     public void ExecuteCommand(string commandString)
     {
