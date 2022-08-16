@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using BLL;
-using BLL.Objects;
 using MarketUI.Models;
 using MarketUI.Util.Interface;
 
@@ -24,20 +23,21 @@ public class PersonalInformationChangingCommand : BaseCommand
             return GetHelp();
         _dict.TryGetValue(Parameters[0], out var stringUserId);
         int.TryParse(stringUserId, out var userId);
-        UserModel targetUser = null;
         if (userId != 0)
         {
-            targetUser = Mapper.Map<UserModel>(_serviceContainer.UserService
+            var targetUser = Mapper.Map<UserModel>(_serviceContainer.UserService
                 .GetById(ConsoleUserInterface.AuthenticationData.Token, userId).Result);
             if (targetUser is null)
                 return "User not found";
         }
 
-        if (TryChangeName(targetUser) | TryChangeSurname(targetUser) | TryChangePsw(targetUser))
+        if (TryChangeName(userId) | TryChangeSurname(userId) | TryChangePsw(userId))
         {
-            if (targetUser is null)
+            if (userId==0)
             {
-                
+                ConsoleUserInterface.AuthenticationData =
+                    Mapper.Map<AuthenticateResponseModel>(_serviceContainer.UserService.GetAuthenticateResponse(ConsoleUserInterface.AuthenticationData
+                        .Token));
             }
             return "Updated information saved";
         }
@@ -45,28 +45,28 @@ public class PersonalInformationChangingCommand : BaseCommand
         return "Something is wrong";
     }
 
-    private bool TryChangeName(UserModel targetUser)
+    private bool TryChangeName(int userId)
     {
         if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrEmpty(newName))
             return _serviceContainer.UserService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,
-                Mapper.Map<User>(targetUser)).Result;
+                userId).Result;
         return false;
     }
 
-    private bool TryChangeSurname(UserModel targetUser)
+    private bool TryChangeSurname(int userId)
     {
         if (_dict.TryGetValue(Parameters[2], out var newSurname) && !string.IsNullOrEmpty(newSurname))
             return _serviceContainer.UserService.ChangeSurname(ConsoleUserInterface.AuthenticationData.Token, newSurname,
-                Mapper.Map<User>(targetUser)).Result;
+                userId).Result;
         return false;
     }
 
-    private bool TryChangePsw(UserModel targetUser)
+    private bool TryChangePsw(int userId)
     {
         if (_dict.TryGetValue(Parameters[3], out var newPsw) && newPsw.Length > 5 &&
             _dict.TryGetValue(Parameters[4], out var oldPsw))
             return _serviceContainer.UserService.ChangePassword(ConsoleUserInterface.AuthenticationData.Token, newPsw, oldPsw,
-                Mapper.Map<User>(targetUser)).Result;
+                userId).Result;
         return false;
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using AutoMapper;
+﻿using AutoMapper;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
@@ -72,44 +71,47 @@ public class UserService : BaseService<UserEntity>, IUserService
         });
     }
 
-    public Task<bool> ChangePassword(string token, string value, string oldPsw, User user = null)
+    public Task<bool> ChangePassword(string token, string value, string oldPsw, int targetId=0)
     {
-        var requestUser= user ?? TokenHandler.GetUser(token);
-        return Task<bool>.Factory.StartNew(() => requestUser.Password == oldPsw && ChangeProperty(token, x => x.Password = value, user));
+        var requestUser= targetId!=0? Mapper.Map<User>(Repository.GetById(targetId)) : TokenHandler.GetUser(token);
+        return Task<bool>.Factory.StartNew(() => requestUser?.Password == oldPsw && ChangeProperty(token, x => x.Password = value, targetId));
     }
 
-    public Task<bool> ChangeName(string token, string value, User user = null)
+    public Task<bool> ChangeName(string token, string value, int targetId=0)
     {
         var userWithTheSameName = Mapper.Map<IEnumerable<User>>(Repository.GetAll()?
             .Where(userEntity => userEntity.Name.Equals(value, StringComparison.OrdinalIgnoreCase)));
-        return Task<bool>.Factory.StartNew(() => userWithTheSameName?.Count()==0 && ChangeProperty(token, x => x.Name = value, user));
+        return Task<bool>.Factory.StartNew(() => userWithTheSameName?.Count()==0 && ChangeProperty(token, x => x.Name = value, targetId));
     }
 
-    public Task<bool> ChangeSurname(string token, string value, User user = null)
+    public Task<bool> ChangeSurname(string token, string value, int targetId=0)
     {
-        return Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Surname = value, user));
+        return Task<bool>.Factory.StartNew(() => ChangeProperty(token, x => x.Surname = value, targetId));
     }
 
-    public Task<bool> ChangeIsAdmin(string token, bool value, User user)
+    public Task<bool> ChangeIsAdmin(string token, bool value, int targetId=0)
     {
         var requestUser = TokenHandler.GetUser(token);
-        return Task<bool>.Factory.StartNew(() => user.Id != 1 && requestUser != user && ChangeProperty(token, x => x.IsAdmin = value, user));
+        return Task<bool>.Factory.StartNew(() => targetId != 1 && requestUser.Id != targetId && ChangeProperty(token, x => x.IsAdmin = value, targetId));
     }
-    private bool ChangeProperty(string token, Action<User> act, User user = null)
+    private bool ChangeProperty(string token, Action<User> act, int targetId=0)
     {
         var requestUser = TokenHandler.GetUser(token);
 
         ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
-        if (user is not null && user != requestUser)
+        if (targetId != 0)
         {
-            ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-            Logger.Log($"Admin {requestUser.Name} changed property for user id {user.Id}");
+            var targetUser = Mapper.Map<User>(Repository.GetById(targetId));
+            if (targetUser is not null && targetUser.Id != requestUser.Id)
+            {
+                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
+                requestUser = targetUser;
+                Logger.Log($"Admin {requestUser.Name} changed property for user id {targetId}");
+            }
         }
-
-        user ??= requestUser;
-        act.Invoke(user);
-        Repository.Update(Mapper.Map<UserEntity>(user));
+        
+        act.Invoke(requestUser);
+        Repository.Update(Mapper.Map<UserEntity>(requestUser));
         return true;
     }
     public Task<IEnumerable<User>> GetAll(string token)
