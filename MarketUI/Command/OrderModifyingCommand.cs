@@ -84,7 +84,7 @@ public class OrderModifyingCommand : BaseCommand
     {
         return _serviceContainer.OrderService.
             SaveOrder(ConsoleUserInterface.AuthenticationData.Token, 
-                Mapper.Map<Order>(order));
+                Mapper.Map<Order>(order)).Result;
     }
 
     private bool ArgumentsAreValid(string[] args)
