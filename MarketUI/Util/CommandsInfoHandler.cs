@@ -15,7 +15,7 @@ public class CommandsInfoHandlerJson : ICommandsInfoHandler
     {
         if (_dictionary is null || !_dictionary.ContainsKey(commandName))
             _dictionary =
-                JsonNet.Deserialize<Dictionary<string, CommandInfoModel>>(File.ReadAllText(@"Util/CommandsInfo.json"));
+                JsonNet.Deserialize<Dictionary<string, CommandInfoModel>>(File.ReadAllText(@"Command/CommandsInfo.json"));
 
         if (_dictionary.ContainsKey(commandName))
             return _dictionary[commandName];
