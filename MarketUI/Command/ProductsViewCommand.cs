@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BLL;
-using BLL.Objects;
+using MarketUI.Models;
+using MarketUI.Util;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
@@ -23,38 +22,37 @@ public class ProductsViewCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
-        var stringBuilder = new StringBuilder();
         TryParseGroupKeyAndName(args);
-        var task = string.IsNullOrEmpty(_name)
-            ? _serviceContainer.ProductService.GetAll(ConsoleUserInterface.AuthenticationData?.Token)
-            : _serviceContainer.ProductService.GetByName(_name);
-        stringBuilder.Append("# Name \t \t Product category \t Product cost \t Product description");
-        stringBuilder.Append(_isGroupBy ? ViewProductsGroupedByCategory(task) : ViewProducts(task));
-        return stringBuilder.ToString();
+        var productModels = string.IsNullOrEmpty(_name)
+            ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
+            : Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetByName(_name).Result);
+        var consoleTable = new ConsoleTable();
+        consoleTable.AddColumn("#", "Name", "Product category", "Product cost", "Product description");
+        if (_isGroupBy)
+        {
+            ViewProductsGroupedByCategory(productModels, consoleTable);
+        }
+        else
+        {
+            ViewProducts(productModels, consoleTable);
+        }
+        return consoleTable.ToString();
     }
 
-    private static string ViewProducts(Task<IEnumerable<Product>> task)
+    private static void ViewProducts(IEnumerable<ProductModel> productModels, ConsoleTable ct)
     {
-        var stringBuilder = new StringBuilder();
-        foreach (var product in task.Result)
-            stringBuilder.Append(
-                $"\n {product.Id} \t {product.Name} \t {product.Category.Name} \t {product.Cost} \t {product.Description}");
-        return stringBuilder.ToString();
+        foreach (var product in productModels)
+            ct.AddRow(product.Id, product.Name, product.Category.Name, product.Cost, product.Description);
     }
 
-    private static string ViewProductsGroupedByCategory(Task<IEnumerable<Product>> task)
+    private static void ViewProductsGroupedByCategory(IEnumerable<ProductModel> productModels, ConsoleTable ct)
     {
-        var stringBuilder = new StringBuilder();
-        var groups = task.Result.GroupBy(x => x.Category);
+        var groups = productModels.GroupBy(x => x.Category);
         foreach (var group in groups)
         {
             var productsOfGroup = group.Select(x => x);
-            foreach (var product in productsOfGroup)
-                stringBuilder.Append(
-                    $"\n {product.Id} \t {product.Name} \t {product.Category.Name} \t {product.Cost} \t {product.Description}");
+            ViewProducts(productsOfGroup, ct);
         }
-
-        return stringBuilder.ToString();
     }
 
     private void TryParseGroupKeyAndName(string[] args)
