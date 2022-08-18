@@ -109,7 +109,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         act.Invoke(product);
         Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
-        Repository.InsertOrUpdate(product, Mapper);
+        Repository.Update(Mapper.Map<ProductEntity>(product));
         return true;
     }
 }
