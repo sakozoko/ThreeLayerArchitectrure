@@ -11,6 +11,8 @@ public static class Repository
         where TTo : BaseEntity
         where TFrom : BaseDto
     {
+        if (from is null)
+            return;
         var exp = repository.GetById(from.Id);
         if (exp is not null)
             repository.Update(mapper.Map<TFrom, TTo>(from));
