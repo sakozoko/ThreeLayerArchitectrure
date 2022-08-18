@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BLL.Extension;
 using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
@@ -88,15 +87,14 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
     public Task<bool> AddProduct(string token, Product product, Order order)
     {
-        return Task<bool>.Factory.StartNew(() => 
-            product is not null && ChangeProperty(token,order,x=>x.Products.Add(product)));
-
+        return Task<bool>.Factory.StartNew(() =>
+            product is not null && ChangeProperty(token, order, x => x.Products.Add(product)));
     }
 
     public Task<bool> DeleteProduct(string token, Product product, Order order)
     {
-        return Task<bool>.Factory.StartNew(() => 
-            product is not null && ChangeProperty(token,order,x=>x.Products.Remove(product)));
+        return Task<bool>.Factory.StartNew(() =>
+            product is not null && ChangeProperty(token, order, x => x.Products.Remove(product)));
     }
 
     public Task<bool> ChangeDescription(string token, string desc, Order order)
@@ -108,22 +106,23 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
     public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Order order)
     {
         return Task<bool>.Factory.StartNew(() => (TokenHandler.GetUser(token) is { IsAdmin: true }
-                                                  || status == OrderStatus.CanceledByUser && order.OrderStatus != OrderStatus.Received) &&
+                                                  || (status == OrderStatus.CanceledByUser &&
+                                                      order.OrderStatus != OrderStatus.Received)) &&
                                                  ChangeProperty(token, order, x => { x.OrderStatus = status; }));
     }
 
     private bool ValidPermissionForModifyOrder(string token, Order order)
     {
         if (order is null) return false;
-        
+
         var requestUser = TokenHandler.GetUser(token);
-        
+
         ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-        
+
         if (order.Owner.Id == requestUser.Id) return true;
-        
+
         ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-        
+
         Logger.Log($"Admin {requestUser.Name} change property for order with id {order.Id}");
 
         return true;

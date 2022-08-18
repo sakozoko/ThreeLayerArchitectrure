@@ -9,6 +9,7 @@ namespace MarketUI;
 public class ConsoleUserInterface
 {
     private readonly ICommandFactory _factory;
+
     public ConsoleUserInterface(ICommandFactory factory)
     {
         _factory = factory;

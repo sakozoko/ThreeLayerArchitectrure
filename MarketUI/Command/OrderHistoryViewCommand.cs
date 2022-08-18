@@ -22,29 +22,30 @@ public class OrderHistoryViewCommand : BaseCommand
     public override string Execute(string[] args)
     {
         var consoleTable = new ConsoleTable();
-        consoleTable.AddColumn("#", "Description", "Status" );
-        
+        consoleTable.AddColumn("#", "Description", "Status");
+
         var targetUser = TryParseId(args)
             ? _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id).Result
             : null;
-        
+
         var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
-                .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token,targetUser).Result);
-        
+            .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, targetUser).Result);
+
 
         foreach (var order in orderModels)
         {
             consoleTable.AddRow(order.Id, order.Description, order.OrderStatus);
             var consoleTable2 = new ConsoleTable(consoleTable.GetCalculatedPadding());
-            if(order.Products.Count==0)
+            if (order.Products.Count == 0)
                 continue;
-            
-            consoleTable2.AddColumn( "Name", "Count", "Sum");
+
+            consoleTable2.AddColumn("Name", "Count", "Sum");
 
             foreach (var orderProductGroup in order.Products.GroupBy(x => x.Id))
                 consoleTable2.AddRow(orderProductGroup.First().Name, orderProductGroup.Count(),
                     orderProductGroup.Sum(x => x.Cost));
-            consoleTable.AddRowWithoutColumn(new string(' ', 15)+"Products:\n" + consoleTable2 + "\n"+new string(' ', 15)+"Total: " + order.Total);
+            consoleTable.AddRowWithoutColumn(new string(' ', 15) + "Products:\n" + consoleTable2 + "\n" +
+                                             new string(' ', 15) + "Total: " + order.Total);
         }
 
 

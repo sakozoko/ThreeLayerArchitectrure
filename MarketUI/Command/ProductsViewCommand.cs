@@ -24,18 +24,15 @@ public class ProductsViewCommand : BaseCommand
     {
         TryParseGroupKeyAndName(args);
         var productModels = string.IsNullOrEmpty(_name)
-            ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
+            ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService
+                .GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
             : Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetByName(_name).Result);
         var consoleTable = new ConsoleTable();
         consoleTable.AddColumn("#", "Name", "Product category", "Product cost", "Product description");
         if (_isGroupBy)
-        {
             ViewProductsGroupedByCategory(productModels, consoleTable);
-        }
         else
-        {
             ViewProducts(productModels, consoleTable);
-        }
         return consoleTable.ToString();
     }
 

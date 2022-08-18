@@ -2,7 +2,6 @@
 
 public class AuthenticateResponse
 {
-
     public AuthenticateResponse(User user, string token)
     {
         Name = user.Name;

@@ -10,7 +10,9 @@ public class ProductModifyingCommand : BaseCommand
 {
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
-    public ProductModifyingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler cih) : base(
+
+    public ProductModifyingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+        ICommandsInfoHandler cih) : base(
         mapperHandler, cih)
     {
         _serviceContainer = serviceContainer;
@@ -27,44 +29,50 @@ public class ProductModifyingCommand : BaseCommand
             return "Target product not found";
         if (TryChangeName(targetProductModel) | TryChangeDescription(targetProductModel) |
             TryChangeCategory(targetProductModel) | TryChangePrice(targetProductModel))
-        {
             return "Product information updated";
-        }
         return "Something is wrong";
     }
+
     private bool TrySetDictionary(string[] args)
     {
         return TryParseArgs(args, out _dict);
     }
+
     private bool TryChangeName(ProductModel productModel)
     {
-        if(_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrEmpty(newName))
+        if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrEmpty(newName))
             return _serviceContainer.ProductService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,
                 Mapper.Map<Product>(productModel)).Result;
         return false;
     }
+
     private bool TryChangeDescription(ProductModel productModel)
     {
-        if(_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrEmpty(newDesc))
-            return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, newDesc,
+        if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrEmpty(newDesc))
+            return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
+                newDesc,
                 Mapper.Map<Product>(productModel)).Result;
         return false;
     }
+
     private bool TryChangeCategory(ProductModel productModel)
     {
         if (_dict.TryGetValue(Parameters[3], out var newCategory) && !string.IsNullOrEmpty(newCategory))
         {
             var targetCategory =
-                _serviceContainer.CategoryService.GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory).Result;
-            return _serviceContainer.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token, targetCategory,
+                _serviceContainer.CategoryService.GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)
+                    .Result;
+            return _serviceContainer.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token,
+                targetCategory,
                 Mapper.Map<Product>(productModel)).Result;
         }
-            
+
         return false;
     }
+
     private bool TryChangePrice(ProductModel productModel)
     {
-        if(_dict.TryGetValue(Parameters[4], out var newStrPrice) && decimal.TryParse(newStrPrice,out var newPrice))
+        if (_dict.TryGetValue(Parameters[4], out var newStrPrice) && decimal.TryParse(newStrPrice, out var newPrice))
             return _serviceContainer.ProductService.ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice,
                 Mapper.Map<Product>(productModel)).Result;
         return false;

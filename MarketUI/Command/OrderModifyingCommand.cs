@@ -36,24 +36,24 @@ public class OrderModifyingCommand : BaseCommand
         };
 
         if (TryChangeOrderProducts(orderModel) | TryChangeDescription(orderModel) | TryChangeOrderStatus(orderModel))
-        {
             return $"Order with id {orderId} updated";
-        }
 
-        return "Something wrong"; 
+        return "Something wrong";
     }
 
     private bool TryChangeOrderStatus(OrderModel orderModel)
     {
         return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
-            _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
-                Enum.Parse<OrderStatus>(stringOrderStatus?.Replace(" ", "") ?? "New"), Mapper.Map<Order>(orderModel)).Result;
+               _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
+                       Enum.Parse<OrderStatus>(stringOrderStatus?.Replace(" ", "") ?? "New"),
+                       Mapper.Map<Order>(orderModel))
+                   .Result;
     }
 
     private bool TryChangeDescription(OrderModel orderModel)
     {
-        return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) && 
-               _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc, 
+        return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) &&
+               _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
                    Mapper.Map<Order>(orderModel)).Result;
     }
 
@@ -75,7 +75,7 @@ public class OrderModifyingCommand : BaseCommand
             return _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
                 Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
         return _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
-                Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
+            Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
     }
 
     private bool ArgumentsAreValid(string[] args)
