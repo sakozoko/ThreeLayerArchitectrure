@@ -128,35 +128,12 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
         return true;
     }
-    public Task<bool> SaveOrder(string token, Order order)
-    {
-        return Task<bool>.Factory.StartNew(() =>
-        {
-            var result = true;
-            if (!ValidPermissionForModifyOrder(token, order)) return false;
-            var repositoryOrder = Mapper.Map<Order>(Repository.GetById(order.Id));
-            if (repositoryOrder is not null)
-            {
-                if(repositoryOrder.Description!=order.Description)
-                    result = ChangeDescription(token, order.Description, repositoryOrder).Result;
-                if(repositoryOrder.OrderStatus!=order.OrderStatus)
-                    result = ChangeOrderStatus(token, order.OrderStatus, repositoryOrder).Result;
-                repositoryOrder.Products=order.Products;
-                Repository.Update(Mapper.Map<OrderEntity>(repositoryOrder));
-            }
-            if (result)
-            {
-                Repository.Add(Mapper.Map<OrderEntity>(order));
-            }
-
-            return result;
-        });
-    }
 
     private bool ChangeProperty(string token, Order order, Action<Order> act)
     {
         if (!ValidPermissionForModifyOrder(token, order)) return false;
         act?.Invoke(order);
+        Repository.Update(Mapper.Map<OrderEntity>(order));
         return true;
     }
 }

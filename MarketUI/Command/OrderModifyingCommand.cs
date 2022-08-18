@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using BLL;
 using BLL.Objects;
 using MarketUI.Models;
@@ -35,31 +35,33 @@ public class OrderModifyingCommand : BaseCommand
                 .Result)
         };
 
-        ModifyOrderProducts(orderModel);
-        ModifyDesc(orderModel);
-        ModifyOrderStatus(orderModel);
+        if (TryChangeOrderProducts(orderModel) | TryChangeDescription(orderModel) | TryChangeOrderStatus(orderModel))
+        {
+            return $"Order with id {orderId} updated";
+        }
 
-        return SaveOrder(orderModel) ? $"Order with id {orderId} updated" : $"Order with id {orderId} not updated";
+        return "Something wrong"; 
     }
 
-    private void ModifyOrderStatus(OrderModel orderModel)
+    private bool TryChangeOrderStatus(OrderModel orderModel)
     {
-        if (_dict.TryGetValue(Parameters[4], out var stringOrderStatus))
-            orderModel.OrderStatus = stringOrderStatus?.Replace(" ", "") ?? "New";
+        return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
+            _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
+                Enum.Parse<OrderStatus>(stringOrderStatus?.Replace(" ", "") ?? "New"), Mapper.Map<Order>(orderModel)).Result;
     }
 
-    private void ModifyDesc(OrderModel orderModel)
+    private bool TryChangeDescription(OrderModel orderModel)
     {
-        _dict.TryGetValue(Parameters[3], out var desc);
-        if (string.IsNullOrWhiteSpace(desc)) return;
-        orderModel.Description = desc;
+        return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) && 
+               _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc, 
+                   Mapper.Map<Order>(orderModel)).Result;
     }
 
-    private void ModifyOrderProducts(OrderModel orderModel)
+    private bool TryChangeOrderProducts(OrderModel orderModel)
     {
         _dict.TryGetValue(Parameters[1], out var stringProductId);
 
-        if (!int.TryParse(stringProductId, out var productId)) return;
+        if (!int.TryParse(stringProductId, out var productId)) return false;
 
         var task =
             _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId);
@@ -67,18 +69,13 @@ public class OrderModifyingCommand : BaseCommand
 
         var productModel = Mapper.Map<ProductModel>(task.Result);
 
-        if (productModel is null) return;
+        if (productModel is null) return false;
 
         if (addProduct)
-            orderModel.Products.Add(productModel);
-        else
-            orderModel.Products.Remove(orderModel.Products.FirstOrDefault(x => x.Id == productId));
-    }
-
-    private bool SaveOrder(OrderModel order)
-    {
-        return _serviceContainer.OrderService.SaveOrder(ConsoleUserInterface.AuthenticationData.Token,
-            Mapper.Map<Order>(order)).Result;
+            return _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
+                Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
+        return _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
+                Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
     }
 
     private bool ArgumentsAreValid(string[] args)
