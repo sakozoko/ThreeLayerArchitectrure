@@ -72,5 +72,17 @@
     "Abbreviated": "lo",
     "FullName": "logout",
     "Tip": "Logout \t logout or lo \t none"
+  },
+  "ProductModifyingCommand": {
+    "Abbreviated": "mp",
+    "FullName": "modifyproduct",
+    "Tip": "Modify information about product  \t modifyproduct or mo \t -id, -n, -d, -c, -p",
+    "Parameters": [
+      "-id",
+      "-n",
+      "-d",
+      "-c",
+      "-p"
+    ]
   }
 }
