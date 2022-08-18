@@ -60,6 +60,12 @@ public static class AppConfiguration
             .Named<ICommand>(cih.GetCommandInfo(nameof(PersonalInformationChangingCommand)).Abbreviated);
         builder.RegisterType<PersonalInformationChangingCommand>()
             .Named<ICommand>(cih.GetCommandInfo(nameof(PersonalInformationChangingCommand)).FullName);
+        
+        builder.RegisterType<ProductModifyingCommand>().As<ICommand>();
+        builder.RegisterType<ProductModifyingCommand>()
+            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).Abbreviated);
+        builder.RegisterType<ProductModifyingCommand>()
+            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).FullName);
 
         builder.RegisterType<IncorrectCommand>().As<ICommand>();
 
