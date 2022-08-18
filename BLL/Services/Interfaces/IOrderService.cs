@@ -12,5 +12,4 @@ public interface IOrderService
     Task<bool> DeleteProduct(string token, Product product, Order order);
     Task<bool> ChangeOrderStatus(string token, OrderStatus status, Order order);
     Task<bool> ChangeDescription(string token, string desc, Order order);
-    Task<bool> SaveOrder(string token, Order order);
 }
