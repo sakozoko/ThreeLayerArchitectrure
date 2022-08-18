@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace MarketUI.Extension;
 
@@ -34,5 +35,17 @@ public static class StringParserExtension
                 arr[i] = parts[k++];
 
         return arr;
+    }
+
+    public static string ConcatWithSeparator(this string[] args, string separator)
+    {
+        var stringBuilder = new StringBuilder();
+        foreach (var arg in args)
+        {
+            stringBuilder.Append(arg);
+            stringBuilder.Append(separator);
+        }
+
+        return stringBuilder.ToString();
     }
 }

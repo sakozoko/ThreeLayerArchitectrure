@@ -9,14 +9,13 @@ namespace MarketUI;
 public class ConsoleUserInterface
 {
     private readonly ICommandFactory _factory;
-
     public ConsoleUserInterface(ICommandFactory factory)
     {
         _factory = factory;
     }
 
     public static AuthenticateResponseModel AuthenticationData { get; set; }
-    
+
 
     public void ExecuteCommand(string commandString)
     {

@@ -1,0 +1,76 @@
+﻿{
+  "LoginCommand": {
+    "Abbreviated": "li",
+    "FullName": "login",
+    "Tip": "Login \t Login or li \t -n -p",
+    "Parameters": [
+      "-n",
+      "-p"
+    ]
+  },
+  "OrderModifyingCommand": {
+    "Abbreviated": "mo",
+    "FullName": "modifyorder",
+    "Tip": "Modyfing order \t mo or modifyorder \t -o, -p,  -r, -d, -s",
+    "Parameters": [
+      "-o",
+      "-p",
+      "-r",
+      "-d",
+      "-s"
+    ]
+  },
+  "OrderCreatingCommand": {
+    "Abbreviated": "co",
+    "FullName": "createorder",
+    "Tip": "Create new order \t cno or order or createno \t -d , -p, -u",
+    "Parameters": [
+      "-d",
+      "-p",
+      "-u"
+    ]
+  },
+  "OrderHistoryViewCommand": {
+    "Abbreviated": "vo",
+    "FullName": "vieworders",
+    "Tip": "View order history \t view orders, vo \t -u",
+    "Parameters": [
+      "-u"
+    ]
+  },
+  "ProductsViewCommand": {
+    "Abbreviated": "vp",
+    "FullName": "viewproducts",
+    "Tip": "View products \t view products or vp \t -g -n",
+    "Parameters": [
+      "-g",
+      "-n"
+    ]
+  },
+  "RegistrationCommand": {
+    "Abbreviated": "r",
+    "FullName": "registration",
+    "Tip": "Registration \t registration, r \t -n, -p ",
+    "Parameters": [
+      "-n",
+      "-p"
+    ]
+  },
+  "PersonalInformationChangingCommand": {
+    "Abbreviated": "i",
+    "FullName": "changeinfo",
+    "Tip": "Change personal information \t changeinfo or i \t -id, -n, -s, -p, -op",
+    "Parameters": [
+      "-id",
+      "-n",
+      "-s",
+      "-p",
+      "-od"
+    ]
+  },
+  "LogoutCommand": {
+    "Abbreviated": "lo",
+    "FullName": "logout",
+    "Tip": "Logout \t logout or lo \t none"
+  }
+}

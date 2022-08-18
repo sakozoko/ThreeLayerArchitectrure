@@ -5,14 +5,14 @@ namespace MarketUI.Command;
 
 public class OrderCreatingCommand : BaseCommand
 {
-    private static readonly string[] Parameters = { "-d", "-p", "-u" };
     private readonly IServiceContainer _serviceContainer;
     private string _desc;
     private int _id;
     private int _product;
 
-    public OrderCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) : 
-        base(mapperHandler, Parameters)
+    public OrderCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+        ICommandsInfoHandler cih) :
+        base(mapperHandler, cih)
     {
         _serviceContainer = serviceContainer;
     }
@@ -37,10 +37,5 @@ public class OrderCreatingCommand : BaseCommand
         var thirdFlag = dict.TryGetValue(Parameters[2], out var userId)
                         && int.TryParse(userId, out _id);
         return firstFlag || secondFlag || thirdFlag;
-    }
-
-    public override string GetHelp()
-    {
-        return "Create new order \t cno or order or createno \t -d , -p, -u";
     }
 }

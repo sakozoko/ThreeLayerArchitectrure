@@ -8,12 +8,12 @@ namespace MarketUI.Command;
 
 public class LoginCommand : BaseCommand
 {
-    private static readonly string[] Parameters = { "-n", "-p" };
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public LoginCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) :
-        base(mapperHandler, Parameters)
+    public LoginCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+        ICommandsInfoHandler cih) :
+        base(mapperHandler, cih)
     {
         _serviceContainer = serviceContainer;
     }
@@ -21,10 +21,12 @@ public class LoginCommand : BaseCommand
     public override string Execute(string[] args)
     {
         var authenticateRequest = new AuthenticateRequestModel();
-        if (!TryCreateDictionary(args) || !TryParseAndSaveName(authenticateRequest) || !TryParseAndSavePsw(authenticateRequest))
+        if (!TryCreateDictionary(args) || !TryParseAndSaveName(authenticateRequest) ||
+            !TryParseAndSavePsw(authenticateRequest))
             return GetHelp();
 
-        var response = Mapper.Map<AuthenticateResponseModel>(_serviceContainer.UserService.Authenticate(Mapper.Map<AuthenticateRequest>(authenticateRequest)));
+        var response = Mapper.Map<AuthenticateResponseModel>(
+            _serviceContainer.UserService.Authenticate(Mapper.Map<AuthenticateRequest>(authenticateRequest)));
         if (response is null) return "Name or password is incorrect";
         ConsoleUserInterface.AuthenticationData = response;
         return $"{response.Name}, hi!";
@@ -34,6 +36,7 @@ public class LoginCommand : BaseCommand
     {
         return TryParseArgs(args, out _dict);
     }
+
     private bool TryParseAndSaveName(AuthenticateRequestModel requestModel)
     {
         if (_dict.TryGetValue(Parameters[0], out var name))
@@ -54,10 +57,5 @@ public class LoginCommand : BaseCommand
         }
 
         return false;
-    }
-
-    public override string GetHelp()
-    {
-        return "Login \t Login or li \t -n -p";
     }
 }

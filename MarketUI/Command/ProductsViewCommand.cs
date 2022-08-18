@@ -10,13 +10,13 @@ namespace MarketUI.Command;
 
 public class ProductsViewCommand : BaseCommand
 {
-    private static readonly string[] Parameters = { "-g", "-n" };
     private readonly IServiceContainer _serviceContainer;
     private bool _isGroupBy;
     private string _name;
 
-    public ProductsViewCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler) :
-        base(mapperHandler,Parameters)
+    public ProductsViewCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+        ICommandsInfoHandler cih) :
+        base(mapperHandler, cih)
     {
         _serviceContainer = serviceContainer;
     }
@@ -62,11 +62,5 @@ public class ProductsViewCommand : BaseCommand
         _name = string.Empty;
         _isGroupBy = TryParseArgs(args, out var dict) && dict.ContainsKey(Parameters[0]);
         dict?.TryGetValue(Parameters[1], out _name);
-    }
-
-
-    public override string GetHelp()
-    {
-        return "View products \t view products or vp \t none";
     }
 }

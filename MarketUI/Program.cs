@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using Autofac;
+using MarketUI.Extension;
 using MarketUI.Util;
 
 namespace MarketUI;
@@ -11,21 +11,10 @@ public static class Program
 
     private static void Main(string[] args)
     {
-        var container = AppConfiguration.Configure();
+        var cihJson = new CommandsInfoHandlerJson();
+        var container = AppConfiguration.Configure(cihJson);
         _consoleUserInterface = container.Resolve<ConsoleUserInterface>();
         Start(args);
-    }
-
-    private static string ConcatWithSeparator(this string[] args, string separator)
-    {
-        var stringBuilder = new StringBuilder();
-        foreach (var arg in args)
-        {
-            stringBuilder.Append(arg);
-            stringBuilder.Append(separator);
-        }
-
-        return stringBuilder.ToString();
     }
 
     private static void Start(string[] args)

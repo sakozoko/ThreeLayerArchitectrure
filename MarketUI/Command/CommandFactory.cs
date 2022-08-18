@@ -19,7 +19,7 @@ public class CommandFactory : ICommandFactory
 
     public ICommand GetCommand(string name)
     {
-        return name == "h"
+        return name is "h" or "?" or "help"
             ? _helpCommand
             : _container.ResolveOptionalNamed<ICommand>(name) ?? _container.Resolve<ICommand>();
     }

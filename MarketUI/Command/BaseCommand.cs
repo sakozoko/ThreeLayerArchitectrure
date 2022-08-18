@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using AutoMapper;
-using BLL.Objects;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Command;
 
 public abstract class BaseCommand : ICommand
 {
-    private readonly string[] _params;
-    protected IMapper Mapper { get; }
+    private readonly ICommandsInfoHandler _commandsInfo;
+    protected readonly string[] Parameters;
 
-    protected BaseCommand(IUserInterfaceMapperHandler mapperHandler,string[] parameters = null)
+    protected BaseCommand(IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler commandsInfo)
     {
-        _params = parameters;
-        Mapper=mapperHandler.GetMapper();
+        _commandsInfo = commandsInfo;
+        Parameters = _commandsInfo.GetCommandInfo(GetType().Name).Parameters;
+        Mapper = mapperHandler.GetMapper();
     }
 
+    protected IMapper Mapper { get; }
+
     public abstract string Execute(string[] args);
-    public abstract string GetHelp();
+
+    public string GetHelp()
+    {
+        return _commandsInfo.GetCommandInfo(GetType().Name).Tip;
+    }
 
     /// <summary>
     ///     Args must be as "-key, value, -key, value, etc",then algorithm working
@@ -36,7 +42,7 @@ public abstract class BaseCommand : ICommand
         {
             var isParsed = false;
 
-            foreach (var key in _params)
+            foreach (var key in Parameters)
             {
                 if (!args[i].Equals(key)) continue;
                 if (i + 1 < args.Length)

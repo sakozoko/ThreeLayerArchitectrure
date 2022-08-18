@@ -4,7 +4,6 @@ public class AuthenticateResponseModel
 {
     public AuthenticateResponseModel()
     {
-        
     }
 
     public AuthenticateResponseModel(UserModel user, string token)

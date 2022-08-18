@@ -4,7 +4,7 @@ using MarketUI.Extension;
 
 namespace MarketUI.Command;
 
-public class HelpCommand :ICommand
+public class HelpCommand : ICommand
 {
     private readonly IContainer _container;
 

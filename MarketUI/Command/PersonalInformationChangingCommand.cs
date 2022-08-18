@@ -7,12 +7,11 @@ namespace MarketUI.Command;
 
 public class PersonalInformationChangingCommand : BaseCommand
 {
-    private static readonly string[] Parameters = { "-id", "-n", "-s", "-p", "-op" };
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
     public PersonalInformationChangingCommand(IServiceContainer serviceContainer,
-        IUserInterfaceMapperHandler mapperHandler) : base(mapperHandler, Parameters)
+        IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler cih) : base(mapperHandler, cih)
     {
         _serviceContainer = serviceContainer;
     }
@@ -33,12 +32,11 @@ public class PersonalInformationChangingCommand : BaseCommand
 
         if (TryChangeName(userId) | TryChangeSurname(userId) | TryChangePsw(userId))
         {
-            if (userId==0)
-            {
+            if (userId == 0)
                 ConsoleUserInterface.AuthenticationData =
-                    Mapper.Map<AuthenticateResponseModel>(_serviceContainer.UserService.GetAuthenticateResponse(ConsoleUserInterface.AuthenticationData
-                        .Token));
-            }
+                    Mapper.Map<AuthenticateResponseModel>(_serviceContainer.UserService.GetAuthenticateResponse(
+                        ConsoleUserInterface.AuthenticationData
+                            .Token));
             return "Updated information saved";
         }
 
@@ -56,7 +54,8 @@ public class PersonalInformationChangingCommand : BaseCommand
     private bool TryChangeSurname(int userId)
     {
         if (_dict.TryGetValue(Parameters[2], out var newSurname) && !string.IsNullOrEmpty(newSurname))
-            return _serviceContainer.UserService.ChangeSurname(ConsoleUserInterface.AuthenticationData.Token, newSurname,
+            return _serviceContainer.UserService.ChangeSurname(ConsoleUserInterface.AuthenticationData.Token,
+                newSurname,
                 userId).Result;
         return false;
     }
@@ -65,26 +64,24 @@ public class PersonalInformationChangingCommand : BaseCommand
     {
         if (_dict.TryGetValue(Parameters[3], out var newPsw) && newPsw.Length > 5 &&
             _dict.TryGetValue(Parameters[4], out var oldPsw))
-            return _serviceContainer.UserService.ChangePassword(ConsoleUserInterface.AuthenticationData.Token, newPsw, oldPsw,
+            return _serviceContainer.UserService.ChangePassword(ConsoleUserInterface.AuthenticationData.Token, newPsw,
+                oldPsw,
                 userId).Result;
         return false;
     }
 
     private bool ArgumentsAreValid(string[] args)
     {
-        return TrySetDictionary(args)  && ((_dict.ContainsKey(Parameters[0])
-                                            && (_dict.ContainsKey(Parameters[1]) || 
+        return (TrySetDictionary(args) && ((_dict.ContainsKey(Parameters[0])
+                                            && (_dict.ContainsKey(Parameters[1]) ||
                                                 _dict.ContainsKey(Parameters[2]) ||
-                                                _dict.ContainsKey(Parameters[3]))) || 
-                                           _dict.ContainsKey(Parameters[1]) || _dict.ContainsKey(Parameters[2])) || 
+                                                _dict.ContainsKey(Parameters[3]))) ||
+                                           _dict.ContainsKey(Parameters[1]) || _dict.ContainsKey(Parameters[2]))) ||
                (_dict.ContainsKey(Parameters[3]) && _dict.ContainsKey(Parameters[4]));
     }
+
     private bool TrySetDictionary(string[] args)
     {
         return TryParseArgs(args, out _dict);
-    }
-    public override string GetHelp()
-    {
-        return "Not implement";
     }
 }
