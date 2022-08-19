@@ -3,15 +3,16 @@ using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
 using BLL.Util.Logger;
+using DAL;
 using DAL.Repositories;
 using Entities;
 
 namespace BLL.Services;
 
-public class CategoryService : BaseService<CategoryEntity>, ICategoryService
+public class CategoryService : BaseService, ICategoryService
 {
-    public CategoryService(IRepository<CategoryEntity> repository, ITokenHandler tokenHandler, ILogger logger,
-        IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    public CategoryService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger,
+        IMapper mapper) : base(unitOfWork, tokenHandler, logger, mapper)
     {
     }
 
@@ -24,10 +25,10 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
                 return -1;
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-            var nameIsUnique = Repository.GetAll().FirstOrDefault(x => x.Name == name) == null;
+            var nameIsUnique = UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name) == null;
             if (!nameIsUnique) return -1;
             var category = new Category { Name = name };
-            var id = Repository.Add(Mapper.Map<CategoryEntity>(category));
+            var id = UnitOfWork.CategoryRepository.Add(Mapper.Map<CategoryEntity>(category));
             Logger.Log($"Admin {requestUser.Name} created category with id {id}");
             return id;
         });
@@ -41,7 +42,7 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            return Mapper.Map<IEnumerable<Category>>(Repository.GetAll());
+            return Mapper.Map<IEnumerable<Category>>(UnitOfWork.CategoryRepository.GetAll());
         });
     }
 
@@ -55,7 +56,7 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 
             Logger.Log($"Admin {requestUser.Name} reviewed category by name {name}");
 
-            return Mapper.Map<Category>(Repository.GetAll().FirstOrDefault(x => x.Name == name));
+            return Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name));
         });
     }
 
@@ -67,13 +68,13 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
-            return Mapper.Map<Category>(Repository.GetById(id));
+            return Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(id));
         });
     }
 
     public Task<bool> Remove(string token, int id)
     {
-        return Remove(token, Mapper.Map<Category>(Repository.GetById(id)));
+        return Remove(token, Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(id)));
     }
 
     public Task<bool> Remove(string token, Category category)
@@ -84,7 +85,7 @@ public class CategoryService : BaseService<CategoryEntity>, ICategoryService
 
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
-            return Repository.Delete(Mapper.Map<CategoryEntity>(category));
+            return UnitOfWork.CategoryRepository.Delete(Mapper.Map<CategoryEntity>(category));
         });
     }
 }

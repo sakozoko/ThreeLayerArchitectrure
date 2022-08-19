@@ -28,55 +28,42 @@ public class OrderModifyingCommand : BaseCommand
 
         int.TryParse(stringOrderId, out var orderId);
 
-        var task = _serviceContainer.OrderService.GetById(ConsoleUserInterface.AuthenticationData.Token, orderId);
-        var orderModel = Mapper.Map<OrderModel>(task.Result) ?? new OrderModel
-        {
-            Owner = Mapper.Map<UserModel>(_serviceContainer.UserService
-                .GetByName(ConsoleUserInterface.AuthenticationData.Token, ConsoleUserInterface.AuthenticationData.Name)
-                .Result)
-        };
-
-        if (TryChangeOrderProducts(orderModel) | TryChangeDescription(orderModel) | TryChangeOrderStatus(orderModel))
+        if (TryChangeOrderProducts(orderId) | TryChangeDescription(orderId) | TryChangeOrderStatus(orderId))
             return $"Order with id {orderId} updated";
 
         return "Something wrong";
     }
 
-    private bool TryChangeOrderStatus(OrderModel orderModel)
+    private bool TryChangeOrderStatus(int orderId)
     {
         return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
                _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
-                       Enum.Parse<OrderStatus>(stringOrderStatus?.Replace(" ", "") ?? "New"),
-                       Mapper.Map<BLL.Objects.Order>(orderModel))
-                   .Result;
+                       stringOrderStatus,
+                       orderId).Result;
     }
 
-    private bool TryChangeDescription(OrderModel orderModel)
+    private bool TryChangeDescription(int orderId)
     {
         return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) &&
                _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
-                   Mapper.Map<BLL.Objects.Order>(orderModel)).Result;
+                   orderId).Result;
     }
 
-    private bool TryChangeOrderProducts(OrderModel orderModel)
+    private bool TryChangeOrderProducts(int orderId)
     {
         _dict.TryGetValue(Parameters[1], out var stringProductId);
-
+        
         if (!int.TryParse(stringProductId, out var productId)) return false;
-
-        var task =
-            _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId);
+        
         var addProduct = !_dict.ContainsKey(Parameters[2]);
-
-        var productModel = Mapper.Map<ProductModel>(task.Result);
-
-        if (productModel is null) return false;
+        
+        if (productId <1) return false;
 
         if (addProduct)
             return _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
-                Mapper.Map<BLL.Objects.Product>(productModel), Mapper.Map<BLL.Objects.Order>(orderModel)).Result;
+                productId, orderId).Result;
         return _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
-            Mapper.Map<BLL.Objects.Product>(productModel), Mapper.Map<BLL.Objects.Order>(orderModel)).Result;
+            productId, orderId).Result;
     }
 
     private bool ArgumentsAreValid(string[] args)

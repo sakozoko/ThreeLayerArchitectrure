@@ -29,15 +29,15 @@ public class ServiceContainer : IServiceContainer
     }
 
     public IUserService UserService =>
-        _userService ??= new UserService(_unitOfWork.UserRepository, _tokenHandler, _logger, _mapper);
+        _userService ??= new UserService(_unitOfWork, _tokenHandler, _logger, _mapper);
 
     public IProductService ProductService =>
-        _productService ??= new ProductService(_unitOfWork.ProductRepository, _tokenHandler, _logger, _mapper);
+        _productService ??= new ProductService(_unitOfWork, _tokenHandler, _logger, _mapper);
 
     public IOrderService OrderService =>
-        _orderService ??= new OrderService(_unitOfWork.OrderRepository, _tokenHandler, _logger, _mapper);
+        _orderService ??= new OrderService(_unitOfWork, _tokenHandler, _logger, _mapper);
 
 
     public ICategoryService CategoryService =>
-        _categoryService ??= new CategoryService(_unitOfWork.CategoryRepository, _tokenHandler, _logger, _mapper);
+        _categoryService ??= new CategoryService(_unitOfWork, _tokenHandler, _logger, _mapper);
 }

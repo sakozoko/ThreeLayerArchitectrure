@@ -3,15 +3,15 @@ using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
 using BLL.Util.Logger;
-using DAL.Repositories;
+using DAL;
 using Entities;
 
 namespace BLL.Services;
 
-public class OrderService : BaseService<OrderEntity>, IOrderService
+public class OrderService : BaseService, IOrderService
 {
-    public OrderService(IRepository<OrderEntity> repository, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
-        : base(repository, tokenHandler, logger, mapper)
+    public OrderService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
+        : base(unitOfWork, tokenHandler, logger, mapper)
     {
     }
 
@@ -20,7 +20,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
     {
         return Task<Order>.Factory.StartNew(() =>
         {
-            var order = Mapper.Map<Order>(Repository.GetById(id));
+            var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(id));
             if (order is null) return null;
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
@@ -31,7 +31,7 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         });
     }
 
-    public Task<int> Create(string token, string desc, Product product, User user = null)
+    public Task<int> Create(string token, string desc, int productId, int userId = 0)
     {
         return Task<int>.Factory.StartNew(() =>
         {
@@ -41,15 +41,24 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
 
             var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
 
-            if (user is not null)
+            if (userId>0)
             {
+                var newOwner = Mapper.Map<User>(UnitOfWork.UserRepository.GetById(userId));
+                if (newOwner is null)
+                    return -1;
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-                order.Owner = user;
-                Logger.Log($"Admin {requestUser.Name} created new order to user id {user.Id}");
+                order.Owner = Mapper.Map<User>(newOwner);
+                Logger.Log($"Admin {requestUser.Name} created new order to user id {userId}");
             }
 
-            if (product is not null) order.Products.Add(product);
-            return Repository.Add(Mapper.Map<OrderEntity>(order));
+            if (productId > 0)
+            {
+                var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
+                if (product is null)
+                    return -1;
+                order.Products.Add(product);
+            }
+            return UnitOfWork.OrderRepository.Add(Mapper.Map<OrderEntity>(order));
         });
     }
 
@@ -62,11 +71,11 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
 
             Logger.Log($"Admin {requestUser.Name} invoke to get all order");
-            return Mapper.Map<IEnumerable<Order>>(Repository.GetAll());
+            return Mapper.Map<IEnumerable<Order>>(UnitOfWork.OrderRepository.GetAll());
         });
     }
 
-    public Task<IEnumerable<Order>> GetUserOrders(string token, User user = null)
+    public Task<IEnumerable<Order>> GetUserOrders(string token, int userId)
     {
         return Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
@@ -74,41 +83,51 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
             Func<Order, bool> func = x => x.Owner.Id == requestUser.Id;
 
-            if (user is not null)
+            if (userId>0)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-                func = x => x.Owner.Id == user.Id;
-                Logger.Log($"Admin {requestUser.Name} review orders of user with id {user.Id}");
+                func = x => x.Owner.Id == userId;
+                Logger.Log($"Admin {requestUser.Name} review orders of user with id {userId}");
             }
 
-            return Mapper.Map<IEnumerable<Order>>(Repository.GetAll()).Where(func);
+            return Mapper.Map<IEnumerable<Order>>(UnitOfWork.OrderRepository.GetAll()).Where(func);
         });
     }
 
-    public Task<bool> AddProduct(string token, Product product, Order order)
+    public Task<bool> AddProduct(string token, int productId, int orderId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            product is not null && ChangeProperty(token, order, x => x.Products.Add(product)));
+        {
+            var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
+            return product is not null && ChangeProperty(token, orderId, x => x.Products.Add(product));
+        });
     }
 
-    public Task<bool> DeleteProduct(string token, Product product, Order order)
+    public Task<bool> DeleteProduct(string token, int productId, int orderId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            product is not null && ChangeProperty(token, order, x => x.Products.Remove(product)));
+        {
+            var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
+            return product is not null && ChangeProperty(token, orderId, x => x.Products.Remove(product));
+        });
     }
-
-    public Task<bool> ChangeDescription(string token, string desc, Order order)
+    public Task<bool> ChangeDescription(string token, string desc, int orderId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, order, x => x.Description = desc));
+            !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, orderId, x => x.Description = desc));
     }
 
-    public Task<bool> ChangeOrderStatus(string token, OrderStatus status, Order order)
+    public Task<bool> ChangeOrderStatus(string token, string status, int orderId)
     {
-        return Task<bool>.Factory.StartNew(() => (TokenHandler.GetUser(token) is { IsAdmin: true }
-                                                  || (status == OrderStatus.CanceledByUser &&
-                                                      order.OrderStatus != OrderStatus.Received)) &&
-                                                 ChangeProperty(token, order, x => { x.OrderStatus = status; }));
+        return Task<bool>.Factory.StartNew(() =>
+        {
+            var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
+            var orderStatus = Enum.Parse<OrderStatus>(status?.Replace(" ", "").Trim() ?? "New", true);
+            return (TokenHandler.GetUser(token) is { IsAdmin: true }
+                    || (orderStatus == OrderStatus.CanceledByUser &&
+                        order?.OrderStatus != OrderStatus.Received)) &&
+                   ChangeProperty(token, orderId, x => { x.OrderStatus = orderStatus; });
+        });
     }
 
     private bool ValidPermissionForModifyOrder(string token, Order order)
@@ -128,11 +147,12 @@ public class OrderService : BaseService<OrderEntity>, IOrderService
         return true;
     }
 
-    private bool ChangeProperty(string token, Order order, Action<Order> act)
+    private bool ChangeProperty(string token, int orderId, Action<Order> act)
     {
+        var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
         if (!ValidPermissionForModifyOrder(token, order)) return false;
         act?.Invoke(order);
-        Repository.Update(Mapper.Map<OrderEntity>(order));
+        UnitOfWork.OrderRepository.Update(Mapper.Map<OrderEntity>(order));
         return true;
     }
 }

@@ -3,15 +3,16 @@ using BLL.Helpers.Token;
 using BLL.Objects;
 using BLL.Services.Interfaces;
 using BLL.Util.Logger;
+using DAL;
 using DAL.Repositories;
 using Entities;
 
 namespace BLL.Services;
 
-public class ProductService : BaseService<ProductEntity>, IProductService
+public class ProductService : BaseService, IProductService
 {
-    public ProductService(IRepository<ProductEntity> repository, ITokenHandler tokenHandler, ILogger logger,
-        IMapper mapper) : base(repository, tokenHandler, logger, mapper)
+    public ProductService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger,
+        IMapper mapper) : base(unitOfWork, tokenHandler, logger, mapper)
     {
     }
 
@@ -19,7 +20,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
     public Task<IEnumerable<Product>> GetByName(string name)
     {
         return Task<IEnumerable<Product>>.Factory.StartNew(() =>
-            Mapper.Map<IEnumerable<Product>>(Repository.GetAll()).Where(x => x.Name == name));
+            Mapper.Map<IEnumerable<Product>>(UnitOfWork.ProductRepository.GetAll()).Where(x => x.Name == name));
     }
 
     public Task<Product> GetById(string token, int id)
@@ -27,7 +28,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
         return Task<Product>.Factory.StartNew(() =>
         {
             ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
-            return Mapper.Map<Product>(Repository.GetById(id));
+            return Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(id));
         });
     }
 
@@ -37,7 +38,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
             () =>
             {
                 ThrowAuthenticationExceptionIfUserIsNull(TokenHandler.GetUser(token));
-                return Mapper.Map<IEnumerable<Product>>(Repository.GetAll());
+                return Mapper.Map<IEnumerable<Product>>(UnitOfWork.ProductRepository.GetAll());
             });
     }
 
@@ -74,7 +75,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
             Logger.Log($"Admin {requestUser.Name} invoked remove product with id {id}");
-            return Repository.Delete(Repository.GetById(id));
+            return UnitOfWork.ProductRepository.Delete(UnitOfWork.ProductRepository.GetById(id));
         });
     }
 
@@ -108,7 +109,7 @@ public class ProductService : BaseService<ProductEntity>, IProductService
 
         act.Invoke(product);
         Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
-        Repository.Update(Mapper.Map<ProductEntity>(product));
+        UnitOfWork.ProductRepository.Update(Mapper.Map<ProductEntity>(product));
         return true;
     }
 }

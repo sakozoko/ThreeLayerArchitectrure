@@ -22,16 +22,17 @@ public class OrderHistoryViewCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
+        if (TryParseArgs(args, out var dict))
+        {
+            dict.TryGetValue(Parameters[0], out var id);
+            int.TryParse(id, out _id);
+        }
+        
+        var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
+            .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, _id).Result);
+
         var consoleTable = new ConsoleTable();
         consoleTable.AddColumn("#", "Description", "Status");
-
-        var targetUser = TryParseId(args)
-            ? _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id).Result
-            : null;
-
-        var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
-            .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, targetUser).Result);
-
 
         foreach (var order in orderModels)
         {
@@ -51,12 +52,5 @@ public class OrderHistoryViewCommand : BaseCommand
 
 
         return consoleTable.ToString();
-    }
-
-    private bool TryParseId(string[] args)
-    {
-        if (TryParseArgs(args, out var dict))
-            return dict.TryGetValue(Parameters[0], out var id) && int.TryParse(id, out _id);
-        return false;
     }
 }

@@ -21,12 +21,9 @@ public class OrderCreatingCommand : BaseCommand
     public override string Execute(string[] args)
     {
         if (!TryParseParameters(args)) return GetHelp();
-        var productTask =
-            _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _product);
-        var userTask = _serviceContainer.UserService.GetById(ConsoleUserInterface.AuthenticationData?.Token, _id);
         var id = _serviceContainer.OrderService.Create(ConsoleUserInterface.AuthenticationData?.Token, _desc,
-            productTask.Result, userTask.Result);
-        return $"Successful! Id your order is {id.Result}";
+            _product, _id);
+        return id.Result == -1 ? "Something wrong" : $"Successful! Id your order is {id.Result}";
     }
 
     private bool TryParseParameters(string[] args)
