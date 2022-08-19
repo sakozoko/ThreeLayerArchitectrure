@@ -4,7 +4,6 @@ using BLL.Objects;
 using BLL.Services.Interfaces;
 using BLL.Util.Logger;
 using DAL;
-using DAL.Repositories;
 using Entities;
 
 namespace BLL.Services;
@@ -21,6 +20,32 @@ public class ProductService : BaseService, IProductService
     {
         return Task<IEnumerable<Product>>.Factory.StartNew(() =>
             Mapper.Map<IEnumerable<Product>>(UnitOfWork.ProductRepository.GetAll()).Where(x => x.Name == name));
+    }
+
+    public Task<int> Create(string token, string name, string desc, decimal cost, int categoryId)
+    {
+        return Task<int>.Factory.StartNew(() =>
+        {
+            var requestUser = TokenHandler.GetUser(token);
+            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
+            var category = Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(categoryId));
+            if (category is null)
+                return -1;
+            
+            var productIsUnique = !UnitOfWork.ProductRepository.GetAll().Any(x =>
+                x.Name == name && x.Category.Id == categoryId && x.Description == desc && x.Cost == cost);
+            if (!productIsUnique) return -1;
+            var newProduct = new Product
+            {
+                Name = name,
+                Description = desc,
+                Cost = cost,
+                Category = category
+            };
+            return UnitOfWork.ProductRepository.Add(Mapper.Map<ProductEntity>(newProduct));
+
+        });
+
     }
 
     public Task<Product> GetById(string token, int id)

@@ -71,6 +71,12 @@ public static class AppConfiguration
             .Named<ICommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).Abbreviated);
         builder.RegisterType<ProductModifyingCommand>()
             .Named<ICommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).FullName);
+        
+        builder.RegisterType<ProductCreatingCommand>().As<ICommand>();
+        builder.RegisterType<ProductCreatingCommand>()
+            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductCreatingCommand)).Abbreviated);
+        builder.RegisterType<ProductCreatingCommand>()
+            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductCreatingCommand)).FullName);
 
         builder.RegisterType<IncorrectCommand>().As<ICommand>();
 

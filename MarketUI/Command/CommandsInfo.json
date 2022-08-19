@@ -11,9 +11,9 @@
   "OrderModifyingCommand": {
     "Abbreviated": "mo",
     "FullName": "modifyorder",
-    "Tip": "Modyfing order \t mo or modifyorder \t -o, -p,  -r, -d, -s",
+    "Tip": "Modyfing order \t mo or modifyorder \t -id, -p,  -r, -d, -s",
     "Parameters": [
-      "-o",
+      "-id",
       "-p",
       "-r",
       "-d",
@@ -79,6 +79,17 @@
     "Tip": "Modify information about product  \t modifyproduct or mo \t -id, -n, -d, -c, -p",
     "Parameters": [
       "-id",
+      "-n",
+      "-d",
+      "-c",
+      "-p"
+    ]
+  },
+  "ProductCreatingCommand": {
+    "Abbreviated": "cp",
+    "FullName": "createproduct",
+    "Tip": "Create new product  \t createproduct or cp \t -n, -d, -c, -p",
+    "Parameters": [
       "-n",
       "-d",
       "-c",
