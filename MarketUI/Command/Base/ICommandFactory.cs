@@ -1,4 +1,4 @@
-﻿namespace MarketUI.Command;
+﻿namespace MarketUI.Command.Base;
 
 public interface ICommandFactory
 {

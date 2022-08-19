@@ -1,6 +1,11 @@
 ﻿using Autofac;
 using BLL.Util;
 using MarketUI.Command;
+using MarketUI.Command.Base;
+using MarketUI.Command.Order;
+using MarketUI.Command.Product;
+using MarketUI.Command.User;
+using MarketUI.Command.Util;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Util;

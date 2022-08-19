@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BLL;
+using MarketUI.Command.Base;
 using MarketUI.Models;
 using MarketUI.Util;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.Product;
 
 public class ProductsViewCommand : BaseCommand
 {

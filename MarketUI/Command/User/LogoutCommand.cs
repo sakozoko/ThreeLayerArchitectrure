@@ -1,6 +1,7 @@
-﻿using MarketUI.Util.Interface;
+﻿using MarketUI.Command.Base;
+using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.User;
 
 public class LogoutCommand : BaseCommand
 {

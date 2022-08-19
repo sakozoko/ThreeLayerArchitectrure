@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using BLL;
 using BLL.Objects;
+using MarketUI.Command.Base;
 using MarketUI.Models;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.User;
 
-public class RegistrationCommand : BaseCommand
+public class LoginCommand : BaseCommand
 {
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public RegistrationCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public LoginCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
@@ -20,16 +21,16 @@ public class RegistrationCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
-        var request = new AuthenticateRequestModel();
-        if (!TryCreateDictionary(args) || !TryParseAndSaveName(request) ||
-            (!TryParseAndSavePsw(request) && !TryParseAndSaveSurname(request)))
+        var authenticateRequest = new AuthenticateRequestModel();
+        if (!TryCreateDictionary(args) || !TryParseAndSaveName(authenticateRequest) ||
+            !TryParseAndSavePsw(authenticateRequest))
             return GetHelp();
-        var response =
-            Mapper.Map<AuthenticateResponseModel>(
-                _serviceContainer.UserService.Registration(Mapper.Map<AuthenticateRequest>(request)));
-        if (response is null) return "Args value incorrect";
+
+        var response = Mapper.Map<AuthenticateResponseModel>(
+            _serviceContainer.UserService.Authenticate(Mapper.Map<AuthenticateRequest>(authenticateRequest)));
+        if (response is null) return "Name or password is incorrect";
         ConsoleUserInterface.AuthenticationData = response;
-        return $"{response.Name} welcome!";
+        return $"{response.Name}, hi!";
     }
 
     private bool TryCreateDictionary(string[] args)
@@ -48,20 +49,9 @@ public class RegistrationCommand : BaseCommand
         return false;
     }
 
-    private bool TryParseAndSaveSurname(AuthenticateRequestModel requestModel)
-    {
-        if (_dict.TryGetValue(Parameters[1], out var surname))
-        {
-            requestModel.Surname = surname;
-            return true;
-        }
-
-        return false;
-    }
-
     private bool TryParseAndSavePsw(AuthenticateRequestModel requestModel)
     {
-        if (_dict.TryGetValue(Parameters[2], out var psw))
+        if (_dict.TryGetValue(Parameters[1], out var psw))
         {
             requestModel.Password = psw;
             return true;

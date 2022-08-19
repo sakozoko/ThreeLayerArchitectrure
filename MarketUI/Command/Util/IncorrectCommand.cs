@@ -1,4 +1,6 @@
-﻿namespace MarketUI.Command;
+﻿using MarketUI.Command.Base;
+
+namespace MarketUI.Command.Util;
 
 public class IncorrectCommand : ICommand
 {

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using BLL;
+using MarketUI.Command.Base;
 using MarketUI.Models;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.User;
 
 public class PersonalInformationChangingCommand : BaseCommand
 {

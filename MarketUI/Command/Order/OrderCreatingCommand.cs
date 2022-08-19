@@ -1,7 +1,8 @@
 ﻿using BLL;
+using MarketUI.Command.Base;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.Order;
 
 public class OrderCreatingCommand : BaseCommand
 {

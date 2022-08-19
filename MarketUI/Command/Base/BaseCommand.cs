@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AutoMapper;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.Base;
 
 public abstract class BaseCommand : ICommand
 {

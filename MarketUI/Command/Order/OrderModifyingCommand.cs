@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using BLL;
 using BLL.Objects;
+using MarketUI.Command.Base;
 using MarketUI.Models;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.Order;
 
 public class OrderModifyingCommand : BaseCommand
 {
@@ -46,7 +47,7 @@ public class OrderModifyingCommand : BaseCommand
         return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
                _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
                        Enum.Parse<OrderStatus>(stringOrderStatus?.Replace(" ", "") ?? "New"),
-                       Mapper.Map<Order>(orderModel))
+                       Mapper.Map<BLL.Objects.Order>(orderModel))
                    .Result;
     }
 
@@ -54,7 +55,7 @@ public class OrderModifyingCommand : BaseCommand
     {
         return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) &&
                _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
-                   Mapper.Map<Order>(orderModel)).Result;
+                   Mapper.Map<BLL.Objects.Order>(orderModel)).Result;
     }
 
     private bool TryChangeOrderProducts(OrderModel orderModel)
@@ -73,9 +74,9 @@ public class OrderModifyingCommand : BaseCommand
 
         if (addProduct)
             return _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
-                Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
+                Mapper.Map<BLL.Objects.Product>(productModel), Mapper.Map<BLL.Objects.Order>(orderModel)).Result;
         return _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
-            Mapper.Map<Product>(productModel), Mapper.Map<Order>(orderModel)).Result;
+            Mapper.Map<BLL.Objects.Product>(productModel), Mapper.Map<BLL.Objects.Order>(orderModel)).Result;
     }
 
     private bool ArgumentsAreValid(string[] args)

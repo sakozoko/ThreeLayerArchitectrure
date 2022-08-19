@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using BLL;
-using BLL.Objects;
+using MarketUI.Command.Base;
 using MarketUI.Models;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command;
+namespace MarketUI.Command.Product;
 
 public class ProductModifyingCommand : BaseCommand
 {
@@ -42,7 +42,7 @@ public class ProductModifyingCommand : BaseCommand
     {
         if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrEmpty(newName))
             return _serviceContainer.ProductService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,
-                Mapper.Map<Product>(productModel)).Result;
+                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
         return false;
     }
 
@@ -51,7 +51,7 @@ public class ProductModifyingCommand : BaseCommand
         if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrEmpty(newDesc))
             return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
                 newDesc,
-                Mapper.Map<Product>(productModel)).Result;
+                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
         return false;
     }
 
@@ -64,7 +64,7 @@ public class ProductModifyingCommand : BaseCommand
                     .Result;
             return _serviceContainer.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token,
                 targetCategory,
-                Mapper.Map<Product>(productModel)).Result;
+                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
         }
 
         return false;
@@ -74,7 +74,7 @@ public class ProductModifyingCommand : BaseCommand
     {
         if (_dict.TryGetValue(Parameters[4], out var newStrPrice) && decimal.TryParse(newStrPrice, out var newPrice))
             return _serviceContainer.ProductService.ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice,
-                Mapper.Map<Product>(productModel)).Result;
+                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
         return false;
     }
 }
