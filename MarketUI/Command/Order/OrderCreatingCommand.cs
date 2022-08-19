@@ -23,7 +23,7 @@ public class OrderCreatingCommand : BaseCommand
         if (!TryParseParameters(args)) return GetHelp();
         var id = _serviceContainer.OrderService.Create(ConsoleUserInterface.AuthenticationData?.Token, _desc,
             _product, _id);
-        return id.Result == -1 ? "Something wrong" : $"Successful! Id your order is {id.Result}";
+        return id.Result == -1 ? "Something wrong" : $"Successful!Your order id is {id.Result}";
     }
 
     private bool TryParseParameters(string[] args)
