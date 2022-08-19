@@ -23,6 +23,7 @@ public class ConsoleTable
     private List<string> Columns { get; }
     private List<object[]> Rows { get; }
     private Dictionary<int, string> RowsWithoutColumns { get; }
+    private List<object[]> ModifiedRows { get; set; }
 
     public ConsoleTable AddColumn(params string[] strings)
     {
@@ -49,6 +50,9 @@ public class ConsoleTable
     public override string ToString()
     {
         var strBuilder = new StringBuilder();
+        //if column have decimal type will format him {0.00}
+        CreatingModifyingRowsForDecimalTypes();
+        
         var paddings = GetCalculatedPadding();
 
         var format = Enumerable.Range(0, Columns.Count)
@@ -59,8 +63,7 @@ public class ConsoleTable
                                                                         paddings[i] - c.Length -
                                                                         (paddings[i] - c.Length) / 2))
             .ToArray<object>());
-
-        var formattedRows = Rows.Select(row =>
+        var formattedRows = ModifiedRows.Select(row =>
             string.Format(format, row.Select((c, i) =>
                 new string(' ', (paddings[i] - c.ToString().Length) / 2) + c +
                 new string(' ',
@@ -86,10 +89,20 @@ public class ConsoleTable
         return strBuilder.ToString();
     }
 
+    private void CreatingModifyingRowsForDecimalTypes()
+    {        
+        var decimalTypeIndexes = Rows.First().Select((v, i) => v is decimal?i:-1);
+        ModifiedRows = Rows.Select(x => 
+                x.Select((v, i) => decimalTypeIndexes.Contains(i)? $"{v:0.00}" : v).
+                    ToArray()).
+            ToList();
+    }
+
     public List<int> GetCalculatedPadding()
     {
+        CreatingModifyingRowsForDecimalTypes();
         return Columns
-            .Select((_, i) => Rows.Select(row => row[i])
+            .Select((_, i) => ModifiedRows.Select(row => row[i])
                 .Union(new[] { Columns[i] })
                 .Where(value => value != null)
                 .Select(value => value.ToString().Length + 2).Max())
