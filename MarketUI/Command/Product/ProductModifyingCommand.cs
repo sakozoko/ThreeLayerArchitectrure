@@ -40,7 +40,7 @@ public class ProductModifyingCommand : BaseCommand
 
     private bool TryChangeName(ProductModel productModel)
     {
-        if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrEmpty(newName))
+        if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrWhiteSpace(newName))
             return _serviceContainer.ProductService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,
                 Mapper.Map<BLL.Objects.Product>(productModel)).Result;
         return false;
@@ -48,7 +48,7 @@ public class ProductModifyingCommand : BaseCommand
 
     private bool TryChangeDescription(ProductModel productModel)
     {
-        if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrEmpty(newDesc))
+        if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrWhiteSpace(newDesc))
             return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
                 newDesc,
                 Mapper.Map<BLL.Objects.Product>(productModel)).Result;
@@ -57,7 +57,7 @@ public class ProductModifyingCommand : BaseCommand
 
     private bool TryChangeCategory(ProductModel productModel)
     {
-        if (_dict.TryGetValue(Parameters[3], out var newCategory) && !string.IsNullOrEmpty(newCategory))
+        if (_dict.TryGetValue(Parameters[3], out var newCategory) && !string.IsNullOrWhiteSpace(newCategory))
         {
             var targetCategory =
                 _serviceContainer.CategoryService.GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)

@@ -46,7 +46,7 @@ public class PersonalInformationChangingCommand : BaseCommand
 
     private bool TryChangeName(int userId)
     {
-        if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrEmpty(newName))
+        if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrWhiteSpace(newName))
             return _serviceContainer.UserService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,
                 userId).Result;
         return false;
@@ -54,7 +54,7 @@ public class PersonalInformationChangingCommand : BaseCommand
 
     private bool TryChangeSurname(int userId)
     {
-        if (_dict.TryGetValue(Parameters[2], out var newSurname) && !string.IsNullOrEmpty(newSurname))
+        if (_dict.TryGetValue(Parameters[2], out var newSurname) && !string.IsNullOrWhiteSpace(newSurname))
             return _serviceContainer.UserService.ChangeSurname(ConsoleUserInterface.AuthenticationData.Token,
                 newSurname,
                 userId).Result;

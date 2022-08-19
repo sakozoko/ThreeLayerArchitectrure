@@ -24,7 +24,7 @@ public class ProductsViewCommand : BaseCommand
     public override string Execute(string[] args)
     {
         TryParseGroupKeyAndName(args);
-        var productModels = string.IsNullOrEmpty(_name)
+        var productModels = string.IsNullOrWhiteSpace(_name)
             ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService
                 .GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
             : Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetByName(_name).Result);
