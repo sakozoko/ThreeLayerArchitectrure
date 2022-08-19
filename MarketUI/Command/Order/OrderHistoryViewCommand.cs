@@ -3,8 +3,8 @@ using System.Linq;
 using BLL;
 using MarketUI.Command.Base;
 using MarketUI.Models;
-using MarketUI.Util;
 using MarketUI.Util.Interface;
+using ConsoleTable;
 
 namespace MarketUI.Command.Order;
 
@@ -31,13 +31,13 @@ public class OrderHistoryViewCommand : BaseCommand
         var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
             .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, _id).Result);
 
-        var consoleTable = new ConsoleTable().AddColumn("#", "Description", "Status").AddAlignment(Alignment.Center, 1)
+        var consoleTable = new Table().AddColumn("#", "Description", "Status").AddAlignment(Alignment.Center, 1)
             .AddAlignment(Alignment.Center, 2);
 
         foreach (var order in orderModels)
         {
             consoleTable.AddRow(order.Id, order.Description, order.OrderStatus);
-            var consoleTable2 = new ConsoleTable(consoleTable.CurrentPadding).
+            var consoleTable2 = new Table(consoleTable.CurrentPadding).
                 AddColumn("Name", "Count", "Sum").
                 AddCustomFormat(typeof(decimal),"{0:0.00}").
                 AddAlignment(Alignment.Center).

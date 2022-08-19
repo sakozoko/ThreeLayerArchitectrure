@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BLL;
+using ConsoleTable;
 using MarketUI.Command.Base;
 using MarketUI.Models;
-using MarketUI.Util;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Product;
@@ -28,7 +28,7 @@ public class ProductsViewCommand : BaseCommand
             ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService
                 .GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
             : Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetByName(_name).Result);
-        var consoleTable = new ConsoleTable().
+        var consoleTable = new Table().
             AddColumn("#", "Name", "Product category", "Product cost", "Product description").
             AddAlignment(Alignment.Center).
             AddCustomFormat(3,"{0:0.00}");
@@ -39,13 +39,13 @@ public class ProductsViewCommand : BaseCommand
         return consoleTable.ToString();
     }
 
-    private static void ViewProducts(IEnumerable<ProductModel> productModels, ConsoleTable ct)
+    private static void ViewProducts(IEnumerable<ProductModel> productModels, Table ct)
     {
         foreach (var product in productModels)
             ct.AddRow(product.Id, product.Name, product.Category.Name, product.Cost, product.Description);
     }
 
-    private static void ViewProductsGroupedByCategory(IEnumerable<ProductModel> productModels, ConsoleTable ct)
+    private static void ViewProductsGroupedByCategory(IEnumerable<ProductModel> productModels, Table ct)
     {
         var groups = productModels.GroupBy(x => x.Category);
         foreach (var group in groups)
