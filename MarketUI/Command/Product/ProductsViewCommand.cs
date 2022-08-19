@@ -28,8 +28,10 @@ public class ProductsViewCommand : BaseCommand
             ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService
                 .GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
             : Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetByName(_name).Result);
-        var consoleTable = new ConsoleTable();
-        consoleTable.AddColumn("#", "Name", "Product category", "Product cost", "Product description");
+        var consoleTable = new ConsoleTable().
+            AddColumn("#", "Name", "Product category", "Product cost", "Product description").
+            AddAlignment(Alignment.Center).
+            AddCustomFormat(3,"{0:0.00}");
         if (_isGroupBy)
             ViewProductsGroupedByCategory(productModels, consoleTable);
         else
