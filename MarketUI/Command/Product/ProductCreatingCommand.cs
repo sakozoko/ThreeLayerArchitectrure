@@ -10,7 +10,8 @@ public class ProductCreatingCommand : BaseCommand
     private readonly IServiceContainer _serviceContainer;
     private Dictionary<string, string> _dict;
 
-    public ProductCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
+    public ProductCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+        ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
     {
         _serviceContainer = serviceContainer;
     }
@@ -19,11 +20,12 @@ public class ProductCreatingCommand : BaseCommand
     {
         if (!TrySetDictionary(args)) GetHelp();
         if (TryParseName() && TryParseDesc() &&
-            (ContainsCategoryId() && int.TryParse(_dict[Parameters[2]], out var categoryId)) &&
-            (ContainsCost() && decimal.TryParse(_dict[Parameters[3]], out var cost)))
+            ContainsCategoryId() && int.TryParse(_dict[Parameters[2]], out var categoryId) &&
+            ContainsCost() && decimal.TryParse(_dict[Parameters[3]], out var cost))
         {
-            var newProductId = _serviceContainer.ProductService.Create(ConsoleUserInterface.AuthenticationData.Token, _dict[Parameters[0]], _dict[Parameters[1]], cost, categoryId).Result;
-            if(newProductId!=-1)
+            var newProductId = _serviceContainer.ProductService.Create(ConsoleUserInterface.AuthenticationData.Token,
+                _dict[Parameters[0]], _dict[Parameters[1]], cost, categoryId).Result;
+            if (newProductId != -1)
                 return $"Successful! New product id is {newProductId}";
         }
 
@@ -39,6 +41,7 @@ public class ProductCreatingCommand : BaseCommand
     {
         return _dict.TryGetValue(Parameters[0], out var name) && !string.IsNullOrWhiteSpace(name);
     }
+
     private bool TryParseDesc()
     {
         return _dict.TryGetValue(Parameters[1], out var desc) && !string.IsNullOrWhiteSpace(desc);
@@ -53,6 +56,4 @@ public class ProductCreatingCommand : BaseCommand
     {
         return _dict.ContainsKey(Parameters[3]);
     }
-
-
 }

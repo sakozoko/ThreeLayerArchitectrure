@@ -4,7 +4,6 @@ using BLL.Objects;
 using BLL.Services.Interfaces;
 using BLL.Util.Logger;
 using DAL;
-using DAL.Repositories;
 using Entities;
 
 namespace BLL.Services;
@@ -69,7 +68,9 @@ public class UserService : BaseService, IUserService
 
     public Task<bool> ChangePassword(string token, string value, string oldPsw, int targetId = 0)
     {
-        var requestUser = targetId != 0 ? Mapper.Map<User>(UnitOfWork.UserRepository.GetById(targetId)) : TokenHandler.GetUser(token);
+        var requestUser = targetId != 0
+            ? Mapper.Map<User>(UnitOfWork.UserRepository.GetById(targetId))
+            : TokenHandler.GetUser(token);
         return Task<bool>.Factory.StartNew(() =>
             requestUser?.Password == oldPsw && ChangeProperty(token, x => x.Password = value, targetId));
     }

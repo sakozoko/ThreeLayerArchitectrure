@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using BLL;
-using BLL.Objects;
 using MarketUI.Command.Base;
-using MarketUI.Models;
 using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Order;
@@ -38,8 +35,8 @@ public class OrderModifyingCommand : BaseCommand
     {
         return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
                _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
-                       stringOrderStatus,
-                       orderId).Result;
+                   stringOrderStatus,
+                   orderId).Result;
     }
 
     private bool TryChangeDescription(int orderId)
@@ -52,12 +49,12 @@ public class OrderModifyingCommand : BaseCommand
     private bool TryChangeOrderProducts(int orderId)
     {
         _dict.TryGetValue(Parameters[1], out var stringProductId);
-        
+
         if (!int.TryParse(stringProductId, out var productId)) return false;
-        
+
         var addProduct = !_dict.ContainsKey(Parameters[2]);
-        
-        if (productId <1) return false;
+
+        if (productId < 1) return false;
 
         if (addProduct)
             return _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,

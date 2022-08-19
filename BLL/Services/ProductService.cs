@@ -31,7 +31,7 @@ public class ProductService : BaseService, IProductService
             var category = Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(categoryId));
             if (category is null)
                 return -1;
-            
+
             var productIsUnique = !UnitOfWork.ProductRepository.GetAll().Any(x =>
                 x.Name == name && x.Category.Id == categoryId && x.Description == desc && x.Cost == cost);
             if (!productIsUnique) return -1;
@@ -43,9 +43,7 @@ public class ProductService : BaseService, IProductService
                 Category = category
             };
             return UnitOfWork.ProductRepository.Add(Mapper.Map<ProductEntity>(newProduct));
-
         });
-
     }
 
     public Task<Product> GetById(string token, int id)
@@ -69,17 +67,19 @@ public class ProductService : BaseService, IProductService
 
     public Task<bool> ChangeName(string token, string value, Product product)
     {
-        return Task<bool>.Factory.StartNew(() => !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Name = value, product));
+        return Task<bool>.Factory.StartNew(() =>
+            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Name = value, product));
     }
 
     public Task<bool> ChangeDescription(string token, string value, Product product)
     {
-        return Task<bool>.Factory.StartNew(() => !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Description = value, product));
+        return Task<bool>.Factory.StartNew(() =>
+            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Description = value, product));
     }
 
     public Task<bool> ChangeCost(string token, decimal value, Product product)
     {
-        return Task<bool>.Factory.StartNew(() => value>0 && ChangeProperty(token, x => x.Cost = value, product));
+        return Task<bool>.Factory.StartNew(() => value > 0 && ChangeProperty(token, x => x.Cost = value, product));
     }
 
     public Task<bool> ChangeCategory(string token, Category category, Product product)

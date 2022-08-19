@@ -6,8 +6,6 @@ namespace ConsoleTable
     public class ConsoleTableOptions
     {
         public readonly Dictionary<object, string> CustomFormats;
-        public Alignment[] Alignments { get; set; }
-        public Dictionary<int, List<string>> RowsWithoutColumns { get; }
         public bool SeparateEachRow;
         public char Separator;
 
@@ -18,6 +16,8 @@ namespace ConsoleTable
             Alignments = Array.Empty<Alignment>();
             Separator = '-';
         }
+
+        public Alignment[] Alignments { get; set; }
+        public Dictionary<int, List<string>> RowsWithoutColumns { get; }
     }
 }
-

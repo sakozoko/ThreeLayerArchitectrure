@@ -41,7 +41,7 @@ public class OrderService : BaseService, IOrderService
 
             var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
 
-            if (userId>0)
+            if (userId > 0)
             {
                 var newOwner = Mapper.Map<User>(UnitOfWork.UserRepository.GetById(userId));
                 if (newOwner is null)
@@ -58,6 +58,7 @@ public class OrderService : BaseService, IOrderService
                     return -1;
                 order.Products.Add(product);
             }
+
             return UnitOfWork.OrderRepository.Add(Mapper.Map<OrderEntity>(order));
         });
     }
@@ -83,7 +84,7 @@ public class OrderService : BaseService, IOrderService
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
             Func<Order, bool> func = x => x.Owner.Id == requestUser.Id;
 
-            if (userId>0)
+            if (userId > 0)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
                 func = x => x.Owner.Id == userId;
@@ -111,6 +112,7 @@ public class OrderService : BaseService, IOrderService
             return product is not null && ChangeProperty(token, orderId, x => x.Products.Remove(product));
         });
     }
+
     public Task<bool> ChangeDescription(string token, string desc, int orderId)
     {
         return Task<bool>.Factory.StartNew(() =>
