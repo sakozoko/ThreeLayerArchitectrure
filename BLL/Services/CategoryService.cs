@@ -20,17 +20,36 @@ public class CategoryService : BaseService, ICategoryService
     {
         return Task<int>.Factory.StartNew(() =>
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return -1;
             var requestUser = TokenHandler.GetUser(token);
-            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-            var nameIsUnique = UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name) == null;
-            if (!nameIsUnique) return -1;
+            if (!ValidateChangeNameOrCreate(requestUser, name)) return -1;
             var category = new Category { Name = name };
             var id = UnitOfWork.CategoryRepository.Add(Mapper.Map<CategoryEntity>(category));
             Logger.Log($"Admin {requestUser.Name} created category with id {id}");
             return id;
         });
+    }
+
+    public Task<bool> ChangeName(string token, string newName, int categoryId)
+    {
+        return Task<bool>.Factory.StartNew(() =>
+        {
+            var requestUser = TokenHandler.GetUser(token);
+            if (!ValidateChangeNameOrCreate(requestUser, newName)) return false;
+            var category = Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(categoryId));
+            if (category is null) return false;
+            category.Name = newName;
+            UnitOfWork.CategoryRepository.Update(Mapper.Map<CategoryEntity>(category));
+            return true;
+        });
+    }
+
+    private bool ValidateChangeNameOrCreate(User requestUser, string name)
+    {
+        ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
+        var nameIsUnique = UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name) == null;
+        return nameIsUnique;
     }
 
     public Task<IEnumerable<Category>> GetAll(string token)

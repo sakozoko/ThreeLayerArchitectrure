@@ -104,26 +104,6 @@ public class ProductService : BaseService, IProductService
         });
     }
 
-    public Task<IEnumerable<Product>> GetFromOrder(string token, Order order)
-    {
-        return Task<IEnumerable<Product>>.Factory.StartNew(() =>
-        {
-            if (order is null)
-                return null;
-            var requestUser = TokenHandler.GetUser(token);
-
-            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
-            if (order.Owner.Id != requestUser.Id)
-            {
-                ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-                Logger.Log($"Admin {requestUser.Name} invoked to get products from order id {order.Id}");
-            }
-
-            return order.Products;
-        });
-    }
-
     private bool ChangeProperty(string token, Action<Product> act, Product product)
     {
         if (product is null)
