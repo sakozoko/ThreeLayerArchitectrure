@@ -23,14 +23,16 @@ public class ProductModifyingCommand : BaseCommand
         if (!TrySetDictionary(args)) GetHelp();
         _dict.TryGetValue(Parameters[0], out var strProductId);
         int.TryParse(strProductId, out var productId);
-        var targetProductModel = Mapper.Map<ProductModel>(
-            _serviceContainer.ProductService.GetById(ConsoleUserInterface.AuthenticationData.Token, productId).Result);
-        if (targetProductModel is null)
-            return "Target product not found";
-        if (TryChangeName(targetProductModel) | TryChangeDescription(targetProductModel) |
-            TryChangeCategory(targetProductModel) | TryChangePrice(targetProductModel))
-            return "Product information updated";
-        return "Something is wrong";
+        return ResultOfTryChange(productId)? "Product information updated":"Something is wrong";
+    }
+
+    private bool ResultOfTryChange(int productId)
+    {
+        var firstFlag = TryChangeName(productId);
+        var secondFlag = TryChangeDescription(productId);
+        var thirdFlag = TryChangeCategory(productId);
+        var fourthFlag = TryChangePrice(productId);
+        return firstFlag || secondFlag || thirdFlag || fourthFlag;
     }
 
     private bool TrySetDictionary(string[] args)
@@ -38,43 +40,39 @@ public class ProductModifyingCommand : BaseCommand
         return TryParseArgs(args, out _dict);
     }
 
-    private bool TryChangeName(ProductModel productModel)
+    private bool TryChangeName(int productId)
     {
         if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrWhiteSpace(newName))
-            return _serviceContainer.ProductService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,
-                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
+            return _serviceContainer.ProductService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,productId).Result;
         return false;
     }
 
-    private bool TryChangeDescription(ProductModel productModel)
+    private bool TryChangeDescription(int productId)
     {
         if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrWhiteSpace(newDesc))
             return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
-                newDesc,
-                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
+                newDesc,productId).Result;
         return false;
     }
 
-    private bool TryChangeCategory(ProductModel productModel)
+    private bool TryChangeCategory(int productId)
     {
         if (_dict.TryGetValue(Parameters[3], out var newCategory) && !string.IsNullOrWhiteSpace(newCategory))
         {
-            var targetCategory =
-                _serviceContainer.CategoryService.GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)
-                    .Result;
+            var targetCategoryId =
+                Mapper.Map<CategoryModel>(_serviceContainer.CategoryService.GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)
+                    .Result)?.Id??0;
             return _serviceContainer.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token,
-                targetCategory,
-                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
+                targetCategoryId,productId).Result;
         }
 
         return false;
     }
 
-    private bool TryChangePrice(ProductModel productModel)
+    private bool TryChangePrice(int productId)
     {
         if (_dict.TryGetValue(Parameters[4], out var newStrPrice) && decimal.TryParse(newStrPrice, out var newPrice))
-            return _serviceContainer.ProductService.ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice,
-                Mapper.Map<BLL.Objects.Product>(productModel)).Result;
+            return _serviceContainer.ProductService.ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice,productId).Result;
         return false;
     }
 }

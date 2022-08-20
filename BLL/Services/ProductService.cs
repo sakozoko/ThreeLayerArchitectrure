@@ -65,27 +65,28 @@ public class ProductService : BaseService, IProductService
             });
     }
 
-    public Task<bool> ChangeName(string token, string value, Product product)
+    public Task<bool> ChangeName(string token, string value, int productId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Name = value, product));
+            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Name = value, productId));
     }
 
-    public Task<bool> ChangeDescription(string token, string value, Product product)
+    public Task<bool> ChangeDescription(string token, string value, int productId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Description = value, product));
+            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Description = value, productId));
     }
 
-    public Task<bool> ChangeCost(string token, decimal value, Product product)
+    public Task<bool> ChangeCost(string token, decimal value, int productId)
     {
-        return Task<bool>.Factory.StartNew(() => value > 0 && ChangeProperty(token, x => x.Cost = value, product));
+        return Task<bool>.Factory.StartNew(() => value > 0 && ChangeProperty(token, x => x.Cost = value, productId));
     }
 
-    public Task<bool> ChangeCategory(string token, Category category, Product product)
+    public Task<bool> ChangeCategory(string token, int categoryId, int productId)
     {
+        var category = Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(categoryId));
         return Task<bool>.Factory.StartNew(() =>
-            category is not null && ChangeProperty(token, x => x.Category = category, product));
+            category is not null && ChangeProperty(token, x => x.Category = category, productId));
     }
 
     public Task<bool> Remove(string token, Product product)
@@ -104,8 +105,9 @@ public class ProductService : BaseService, IProductService
         });
     }
 
-    private bool ChangeProperty(string token, Action<Product> act, Product product)
+    private bool ChangeProperty(string token, Action<Product> act, int productId)
     {
+        var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
         if (product is null)
             return false;
         var requestUser = TokenHandler.GetUser(token);
