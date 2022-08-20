@@ -1,13 +1,4 @@
 ﻿{
-  "LoginCommand": {
-    "Abbreviated": "li",
-    "FullName": "login",
-    "Tip": "Login \t Login or li \t -n -p",
-    "Parameters": [
-      "-n",
-      "-p"
-    ]
-  },
   "OrderModifyingCommand": {
     "Abbreviated": "mo",
     "FullName": "modifyorder",
@@ -47,32 +38,6 @@
       "-n"
     ]
   },
-  "RegistrationCommand": {
-    "Abbreviated": "r",
-    "FullName": "registration",
-    "Tip": "Registration \t registration, r \t -n, -p ",
-    "Parameters": [
-      "-n",
-      "-p"
-    ]
-  },
-  "PersonalInformationChangingCommand": {
-    "Abbreviated": "i",
-    "FullName": "changeinfo",
-    "Tip": "Change personal information \t changeinfo or i \t -id, -n, -s, -p, -op",
-    "Parameters": [
-      "-id",
-      "-n",
-      "-s",
-      "-p",
-      "-od"
-    ]
-  },
-  "LogoutCommand": {
-    "Abbreviated": "lo",
-    "FullName": "logout",
-    "Tip": "Logout \t logout or lo \t none"
-  },
   "ProductModifyingCommand": {
     "Abbreviated": "mp",
     "FullName": "modifyproduct",
@@ -94,6 +59,66 @@
       "-d",
       "-c",
       "-p"
+    ]
+  }, 
+  "LoginCommand": {
+  "Abbreviated": "li",
+  "FullName": "login",
+  "Tip": "Login \t Login or li \t -n -p",
+  "Parameters": [
+    "-n",
+    "-p"
+  ]
+},
+  "RegistrationCommand": {
+    "Abbreviated": "r",
+    "FullName": "registration",
+    "Tip": "Registration \t registration, r \t -n, -p ",
+    "Parameters": [
+      "-n",
+      "-p"
+    ]
+  },
+  "PersonalInformationChangingCommand": {
+    "Abbreviated": "i",
+    "FullName": "modifyinfo",
+    "Tip": "Modify personal information \t changeinfo or i \t -id, -n, -s, -p, -op",
+    "Parameters": [
+      "-id",
+      "-n",
+      "-s",
+      "-p",
+      "-od"
+    ]
+  },
+  "LogoutCommand": {
+    "Abbreviated": "lo",
+    "FullName": "logout",
+    "Tip": "Logout \t logout or lo \t none"
+  },
+  "CategoryCreatingCommand": {
+    "Abbreviated": "cc",
+    "FullName": "createcategory",
+    "Tip": "Create new category  \t createcategory or cc \t -n",
+    "Parameters": [
+      "-n"
+    ]
+  },
+  "CategoryModifyingCommand": {
+    "Abbreviated": "mc",
+    "FullName": "modifycategory",
+    "Tip": "Modify category  \t modifycategory or mc \t -id, -n",
+    "Parameters": [
+      "-id",
+      "-n"
+    ]
+  },
+  "CategoryViewCommand": {
+    "Abbreviated": "vc",
+    "FullName": "viewcategory",
+    "Tip": "View categories  \t viewcategory or vc \t -n",
+    "Parameters": [
+      "-n"
     ]
   }
 }
