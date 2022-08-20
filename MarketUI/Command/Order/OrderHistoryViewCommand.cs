@@ -31,14 +31,18 @@ public class OrderHistoryViewCommand : BaseCommand
         var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
             .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, _id).Result);
 
-        var consoleTable = new Table().AddColumn("#", "Description", "Status").AddAlignment(Alignment.Center, 1)
+        var consoleTable = new Table()
+            .AddColumn("#", "Description", "Status")
+            .AddAlignment(Alignment.Center, 1)
             .AddAlignment(Alignment.Center, 2);
 
         foreach (var order in orderModels)
         {
             consoleTable.AddRow(order.Id, order.Description, order.OrderStatus);
-            var consoleTable2 = new Table(consoleTable.CurrentPadding).AddColumn("Name", "Count", "Sum")
-                .AddCustomFormat(typeof(decimal), "{0:0.00}").AddAlignment(Alignment.Center)
+            var consoleTable2 = new Table()
+                .AddColumn("Name", "Count", "Sum")
+                .AddCustomFormat(typeof(decimal), "{0:0.00}")
+                .AddAlignment(Alignment.Center)
                 .AddAlignment(Alignment.Left, 0);
             if (order.Products.Count == 0)
                 continue;
@@ -47,8 +51,8 @@ public class OrderHistoryViewCommand : BaseCommand
                 consoleTable2.AddRow(orderProductGroup.First().Name, orderProductGroup.Count(),
                     orderProductGroup.Sum(x => x.Cost));
             consoleTable.AddRowWithoutColumn(new string(' ', 15) + "Products:")
-                .AddRowWithoutColumn(consoleTable2.ToString())
-                .AddRowWithoutColumn(new string(' ', 15) + "Total: " + order.Total);
+                .AddTable(consoleTable2)
+                .AddRowWithoutColumn(new string(' ', 15) + "Total: " + order.Total, RowOrder.After);
         }
 
         return consoleTable.ToString();
