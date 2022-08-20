@@ -25,10 +25,18 @@ public class OrderModifyingCommand : BaseCommand
 
         int.TryParse(stringOrderId, out var orderId);
 
-        if (TryChangeOrderProducts(orderId) | TryChangeDescription(orderId) | TryChangeOrderStatus(orderId))
+        if (ResultOfTryChanging(orderId))
             return $"Order with id {orderId} updated";
 
         return "Something wrong";
+    }
+
+    private bool ResultOfTryChanging(int orderId)
+    {
+        var firstFlag = TryChangeOrderProducts(orderId);
+        var secondFlag = TryChangeDescription(orderId);
+        var thirdFlag = TryChangeOrderStatus(orderId);
+        return firstFlag || secondFlag || thirdFlag;
     }
 
     private bool TryChangeOrderStatus(int orderId)

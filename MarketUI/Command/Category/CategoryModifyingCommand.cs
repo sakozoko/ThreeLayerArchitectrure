@@ -8,7 +8,7 @@ namespace MarketUI.Command.Category;
 public class CategoryModifyingCommand : BaseCommand
 {
     private readonly IServiceContainer _serviceContainer;
-    private Dictionary<string, string> _dict;
+
 
     public CategoryModifyingCommand(IUserInterfaceMapperHandler mapperHandler, IServiceContainer serviceContainer,
         ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
@@ -18,11 +18,11 @@ public class CategoryModifyingCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
-        if (!TryParseArgs(args, out _dict)) GetHelp();
+        if (!TryParseArgs(args, out var dict)) GetHelp();
 
-        if (_dict.TryGetValue(Parameters[0], out var strCategoryId) &&
+        if (dict.TryGetValue(Parameters[0], out var strCategoryId) &&
             int.TryParse(strCategoryId, out var categoryId) &&
-            _dict.TryGetValue(Parameters[1], out var newName))
+            dict.TryGetValue(Parameters[1], out var newName))
         {
             var result = _serviceContainer.CategoryService.ChangeName(ConsoleUserInterface.AuthenticationData.Token,
                 newName, categoryId).Result;
