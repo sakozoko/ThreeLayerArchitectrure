@@ -21,6 +21,7 @@ public class LoginCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
+        if (ConsoleUserInterface.AuthenticationData is not null) return GetHelp();
         var authenticateRequest = new AuthenticateRequestModel();
         if (!TryCreateDictionary(args) || !TryParseAndSaveName(authenticateRequest) ||
             !TryParseAndSavePsw(authenticateRequest))
