@@ -60,16 +60,16 @@
       "-c",
       "-p"
     ]
-  }, 
+  },
   "LoginCommand": {
-  "Abbreviated": "li",
-  "FullName": "login",
-  "Tip": "Login \t Login or li \t -n -p",
-  "Parameters": [
-    "-n",
-    "-p"
-  ]
-},
+    "Abbreviated": "li",
+    "FullName": "login",
+    "Tip": "Login \t Login or li \t -n -p",
+    "Parameters": [
+      "-n",
+      "-p"
+    ]
+  },
   "RegistrationCommand": {
     "Abbreviated": "r",
     "FullName": "registration",

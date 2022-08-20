@@ -43,15 +43,6 @@ public class CategoryService : BaseService, ICategoryService
         });
     }
 
-    private bool ValidateChangeNameOrCreate(User requestUser, string name)
-    {
-        ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-        if (string.IsNullOrWhiteSpace(name))
-            return false;
-        var nameIsUnique = UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name) == null;
-        return nameIsUnique;
-    }
-
     public Task<IEnumerable<Category>> GetAll(string token)
     {
         return Task<IEnumerable<Category>>.Factory.StartNew(() =>
@@ -105,5 +96,14 @@ public class CategoryService : BaseService, ICategoryService
 
             return UnitOfWork.CategoryRepository.Delete(Mapper.Map<CategoryEntity>(category));
         });
+    }
+
+    private bool ValidateChangeNameOrCreate(User requestUser, string name)
+    {
+        ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
+        var nameIsUnique = UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name) == null;
+        return nameIsUnique;
     }
 }

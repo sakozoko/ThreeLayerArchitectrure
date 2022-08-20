@@ -8,6 +8,7 @@ public class CategoryCreatingCommand : BaseCommand
 {
     private readonly IServiceContainer _serviceContainer;
     private string _name;
+
     public CategoryCreatingCommand(IUserInterfaceMapperHandler mapperHandler, IServiceContainer serviceContainer,
         ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
     {

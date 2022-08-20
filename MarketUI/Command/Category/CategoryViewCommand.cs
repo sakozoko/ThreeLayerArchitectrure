@@ -11,7 +11,9 @@ namespace MarketUI.Command.Category;
 public class CategoryViewCommand : BaseCommand
 {
     private readonly IServiceContainer _serviceContainer;
-    public CategoryViewCommand(IUserInterfaceMapperHandler mapperHandler, IServiceContainer serviceContainer, ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
+
+    public CategoryViewCommand(IUserInterfaceMapperHandler mapperHandler, IServiceContainer serviceContainer,
+        ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
     {
         _serviceContainer = serviceContainer;
     }
@@ -21,12 +23,12 @@ public class CategoryViewCommand : BaseCommand
         var result = Mapper.Map<IEnumerable<CategoryModel>>(_serviceContainer.CategoryService
             .GetAll(ConsoleUserInterface.AuthenticationData.Token).Result).ToArray();
         if (!result.Any()) return "None";
-        
+
         var table = new Table()
             .AddColumn("#", "Name")
             .AddAlignment(Alignment.Center);
-        if(TryParseArgs(args,out var dict) && dict.TryGetValue(Parameters[0],out var name))
-            foreach (var category in result.Where(x=>x.Name.Contains(name)))
+        if (TryParseArgs(args, out var dict) && dict.TryGetValue(Parameters[0], out var name))
+            foreach (var category in result.Where(x => x.Name.Contains(name)))
                 table.AddRow(category.Id, category.Name);
         else
             foreach (var category in result)
