@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entiti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{D2692E3D-0920-4849-8A2A-24CB5FE5E7EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTable", "ConsoleTable\ConsoleTable.csproj", "{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,12 +45,6 @@ Global
 		{D2692E3D-0920-4849-8A2A-24CB5FE5E7EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D2692E3D-0920-4849-8A2A-24CB5FE5E7EE}.test|Any CPU.ActiveCfg = test|Any CPU
 		{D2692E3D-0920-4849-8A2A-24CB5FE5E7EE}.test|Any CPU.Build.0 = test|Any CPU
-		{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}.test|Any CPU.ActiveCfg = Debug|Any CPU
-		{97E64A53-1F0A-4AB9-AB1A-1651F06A2920}.test|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
