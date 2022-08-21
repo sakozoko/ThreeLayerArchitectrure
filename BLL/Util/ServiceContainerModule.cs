@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using BLL.Helpers.Token;
+using BLL.Logger;
 using BLL.Util.Interface;
-using BLL.Util.Logger;
 using DAL.Util;
 
 namespace BLL.Util;

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using AutoMapper;
+using BLL.Logger;
 using BLL.Objects;
 using BLL.Util.Interface;
-using BLL.Util.Logger;
 using DAL;
 
 namespace BLL.Helpers.Token;

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using BLL.Helpers.Token;
+using BLL.Logger;
 using BLL.Services;
 using BLL.Services.Interfaces;
 using BLL.Util.Interface;
-using BLL.Util.Logger;
 using DAL;
 
 namespace BLL;

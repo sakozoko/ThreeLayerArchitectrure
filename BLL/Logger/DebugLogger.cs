@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text;
 
-namespace BLL.Util.Logger;
+namespace BLL.Logger;
 
 public class DebugLogger : ILogger
 {
