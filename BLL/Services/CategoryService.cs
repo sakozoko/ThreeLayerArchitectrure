@@ -23,9 +23,9 @@ public class CategoryService : BaseService, ICategoryService
             var requestUser = TokenHandler.GetUser(token);
             if (!ValidateChangeNameOrCreate(requestUser, name)) return -1;
             var category = new Category { Name = name };
-            var id = UnitOfWork.CategoryRepository.Add(Mapper.Map<CategoryEntity>(category));
-            Logger.Log($"Admin {requestUser.Name} created category with id {id}");
-            return id;
+            var categoryId = UnitOfWork.CategoryRepository.Add(Mapper.Map<CategoryEntity>(category));
+            Logger.Log($"Admin {requestUser.Name} created category with id {categoryId}");
+            return categoryId;
         });
     }
 
@@ -39,6 +39,7 @@ public class CategoryService : BaseService, ICategoryService
             if (category is null) return false;
             category.Name = newName;
             UnitOfWork.CategoryRepository.Update(Mapper.Map<CategoryEntity>(category));
+            Logger.Log($"Admin {requestUser.Name} changed name category with id {categoryId}");
             return true;
         });
     }
@@ -61,9 +62,7 @@ public class CategoryService : BaseService, ICategoryService
         {
             var requestUser = TokenHandler.GetUser(token);
 
-            ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-
-            Logger.Log($"Admin {requestUser.Name} reviewed category by name {name}");
+            ThrowAuthenticationExceptionIfUserIsNull(requestUser);
 
             return Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetAll().FirstOrDefault(x => x.Name == name));
         });
