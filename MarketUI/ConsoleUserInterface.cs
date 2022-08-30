@@ -26,11 +26,15 @@ public class ConsoleUserInterface
             var result = _factory.GetCommand(args[0]).Execute(args);
             WriteMessage(result);
         }
+        catch (AuthenticationException ae)
+        {
+            WriteException(ae);
+        }
         catch (AggregateException ae)
         {
-            if (ae.InnerException is AuthenticationException e)
-                WriteException(e);
+            WriteException(ae.InnerException);
         }
+
     }
 
     private static void WriteMessage(string msg)
