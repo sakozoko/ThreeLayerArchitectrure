@@ -23,15 +23,7 @@ public static class Program
 
         while (k != "exit")
         {
-            try
-            {
-                _consoleUserInterface.ExecuteCommand(k);
-            }
-            catch (AggregateException)
-            {
-                Console.WriteLine("Exception!!!");
-            }
-
+            _consoleUserInterface.ExecuteCommand(k);
             k = Console.ReadLine();
         }
     }
