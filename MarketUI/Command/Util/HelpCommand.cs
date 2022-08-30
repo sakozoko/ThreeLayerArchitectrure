@@ -19,17 +19,16 @@ public class HelpCommand : ICommand
     {
         var commands = _container.ResolveAll<ICommand>();
         var consoleTable = new Table()
-            .AddColumn("Name","To invoke", "Args")
+            .AddColumn("Name", "To invoke", "Args")
             .AddAlignment(Alignment.Center);
         foreach (var command in commands)
-        {
             if (command is BaseCommand baseCommand)
             {
                 var str = baseCommand.GetHelp();
                 consoleTable.AddRow(str.Split("\t").ToArray<object>());
             }
-        }
-        consoleTable.AddRow("Help","h or help","none");
+
+        consoleTable.AddRow("Help", "h or help", "none");
         return consoleTable.ToString();
     }
 }

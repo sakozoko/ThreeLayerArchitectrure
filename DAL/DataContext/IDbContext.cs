@@ -1,5 +1,4 @@
-﻿
-namespace DAL.DataContext;
+﻿namespace DAL.DataContext;
 
 public interface IDbContext
 {

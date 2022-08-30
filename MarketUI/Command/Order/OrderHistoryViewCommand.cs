@@ -36,10 +36,10 @@ public class OrderHistoryViewCommand : BaseCommand
             .AddAlignment(Alignment.Center, 1)
             .AddAlignment(Alignment.Center, 2);
 
-        SeedRows(consoleTable, orderModels.Where(x=>x.Confirmed));
+        SeedRows(consoleTable, orderModels.Where(x => x.Confirmed));
 
         consoleTable.AddRowWithoutColumn("Unconfirmed orders:");
-        SeedRows(consoleTable, orderModels.Where(x=>!x.Confirmed));
+        SeedRows(consoleTable, orderModels.Where(x => !x.Confirmed));
 
         return consoleTable.ToString();
     }

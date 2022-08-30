@@ -9,14 +9,15 @@ namespace BLL.Test.Helpers;
 
 public class BaseServiceTester : BaseService
 {
+    public BaseServiceTester(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(
+        unitOfWork, tokenHandler, logger, mapper)
+    {
+    }
+
     public IUnitOfWork UnitOfWorkTest => UnitOfWork;
     public ITokenHandler TokenHandlerTest => TokenHandler;
     public ILogger LoggerTest => Logger;
     public IMapper MapperTest => Mapper;
-    
-    public BaseServiceTester(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) : base(unitOfWork, tokenHandler, logger, mapper)
-    {
-    }
 
     public void LogAndThrowAuthenticationExceptionTest(string msg)
     {
@@ -37,5 +38,4 @@ public class BaseServiceTester : BaseService
     {
         ThrowAuthenticationExceptionIfUserIsNotAdmin(user);
     }
-    
 }

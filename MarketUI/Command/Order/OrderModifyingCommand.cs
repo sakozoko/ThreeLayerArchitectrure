@@ -88,7 +88,7 @@ public class OrderModifyingCommand : BaseCommand
         if (_dict.ContainsKey(Parameters[5]))
             return _serviceContainer.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, true,
                 orderId).Result;
-        if(_dict.ContainsKey(Parameters[6]))
+        if (_dict.ContainsKey(Parameters[6]))
             return _serviceContainer.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, false,
                 orderId).Result;
         return false;

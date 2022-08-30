@@ -34,7 +34,6 @@ public class ConsoleUserInterface
         {
             WriteException(ae.InnerException);
         }
-
     }
 
     private static void WriteMessage(string msg)

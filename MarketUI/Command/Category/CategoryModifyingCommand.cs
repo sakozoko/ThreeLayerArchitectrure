@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using BLL;
+﻿using BLL;
 using MarketUI.Command.Base;
 using MarketUI.Util.Interface;
 

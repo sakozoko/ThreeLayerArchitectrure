@@ -124,7 +124,8 @@ public class OrderService : BaseService, IOrderService
         return Task<bool>.Factory.StartNew(() =>
         {
             var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
-            return order?.OrderStatus == OrderStatus.New && ChangeProperty(token, orderId, x => x.Confirmed = confirmed);
+            return order?.OrderStatus == OrderStatus.New &&
+                   ChangeProperty(token, orderId, x => x.Confirmed = confirmed);
         });
     }
 

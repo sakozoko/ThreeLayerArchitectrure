@@ -87,7 +87,7 @@ public class CategoryService : BaseService, ICategoryService
             var requestUser = TokenHandler.GetUser(token);
 
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-            
+
             var targetCategory = UnitOfWork.CategoryRepository.GetById(id);
             if (targetCategory is null) return false;
             Logger.Log($"Admin {requestUser.Name} removed category with id {targetCategory.Id}");

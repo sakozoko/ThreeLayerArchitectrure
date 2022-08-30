@@ -23,7 +23,7 @@ public class ProductModifyingCommand : BaseCommand
         if (!TrySetDictionary(args)) GetHelp();
         _dict.TryGetValue(Parameters[0], out var strProductId);
         int.TryParse(strProductId, out var productId);
-        return ResultOfTryChange(productId)? "Product information updated":"Something is wrong";
+        return ResultOfTryChange(productId) ? "Product information updated" : "Something is wrong";
     }
 
     private bool ResultOfTryChange(int productId)
@@ -43,7 +43,8 @@ public class ProductModifyingCommand : BaseCommand
     private bool TryChangeName(int productId)
     {
         if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrWhiteSpace(newName))
-            return _serviceContainer.ProductService.ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName,productId).Result;
+            return _serviceContainer.ProductService
+                .ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName, productId).Result;
         return false;
     }
 
@@ -51,7 +52,7 @@ public class ProductModifyingCommand : BaseCommand
     {
         if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrWhiteSpace(newDesc))
             return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
-                newDesc,productId).Result;
+                newDesc, productId).Result;
         return false;
     }
 
@@ -60,10 +61,11 @@ public class ProductModifyingCommand : BaseCommand
         if (_dict.TryGetValue(Parameters[3], out var newCategory) && !string.IsNullOrWhiteSpace(newCategory))
         {
             var targetCategoryId =
-                Mapper.Map<CategoryModel>(_serviceContainer.CategoryService.GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)
-                    .Result)?.Id??0;
+                Mapper.Map<CategoryModel>(_serviceContainer.CategoryService
+                    .GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)
+                    .Result)?.Id ?? 0;
             return _serviceContainer.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token,
-                targetCategoryId,productId).Result;
+                targetCategoryId, productId).Result;
         }
 
         return false;
@@ -72,7 +74,8 @@ public class ProductModifyingCommand : BaseCommand
     private bool TryChangePrice(int productId)
     {
         if (_dict.TryGetValue(Parameters[4], out var newStrPrice) && decimal.TryParse(newStrPrice, out var newPrice))
-            return _serviceContainer.ProductService.ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice,productId).Result;
+            return _serviceContainer.ProductService
+                .ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice, productId).Result;
         return false;
     }
 }

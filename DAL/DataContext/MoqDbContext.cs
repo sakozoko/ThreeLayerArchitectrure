@@ -5,16 +5,14 @@ namespace DAL.DataContext;
 
 public class MoqDbContext
 {
-    public IDbContext MoqDb { get; }
-
     public MoqDbContext()
     {
-        var users = new List<UserEntity>()
+        var users = new List<UserEntity>
         {
             new() { Id = 1, Name = "Admin", IsAdmin = true, Password = "123123" },
             new() { Id = 2, Name = "Alex", Surname = "John", IsAdmin = false, Password = "332211" }
         };
-        var categories = new List<CategoryEntity>()
+        var categories = new List<CategoryEntity>
         {
             new() { Id = 1, Name = "First" },
             new() { Id = 2, Name = "Second" },
@@ -22,7 +20,7 @@ public class MoqDbContext
             new() { Id = 4, Name = "Fourth" },
             new() { Id = 5, Name = "Fifth" }
         };
-        var orders = new List<OrderEntity>()
+        var orders = new List<OrderEntity>
         {
             new()
             {
@@ -55,12 +53,15 @@ public class MoqDbContext
                 OrderStatus = "Received", Confirmed = true
             }
         };
-        var products = new List<ProductEntity>()
+        var products = new List<ProductEntity>
         {
             new() { Id = 1, Name = "First", Description = "First description", Cost = 12, Category = categories[0] },
             new() { Id = 2, Name = "Second", Description = "Second description", Cost = 354, Category = categories[2] },
             new() { Id = 3, Name = "Third", Description = "Third description", Cost = 2541, Category = categories[3] },
-            new() { Id = 4, Name = "Fourth", Description = "Fourth description", Cost = 1231, Category = categories[0] },
+            new()
+            {
+                Id = 4, Name = "Fourth", Description = "Fourth description", Cost = 1231, Category = categories[0]
+            },
             new() { Id = 5, Name = "Fifth", Description = "Fifth description", Cost = 511, Category = categories[4] }
         };
         MoqDb = Mock.Of<IDbContext>(x =>
@@ -70,4 +71,6 @@ public class MoqDbContext
             x.Set<CategoryEntity>() == categories &&
             x.Save() == Task.CompletedTask);
     }
+
+    public IDbContext MoqDb { get; }
 }
