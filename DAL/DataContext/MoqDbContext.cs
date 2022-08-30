@@ -27,32 +27,32 @@ public class MoqDbContext
             new()
             {
                 Id = 1, Description = "Vishneva st. 34", Owner = users[1], Products = new List<ProductEntity>(),
-                OrderStatus = "New"
+                OrderStatus = "New", Confirmed = true
             },
             new()
             {
                 Id = 2, Description = "Vishneva st. 34", Owner = users[1], Products = new List<ProductEntity>(),
-                OrderStatus = "CanceledByTheAdministrator"
+                OrderStatus = "CanceledByTheAdministrator", Confirmed = true
             },
             new()
             {
                 Id = 3, Description = "Vishneva st. 34", Owner = users[1], Products = new List<ProductEntity>(),
-                OrderStatus = "CanceledByTheAdministrator"
+                OrderStatus = "CanceledByTheAdministrator", Confirmed = true
             },
             new()
             {
                 Id = 4, Description = "Vishneva st. 34", Owner = users[1], Products = new List<ProductEntity>(),
-                OrderStatus = "CanceledByTheAdministrator"
+                OrderStatus = "CanceledByTheAdministrator", Confirmed = true
             },
             new()
             {
                 Id = 5, Description = "Vishneva st. 34", Owner = users[1], Products = new List<ProductEntity>(),
-                OrderStatus = "Sent"
+                OrderStatus = "Sent", Confirmed = true
             },
             new()
             {
                 Id = 6, Description = "Vishneva st. 34", Owner = users[1], Products = new List<ProductEntity>(),
-                OrderStatus = "Received"
+                OrderStatus = "Received", Confirmed = true
             }
         };
         var products = new List<ProductEntity>()

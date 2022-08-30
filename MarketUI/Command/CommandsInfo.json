@@ -2,13 +2,15 @@
   "OrderModifyingCommand": {
     "Abbreviated": "mo",
     "FullName": "modifyorder",
-    "Tip": "Modyfing order \t mo or modifyorder \t -id, -p,  -r, -d, -s",
+    "Tip": "Modyfing order \t mo or modifyorder \t -id, -p,  -r, -d, -s, -c, -unc",
     "Parameters": [
       "-id",
       "-p",
       "-r",
       "-d",
-      "-s"
+      "-s",
+      "-c",
+      "-unc"
     ]
   },
   "OrderCreatingCommand": {

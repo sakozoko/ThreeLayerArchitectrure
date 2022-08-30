@@ -29,13 +29,23 @@ public class OrderHistoryViewCommand : BaseCommand
         }
 
         var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
-            .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, _id).Result);
+            .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, _id).Result).ToArray();
 
         var consoleTable = new Table()
             .AddColumn("#", "Description", "Status")
             .AddAlignment(Alignment.Center, 1)
             .AddAlignment(Alignment.Center, 2);
 
+        SeedRows(consoleTable, orderModels.Where(x=>x.Confirmed));
+
+        consoleTable.AddRowWithoutColumn("Unconfirmed orders:");
+        SeedRows(consoleTable, orderModels.Where(x=>!x.Confirmed));
+
+        return consoleTable.ToString();
+    }
+
+    private static void SeedRows(Table consoleTable, IEnumerable<OrderModel> orderModels)
+    {
         foreach (var order in orderModels)
         {
             consoleTable.AddRow(order.Id, order.Description, order.OrderStatus);
@@ -54,7 +64,5 @@ public class OrderHistoryViewCommand : BaseCommand
                 .AddTable(consoleTable2)
                 .AddRowWithoutColumn(new string(' ', 15) + "Total: " + order.Total, RowOrder.After);
         }
-
-        return consoleTable.ToString();
     }
 }

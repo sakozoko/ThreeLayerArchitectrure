@@ -119,6 +119,15 @@ public class OrderService : BaseService, IOrderService
             !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, orderId, x => x.Description = desc));
     }
 
+    public Task<bool> ChangeConfirmed(string token, bool confirmed, int orderId)
+    {
+        return Task<bool>.Factory.StartNew(() =>
+        {
+            var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
+            return order?.OrderStatus == OrderStatus.New && ChangeProperty(token, orderId, x => x.Confirmed = confirmed);
+        });
+    }
+
     public Task<bool> ChangeOrderStatus(string token, string status, int orderId)
     {
         return Task<bool>.Factory.StartNew(() =>

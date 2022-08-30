@@ -36,7 +36,8 @@ public class OrderModifyingCommand : BaseCommand
         var firstFlag = TryChangeOrderProducts(orderId);
         var secondFlag = TryChangeDescription(orderId);
         var thirdFlag = TryChangeOrderStatus(orderId);
-        return firstFlag || secondFlag || thirdFlag;
+        var fourthFlag = TryChangeConfirmed(orderId);
+        return firstFlag || secondFlag || thirdFlag || fourthFlag;
     }
 
     private bool TryChangeOrderStatus(int orderId)
@@ -80,5 +81,16 @@ public class OrderModifyingCommand : BaseCommand
     private bool TrySetDictionary(string[] args)
     {
         return TryParseArgs(args, out _dict);
+    }
+
+    private bool TryChangeConfirmed(int orderId)
+    {
+        if (_dict.ContainsKey(Parameters[5]))
+            return _serviceContainer.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, true,
+                orderId).Result;
+        if(_dict.ContainsKey(Parameters[6]))
+            return _serviceContainer.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, false,
+                orderId).Result;
+        return false;
     }
 }
