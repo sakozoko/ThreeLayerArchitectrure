@@ -82,18 +82,16 @@ public class CategoryService : BaseService, ICategoryService
 
     public Task<bool> Remove(string token, int id)
     {
-        return Remove(token, Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(id)));
-    }
-
-    public Task<bool> Remove(string token, Category category)
-    {
         return Task<bool>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
 
             ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-
-            return UnitOfWork.CategoryRepository.Delete(Mapper.Map<CategoryEntity>(category));
+            
+            var targetCategory = UnitOfWork.CategoryRepository.GetById(id);
+            if (targetCategory is null) return false;
+            Logger.Log($"Admin {requestUser.Name} removed category with id {targetCategory.Id}");
+            return UnitOfWork.CategoryRepository.Delete(targetCategory);
         });
     }
 

@@ -11,5 +11,4 @@ public interface ICategoryService
     Task<bool> ChangeName(string token, string newName, int categoryId);
     Task<Category> GetById(string token, int id);
     Task<bool> Remove(string token, int id);
-    Task<bool> Remove(string token, Category category);
 }
