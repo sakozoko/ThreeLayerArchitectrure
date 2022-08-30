@@ -1,5 +1,6 @@
-﻿using System.Text;
+﻿using System.Linq;
 using Autofac;
+using ConsoleTable;
 using MarketUI.Command.Base;
 using MarketUI.Extension;
 
@@ -17,15 +18,18 @@ public class HelpCommand : ICommand
     public string Execute(string[] args)
     {
         var commands = _container.ResolveAll<ICommand>();
-        var stringBuilder = new StringBuilder();
-        stringBuilder.Append("Name \t To invoke \t Args");
+        var consoleTable = new Table()
+            .AddColumn("Name","To invoke", "Args")
+            .AddAlignment(Alignment.Center);
         foreach (var command in commands)
         {
-            var str = (command as BaseCommand)?.GetHelp();
-            stringBuilder.Append("\n" + str);
+            if (command is BaseCommand baseCommand)
+            {
+                var str = baseCommand.GetHelp();
+                consoleTable.AddRow(str.Split("\t").ToArray<object>());
+            }
         }
-
-        stringBuilder.Append("Help \t h or help \t none");
-        return stringBuilder.ToString();
+        consoleTable.AddRow("Help","h or help","none");
+        return consoleTable.ToString();
     }
 }
