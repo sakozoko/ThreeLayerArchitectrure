@@ -11,7 +11,7 @@ public class LogoutCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
-        if (ConsoleUserInterface.AuthenticationData is null) return "Error";
+        if (ConsoleUserInterface.AuthenticationData is null) return "You cannot log out until you are logged in.";
         var str = $"{ConsoleUserInterface.AuthenticationData.Name}, bye bye!";
         ConsoleUserInterface.AuthenticationData = null;
         return str;

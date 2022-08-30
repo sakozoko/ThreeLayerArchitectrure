@@ -21,6 +21,8 @@ public class RegistrationCommand : BaseCommand
 
     public override string Execute(string[] args)
     {
+        if (ConsoleUserInterface.AuthenticationData is not null) 
+            return "You cannot register when you are already logged in";
         var request = new AuthenticateRequestModel();
         if (!TryCreateDictionary(args) || !TryParseAndSaveName(request) ||
             (!TryParseAndSavePsw(request) && !TryParseAndSaveSurname(request)))
