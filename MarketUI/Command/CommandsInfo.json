@@ -73,7 +73,7 @@
   "RegistrationCommand": {
     "Abbreviated": "r",
     "FullName": "registration",
-    "Tip": "Registration \t registration, r \t -n, -p ",
+    "Tip": "Registration \t registration, r \t -n, -s, -p",
     "Parameters": [
       "-n",
       "-s",
