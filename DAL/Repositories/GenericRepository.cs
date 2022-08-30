@@ -45,13 +45,13 @@ internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : B
     {
         lock (Obj)
         {
-            return _dbContext.Set<T>().Remove(entity);
+            return _dbContext.Set<T>().Remove(GetById(entity.Id));
         }
     }
 
     public void Update(T entity)
     {
-        var value = _dbContext.Set<T>().FirstOrDefault(x => x.Id == entity.Id);
+        var value = GetById(entity.Id);
         if (value is null) throw new ArgumentException(nameof(entity));
 
         lock (Obj)
