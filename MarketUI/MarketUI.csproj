@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ConsoleTable" Version="1.0.1" />
+        <PackageReference Include="ConsoleTable" Version="1.0.1.1" />
         <PackageReference Include="Json.Net" Version="1.0.33" />
     </ItemGroup>
 
