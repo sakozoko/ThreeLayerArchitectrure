@@ -76,6 +76,7 @@
     "Tip": "Registration \t registration, r \t -n, -p ",
     "Parameters": [
       "-n",
+      "-s",
       "-p"
     ]
   },
@@ -88,7 +89,7 @@
       "-n",
       "-s",
       "-p",
-      "-od"
+      "-op"
     ]
   },
   "LogoutCommand": {
