@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using BLL.Helpers.Token;
 using BLL.Logger;
@@ -17,8 +18,7 @@ namespace BLL.Test;
 
 public class CategoryServiceTest
 {
-    
-    
+
     #region CreateMethodTest
     
     [Theory]
@@ -26,7 +26,7 @@ public class CategoryServiceTest
     [InlineData("",false)]
     [InlineData(" ",false)]
     [InlineData("Alcohol",true)]
-    public void CreateCategoryAndLoggingWhenUserIsAdminTest(string categoryName, bool expected)
+    public void CreateCategoryAndLoggingCorrectlyWork(string categoryName, bool expected)
     {
         const int resultCategoryId = 1;
         
@@ -82,22 +82,7 @@ public class CategoryServiceTest
     [Fact]
     public void CreateCategoryAndLoggingTestUserIsNullReturnedException()
     {
-        const string categoryName = "name";
-        
-        var moqLogger = new Mock<ILogger>();
-        moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
-        moqLogger.Setup(x => x.Log(It.IsAny<Exception>())).Verifiable();
-        
-        var tokenHandler = Mock.Of<ITokenHandler>();
-        var unitOfWork = Mock.Of<IUnitOfWork>();
-        var mapper = Mock.Of<IMapper>();
-        var categoryService = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
-
-        var actual = categoryService.Create("", categoryName);
-        
-        Assert.ThrowsAsync<AuthenticationException>(() => actual).Wait();
-        moqLogger.Verify(x=>x.Log(It.IsAny<string>()),Times.Never);
-        moqLogger.Verify(x=>x.Log(It.IsAny<Exception>()),Times.Once);
+        MethodsTestReturnedException(null, categoryService => categoryService.Create("",""));
     }
 
     [Fact]
@@ -148,8 +133,7 @@ public class CategoryServiceTest
     {
         const string token = "token";
         var storedCategoryEntity = new CategoryEntity{Id=1,Name = oldName};
-        var mappedCategory = new Category() { Id = 1, Name=newName };
-        
+
         var tokenHandler = Mock.Of<ITokenHandler>(x=>x.GetUser(token)==new User(){IsAdmin = true});
         var repository = Mock.Of<IRepository<CategoryEntity>>(x =>
             x.GetById(storedCategoryEntity.Id) == storedCategoryEntity &&
@@ -172,39 +156,13 @@ public class CategoryServiceTest
     [Fact]
     public void ChangeNameAndLoggingTestWhenUserIsNotAdminReturnedException()
     {
-        const string token = "token";
-        var tokenHandler = Mock.Of<ITokenHandler>(x=>x.GetUser(token)==new User(){IsAdmin = false});
-        var repository = Mock.Of<IRepository<CategoryEntity>>();
-        var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
-        var mapper = Mock.Of<IMapper>();
-        var moqLogger = new Mock<ILogger>();
-        moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
-        moqLogger.Setup(x => x.Log(It.IsAny<Exception>())).Verifiable();
-        
-        var actual = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper).ChangeName(token, "NewName", 1);
-
-        Assert.ThrowsAsync<AuthenticationException>(()=>actual).Wait();
-        moqLogger.Verify(x=>x.Log(It.IsAny<string >()), Times.Never());
-        moqLogger.Verify(x=>x.Log(It.IsAny<Exception>()), Times.Once());
+        MethodsTestReturnedException(new User{IsAdmin = false},categoryService=> categoryService.ChangeName("", "New Name",1));
     }
     
     [Fact]
     public void ChangeNameAndLoggingTestWhenUserIsNullReturnedException()
     {
-        const string token = "token";
-        var tokenHandler = Mock.Of<ITokenHandler>(x=>x.GetUser(token)==null);
-        var repository = Mock.Of<IRepository<CategoryEntity>>();
-        var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
-        var mapper = Mock.Of<IMapper>();
-        var moqLogger = new Mock<ILogger>();
-        moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
-        moqLogger.Setup(x => x.Log(It.IsAny<Exception>())).Verifiable();
-        
-        var actual = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper).ChangeName(token, "NewName", 1);
-
-        Assert.ThrowsAsync<AuthenticationException>(()=>actual).Wait();
-        moqLogger.Verify(x=>x.Log(It.IsAny<string >()), Times.Never());
-        moqLogger.Verify(x=>x.Log(It.IsAny<Exception>()), Times.Once());
+        MethodsTestReturnedException(null, categoryService => categoryService.ChangeName("","New Name",1));
     }
     #endregion
 
@@ -268,18 +226,7 @@ public class CategoryServiceTest
     [Fact]
     public void GetAllTestUserIsNullReturnedException()
     {
-
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) ==null);
-        var unitOfWork = Mock.Of<IUnitOfWork>();
-        var logger = Mock.Of<ILogger>();
-        var mapper = Mock.Of<IMapper>();
-
-        var service = new CategoryService(unitOfWork, tokenHandler, logger, mapper);
-
-        var actual = service.GetAll("");
-
-        Assert.ThrowsAsync<AuthenticationException>(() => actual).Wait();
-
+        MethodsTestReturnedException(null, categoryService => categoryService.GetAll(""));
     }
 
     #endregion
@@ -287,7 +234,7 @@ public class CategoryServiceTest
     #region GetByNameMethodTest
 
     [Fact]
-    public void GetByNameMethodTest()
+    public void GetByNameTestReturnedCorrectValue()
     {
         var categoryEntities = new List<CategoryEntity>
         {
@@ -329,6 +276,144 @@ public class CategoryServiceTest
         Assert.Equal(expected.Id,actual.Id);
 
     }
+    [Fact]
+    public void GetByNameTestUserIsNullReturnedException()
+    {
+        MethodsTestReturnedException(null, categoryService => categoryService.GetByName("",""));
+    }
 
     #endregion
+
+    #region GetByIdMethodTest
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public void GetByIdTestReturnedCorrectValue(int expectedId)
+    {
+        var categoryEntities = new List<CategoryEntity>
+        {
+            new()
+            {
+                Id = 1,
+                Name = "First"
+            },
+            new()
+            {
+                Id = 2,
+                Name = "Second"
+            },
+            new()
+            {
+                Id = 3,
+                Name = "Third"
+            },
+            new()
+            {
+                Id = 4,
+                Name = "Fourth"
+            },
+            new()
+            {
+                Id = 5,
+                Name = "Fifth"
+            },
+            new()
+            {
+                Id = 6,
+                Name = "Sixth"
+            }
+        };
+
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User());
+        var repository = Mock.Of<IRepository<CategoryEntity>>(x => x.GetById(expectedId) == categoryEntities[expectedId-1]);
+        var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
+        var logger = Mock.Of<ILogger>();
+        var mapper = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<CategoryEntity,Category>();
+        }).CreateMapper();
+
+        var service = new CategoryService(unitOfWork, tokenHandler, logger, mapper);
+
+        var actual = service.GetById("", expectedId).Result;
+        var expected = mapper.Map<Category>(categoryEntities[expectedId - 1]);
+        
+        Assert.Equal(expected.Id,actual.Id);
+        Assert.Equal(expected.Name,actual.Name);
+    }
+    
+    [Fact]
+    public void GetByIdTestUserIsNullReturnedException()
+    {
+        MethodsTestReturnedException(null, categoryService => categoryService.GetById("",0));
+    }
+
+    #endregion
+
+    #region RemoveMethodTest
+
+    [Theory]
+    [InlineData(0,0,true)]
+    [InlineData(1,0,false)]
+    [InlineData(0,1,false)]
+    [InlineData(0,-1,false)]
+    [InlineData(1,1,true)]
+    public void RemoveTestCorrectlyWork(int targetId, int removedId, bool expected)
+    {
+        var categoryEntity = new CategoryEntity{ Id = targetId };
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User(){IsAdmin = true});
+        var repository = Mock.Of<IRepository<CategoryEntity>>(x => 
+            x.Delete(It.Is<CategoryEntity>(c=>c.Id==targetId)) == true &&
+            x.GetById(targetId)==categoryEntity);
+        var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
+        var moqLogger = new Mock<ILogger>();
+        moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
+        var mapper = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<CategoryEntity,Category>();
+        }).CreateMapper();
+
+        var service = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
+
+        var actual = service.Remove("", removedId).Result;
+        var times = expected ? Times.Once() : Times.Never();
+        
+        Assert.Equal(expected, actual);
+        moqLogger.Verify(x=>x.Log(It.IsAny<string>()), times);
+    }
+
+    [Fact]
+    public void RemoveTestUserIsNotAdminReturnedException()
+    {
+        MethodsTestReturnedException(new User{IsAdmin = false},categoryService=>categoryService.Remove("",0));
+    }
+
+    [Fact]
+    public void RemoveTestUserIsNullReturnedException()
+    {
+        MethodsTestReturnedException(null, categoryService => categoryService.Remove("",0));
+    }
+
+    #endregion
+    
+    private static void MethodsTestReturnedException(User tokenHandlerReturnedValue, Func<CategoryService, Task> testMethod)
+    {
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == tokenHandlerReturnedValue);
+        var unitOfWork = Mock.Of<IUnitOfWork>();
+        var mapper = Mock.Of<IMapper>();
+        var moqLogger = new Mock<ILogger>();
+        moqLogger.Setup(x => x.Log(It.IsAny<Exception>())).Verifiable();
+        moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
+
+        var service = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
+
+        Assert.ThrowsAsync<AuthenticationException>(() => testMethod.Invoke(service)).Wait();
+        moqLogger.Verify(x=>x.Log(It.IsAny<Exception>()),Times.Once);
+        moqLogger.Verify(x=>x.Log(It.IsAny<string>()),Times.Never);
+    }
 }
