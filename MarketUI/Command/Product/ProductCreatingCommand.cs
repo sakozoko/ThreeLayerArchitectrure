@@ -7,13 +7,13 @@ namespace MarketUI.Command.Product;
 
 public class ProductCreatingCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;
 
-    public ProductCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public ProductCreatingCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
@@ -23,7 +23,7 @@ public class ProductCreatingCommand : BaseCommand
             ContainsCategoryId() && int.TryParse(_dict[Parameters[2]], out var categoryId) &&
             ContainsCost() && decimal.TryParse(_dict[Parameters[3]], out var cost))
         {
-            var newProductId = _serviceContainer.ProductService.Create(ConsoleUserInterface.AuthenticationData.Token,
+            var newProductId = _serviceManager.ProductService.Create(ConsoleUserInterface.AuthenticationData.Token,
                 _dict[Parameters[0]], _dict[Parameters[1]], cost, categoryId).Result;
             if (newProductId != -1)
                 return $"Successful! New product id is {newProductId}";

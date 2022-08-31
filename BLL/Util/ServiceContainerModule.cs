@@ -14,6 +14,6 @@ public class ServiceContainerModule : Module
         builder.RegisterType<AutoMapperHandler>().As<IDomainMapperHandler>().SingleInstance();
         builder.RegisterType<DebugLogger>().As<ILogger>();
         builder.RegisterType<CustomTokenHandler>().As<ITokenHandler>();
-        builder.RegisterType<ServiceContainer>().As<IServiceContainer>();
+        builder.RegisterType<ServiceManager>().As<IServiceManager>();
     }
 }

@@ -6,19 +6,19 @@ namespace MarketUI.Command.Category;
 
 public class CategoryCreatingCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private string _name;
 
-    public CategoryCreatingCommand(IUserInterfaceMapperHandler mapperHandler, IServiceContainer serviceContainer,
+    public CategoryCreatingCommand(IUserInterfaceMapperHandler mapperHandler, IServiceManager serviceManager,
         ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
     {
         if (!TryParseName(args)) GetHelp();
-        var resultedId = _serviceContainer.CategoryService.Create(ConsoleUserInterface.AuthenticationData.Token, _name)
+        var resultedId = _serviceManager.CategoryService.Create(ConsoleUserInterface.AuthenticationData.Token, _name)
             .Result;
         return resultedId == -1 ? "Something wrong" : $"Success!New category id is{resultedId}";
     }

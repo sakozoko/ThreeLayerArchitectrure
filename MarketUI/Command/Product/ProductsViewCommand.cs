@@ -10,24 +10,24 @@ namespace MarketUI.Command.Product;
 
 public class ProductsViewCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private bool _isGroupBy;
     private string _name;
 
-    public ProductsViewCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public ProductsViewCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
     {
         TryParseGroupKeyAndName(args);
         var productModels = string.IsNullOrWhiteSpace(_name)
-            ? Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService
+            ? Mapper.Map<IEnumerable<ProductModel>>(_serviceManager.ProductService
                 .GetAll(ConsoleUserInterface.AuthenticationData?.Token).Result)
-            : Mapper.Map<IEnumerable<ProductModel>>(_serviceContainer.ProductService.GetByName(_name).Result);
+            : Mapper.Map<IEnumerable<ProductModel>>(_serviceManager.ProductService.GetByName(_name).Result);
         var consoleTable = new Table().AddColumn("#", "Name", "Product category", "Product cost", "Product description")
             .AddAlignment(Alignment.Center).AddCustomFormat(3, "{0:0.00}");
         if (_isGroupBy)

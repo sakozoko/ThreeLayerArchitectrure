@@ -7,14 +7,14 @@ namespace MarketUI.Command.Order;
 
 public class OrderModifyingCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;
 
-    public OrderModifyingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public OrderModifyingCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
@@ -43,7 +43,7 @@ public class OrderModifyingCommand : BaseCommand
     private bool TryChangeOrderStatus(int orderId)
     {
         return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
-               _serviceContainer.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
+               _serviceManager.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
                    stringOrderStatus,
                    orderId).Result;
     }
@@ -51,7 +51,7 @@ public class OrderModifyingCommand : BaseCommand
     private bool TryChangeDescription(int orderId)
     {
         return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) &&
-               _serviceContainer.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
+               _serviceManager.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
                    orderId).Result;
     }
 
@@ -66,9 +66,9 @@ public class OrderModifyingCommand : BaseCommand
         if (productId < 1) return false;
 
         if (addProduct)
-            return _serviceContainer.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
+            return _serviceManager.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
                 productId, orderId).Result;
-        return _serviceContainer.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
+        return _serviceManager.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
             productId, orderId).Result;
     }
 
@@ -86,10 +86,10 @@ public class OrderModifyingCommand : BaseCommand
     private bool TryChangeConfirmed(int orderId)
     {
         if (_dict.ContainsKey(Parameters[5]))
-            return _serviceContainer.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, true,
+            return _serviceManager.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, true,
                 orderId).Result;
         if (_dict.ContainsKey(Parameters[6]))
-            return _serviceContainer.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, false,
+            return _serviceManager.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, false,
                 orderId).Result;
         return false;
     }

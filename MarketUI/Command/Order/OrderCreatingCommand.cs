@@ -6,22 +6,22 @@ namespace MarketUI.Command.Order;
 
 public class OrderCreatingCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private string _desc;
     private int _id;
     private int _product;
 
-    public OrderCreatingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public OrderCreatingCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
     {
         if (!TryParseParameters(args)) return GetHelp();
-        var id = _serviceContainer.OrderService.Create(ConsoleUserInterface.AuthenticationData?.Token, _desc,
+        var id = _serviceManager.OrderService.Create(ConsoleUserInterface.AuthenticationData?.Token, _desc,
             _product, _id);
         return id.Result == -1 ? "Something wrong" : $"Successful!Your order id is {id.Result}";
     }

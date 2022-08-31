@@ -15,7 +15,7 @@ namespace BLL.Test;
 
 public class OrderServiceTest
 {
-    private void MethodsTestReturnedExceptionIfUserIsNull(Func<ServiceContainer, Task> testMethod)
+    private void MethodsTestReturnedExceptionIfUserIsNull(Func<ServiceManager, Task> testMethod)
     {
         var repository = Mock.Of<IRepository<OrderEntity>>();
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository);
@@ -23,7 +23,7 @@ public class OrderServiceTest
         ServiceTest.MethodsTestReturnedException(null, unitOfWork, testMethod);
     }
 
-    private void MethodsTestReturnedExceptionIfUserIsNotAdmin(Func<ServiceContainer, Task> testMethod)
+    private void MethodsTestReturnedExceptionIfUserIsNotAdmin(Func<ServiceManager, Task> testMethod)
     {
         const int orderId = 1;
         const int ownerId = 1;
@@ -63,7 +63,7 @@ public class OrderServiceTest
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository);
         var logger = Mock.Of<ILogger>();
         var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == owner);
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.GetById("", orderId).Result;
 
@@ -91,7 +91,7 @@ public class OrderServiceTest
         });
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository);
 
-        ServiceTest.MethodsTestReturnedException<ServiceContainer>(new UserEntity { Id = ownerId }, unitOfWork,
+        ServiceTest.MethodsTestReturnedException<ServiceManager>(new UserEntity { Id = ownerId }, unitOfWork,
             service => service.OrderService.GetById(It.IsAny<string>(), orderId));
     }
 
@@ -117,7 +117,7 @@ public class OrderServiceTest
             Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity { IsAdmin = true });
         var orderRepository = Mock.Of<IRepository<OrderEntity>>(x => x.GetAll() == expectedOrders);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == orderRepository);
-        var service = new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
+        var service = new ServiceManager(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
             .OrderService;
 
         var actual = service.GetAll("").Result.ToArray();
@@ -161,7 +161,7 @@ public class OrderServiceTest
         var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == owner);
         var orderRepository = Mock.Of<IRepository<OrderEntity>>(x => x.GetAll() == data);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == orderRepository);
-        var service = new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
+        var service = new ServiceManager(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
             .OrderService;
 
         var expectedOrders = new List<OrderEntity>
@@ -209,7 +209,7 @@ public class OrderServiceTest
             .Callback<OrderEntity>(oe => orders.Add(oe));
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.ProductRepository == productRepository &&
                                                    x.OrderRepository == orderRepository.Object);
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         service.Create("", "Desc", productId).Wait();
         service.Create("", "Desc", productId).Wait();
@@ -234,7 +234,7 @@ public class OrderServiceTest
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.ProductRepository == productRepository &&
                                                    x.UserRepository == userRepository);
 
-        ServiceTest.MethodsTestReturnedException<ServiceContainer>(new UserEntity(), unitOfWork,
+        ServiceTest.MethodsTestReturnedException<ServiceManager>(new UserEntity(), unitOfWork,
             container => container.OrderService.Create("", "desc", productId, userId));
     }
 
@@ -265,7 +265,7 @@ public class OrderServiceTest
         var productRepository = Mock.Of<IRepository<ProductEntity>>(x => x.GetById(productId) == product);
         var unitOfWork = Mock.Of<IUnitOfWork>(x =>
             x.OrderRepository == orderRepository.Object && x.ProductRepository == productRepository);
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         service.AddProduct("", productId, orderId).Wait();
         var actual = service.AddProduct("", productId, orderId).Result;
@@ -313,7 +313,7 @@ public class OrderServiceTest
         var productRepository = Mock.Of<IRepository<ProductEntity>>(x => x.GetById(productId) == product);
         var unitOfWork = Mock.Of<IUnitOfWork>(x =>
             x.OrderRepository == orderRepository.Object && x.ProductRepository == productRepository);
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.DeleteProduct("", productId, orderId).Result;
 
@@ -362,7 +362,7 @@ public class OrderServiceTest
         repository.Setup(x => x.Update(It.Is<OrderEntity>(c => c.Id == actualOrder.Id)))
             .Callback<OrderEntity>(entity => actualOrder = entity);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository.Object);
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.ChangeOrderStatus(It.IsAny<string>(), status, orderId).Result;
 
@@ -399,7 +399,7 @@ public class OrderServiceTest
         repository.Setup(x => x.Update(It.Is<OrderEntity>(c => c.Id == actualOrder.Id)))
             .Callback<OrderEntity>(entity => actualOrder = entity);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository.Object);
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.ChangeOrderStatus(It.IsAny<string>(), status, orderId).Result;
 
@@ -464,7 +464,7 @@ public class OrderServiceTest
             .Callback<OrderEntity>(entity => actualOrder = entity);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository.Object);
 
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.ChangeDescription(It.IsAny<string>(), expectedDesc, 1).Result;
 
@@ -499,7 +499,7 @@ public class OrderServiceTest
             .Callback<OrderEntity>(entity => actualOrder = entity);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository.Object);
 
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.ChangeDescription(It.IsAny<string>(), expectedDesc, 1).Result;
 
@@ -564,7 +564,7 @@ public class OrderServiceTest
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository);
 
 
-        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
+        var service = new ServiceManager(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest()).OrderService;
 
         var actual = service.ChangeConfirmed(It.IsAny<string>(), true, orderId).Result;
 
@@ -594,7 +594,7 @@ public class OrderServiceTest
         });
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.OrderRepository == repository);
 
-        ServiceTest.MethodsTestReturnedException<ServiceContainer>(new UserEntity { Id = ownerId }, unitOfWork,
+        ServiceTest.MethodsTestReturnedException<ServiceManager>(new UserEntity { Id = ownerId }, unitOfWork,
             service => service.OrderService.ChangeConfirmed(It.IsAny<string>(), true, orderId));
     }
 

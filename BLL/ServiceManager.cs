@@ -8,7 +8,7 @@ using DAL;
 
 namespace BLL;
 
-public class ServiceContainer : IServiceContainer
+public class ServiceManager : IServiceManager
 {
     private readonly ILogger _logger;
     private readonly IMapper _mapper;
@@ -19,7 +19,7 @@ public class ServiceContainer : IServiceContainer
     private IProductService _productService;
     private IUserService _userService;
 
-    public ServiceContainer(IUnitOfWork unitOfWork, ILogger logger, ITokenHandler tokenHandler,
+    public ServiceManager(IUnitOfWork unitOfWork, ILogger logger, ITokenHandler tokenHandler,
         IDomainMapperHandler domainMapperHandler)
     {
         _unitOfWork = unitOfWork;

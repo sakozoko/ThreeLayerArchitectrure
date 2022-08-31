@@ -10,17 +10,17 @@ namespace MarketUI.Command.Category;
 
 public class CategoryViewCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
 
-    public CategoryViewCommand(IUserInterfaceMapperHandler mapperHandler, IServiceContainer serviceContainer,
+    public CategoryViewCommand(IUserInterfaceMapperHandler mapperHandler, IServiceManager serviceManager,
         ICommandsInfoHandler commandsInfo) : base(mapperHandler, commandsInfo)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
     {
-        var result = Mapper.Map<IEnumerable<CategoryModel>>(_serviceContainer.CategoryService
+        var result = Mapper.Map<IEnumerable<CategoryModel>>(_serviceManager.CategoryService
             .GetAll(ConsoleUserInterface.AuthenticationData.Token).Result).ToArray();
         if (!result.Any()) return "None";
 

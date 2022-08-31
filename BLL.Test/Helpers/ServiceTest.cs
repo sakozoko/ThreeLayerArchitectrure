@@ -13,14 +13,14 @@ namespace BLL.Test.Helpers;
 public static class ServiceTest
 {
     public static void MethodsTestReturnedException<T>(UserEntity tokenHandlerReturnedValue,
-        Func<T, Task> testMethod) where T : IServiceContainer
+        Func<T, Task> testMethod) where T : IServiceManager
     {
         var unitOfWork = Mock.Of<IUnitOfWork>();
         MethodsTestReturnedException(tokenHandlerReturnedValue, unitOfWork, testMethod);
     }
 
     public static void MethodsTestReturnedException<T>(UserEntity tokenHandlerReturnedValue, IUnitOfWork unitOfWork,
-        Func<T, Task> testMethod) where T : IServiceContainer
+        Func<T, Task> testMethod) where T : IServiceManager
     {
         var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == tokenHandlerReturnedValue);
         var moqLogger = new Mock<ILogger>();

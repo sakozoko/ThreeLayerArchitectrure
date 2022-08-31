@@ -9,14 +9,14 @@ namespace MarketUI.Command.User;
 
 public class RegistrationCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;
 
-    public RegistrationCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public RegistrationCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
@@ -29,7 +29,7 @@ public class RegistrationCommand : BaseCommand
             return GetHelp();
         var response =
             Mapper.Map<AuthenticateResponseModel>(
-                _serviceContainer.UserService.Registration(Mapper.Map<AuthenticateRequest>(request)));
+                _serviceManager.UserService.Registration(Mapper.Map<AuthenticateRequest>(request)));
         if (response is null) return "Args value incorrect";
         ConsoleUserInterface.AuthenticationData = response;
         return $"{response.Name} welcome!";

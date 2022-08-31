@@ -10,14 +10,14 @@ namespace MarketUI.Command.Order;
 
 public class OrderHistoryViewCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private int _id;
 
-    public OrderHistoryViewCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public OrderHistoryViewCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
@@ -28,7 +28,7 @@ public class OrderHistoryViewCommand : BaseCommand
             int.TryParse(id, out _id);
         }
 
-        var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceContainer.OrderService
+        var orderModels = Mapper.Map<IEnumerable<OrderModel>>(_serviceManager.OrderService
             .GetUserOrders(ConsoleUserInterface.AuthenticationData?.Token, _id).Result).ToArray();
 
         var consoleTable = new Table()

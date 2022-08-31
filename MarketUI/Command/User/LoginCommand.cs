@@ -9,14 +9,14 @@ namespace MarketUI.Command.User;
 
 public class LoginCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;
 
-    public LoginCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public LoginCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) :
         base(mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
@@ -29,7 +29,7 @@ public class LoginCommand : BaseCommand
             return GetHelp();
 
         var response = Mapper.Map<AuthenticateResponseModel>(
-            _serviceContainer.UserService.Authenticate(Mapper.Map<AuthenticateRequest>(authenticateRequest)));
+            _serviceManager.UserService.Authenticate(Mapper.Map<AuthenticateRequest>(authenticateRequest)));
         if (response is null) return "Name or password is incorrect";
         ConsoleUserInterface.AuthenticationData = response;
         return $"{response.Name}, hi!";

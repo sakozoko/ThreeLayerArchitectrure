@@ -8,14 +8,14 @@ namespace MarketUI.Command.Product;
 
 public class ProductModifyingCommand : BaseCommand
 {
-    private readonly IServiceContainer _serviceContainer;
+    private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;
 
-    public ProductModifyingCommand(IServiceContainer serviceContainer, IUserInterfaceMapperHandler mapperHandler,
+    public ProductModifyingCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
         ICommandsInfoHandler cih) : base(
         mapperHandler, cih)
     {
-        _serviceContainer = serviceContainer;
+        _serviceManager = serviceManager;
     }
 
     public override string Execute(string[] args)
@@ -43,7 +43,7 @@ public class ProductModifyingCommand : BaseCommand
     private bool TryChangeName(int productId)
     {
         if (_dict.TryGetValue(Parameters[1], out var newName) && !string.IsNullOrWhiteSpace(newName))
-            return _serviceContainer.ProductService
+            return _serviceManager.ProductService
                 .ChangeName(ConsoleUserInterface.AuthenticationData.Token, newName, productId).Result;
         return false;
     }
@@ -51,7 +51,7 @@ public class ProductModifyingCommand : BaseCommand
     private bool TryChangeDescription(int productId)
     {
         if (_dict.TryGetValue(Parameters[2], out var newDesc) && !string.IsNullOrWhiteSpace(newDesc))
-            return _serviceContainer.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
+            return _serviceManager.ProductService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token,
                 newDesc, productId).Result;
         return false;
     }
@@ -61,10 +61,10 @@ public class ProductModifyingCommand : BaseCommand
         if (_dict.TryGetValue(Parameters[3], out var newCategory) && !string.IsNullOrWhiteSpace(newCategory))
         {
             var targetCategoryId =
-                Mapper.Map<CategoryModel>(_serviceContainer.CategoryService
+                Mapper.Map<CategoryModel>(_serviceManager.CategoryService
                     .GetByName(ConsoleUserInterface.AuthenticationData.Token, newCategory)
                     .Result)?.Id ?? 0;
-            return _serviceContainer.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token,
+            return _serviceManager.ProductService.ChangeCategory(ConsoleUserInterface.AuthenticationData.Token,
                 targetCategoryId, productId).Result;
         }
 
@@ -74,7 +74,7 @@ public class ProductModifyingCommand : BaseCommand
     private bool TryChangePrice(int productId)
     {
         if (_dict.TryGetValue(Parameters[4], out var newStrPrice) && decimal.TryParse(newStrPrice, out var newPrice))
-            return _serviceContainer.ProductService
+            return _serviceManager.ProductService
                 .ChangeCost(ConsoleUserInterface.AuthenticationData.Token, newPrice, productId).Result;
         return false;
     }
