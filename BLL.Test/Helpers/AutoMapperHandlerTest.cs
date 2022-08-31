@@ -7,7 +7,7 @@ namespace BLL.Test.Helpers;
 
 public class AutoMapperHandlerTest : IDomainMapperHandler
 {
-    public  IMapper GetMapper()
+    public IMapper GetMapper()
     {
         var config = new MapperConfiguration(cfg =>
         {

@@ -7,6 +7,6 @@ public enum OrderStatus
     Sent = 2,
     Received = 3,
     Completed = 4,
-    CanceledByUser =5,
-    CanceledByTheAdministrator = 6,
+    CanceledByUser = 5,
+    CanceledByTheAdministrator = 6
 }

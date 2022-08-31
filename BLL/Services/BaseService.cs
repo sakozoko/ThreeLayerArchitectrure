@@ -50,7 +50,7 @@ public class BaseService
         if (requestUserEntity is null) LogAndThrowAuthenticationException("Token is bad", callerName);
     }
 
-    
+
     protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(UserEntity requestUserEntity,
         [CallerMemberName] string callerName = "")
     {

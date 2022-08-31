@@ -42,7 +42,7 @@ public class OrderHistoryViewCommand : BaseCommand
             consoleTable.AddRowWithoutColumn("Unconfirmed orders:", RowOrder.After);
             SeedRows(consoleTable, orderModels.Where(x => !x.Confirmed));
         }
-        
+
 
         return consoleTable.ToString();
     }

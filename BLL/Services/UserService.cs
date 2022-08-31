@@ -32,8 +32,7 @@ internal sealed class UserService : BaseService, IUserService
             return null;
         if (UnitOfWork.UserRepository.GetAll().FirstOrDefault(x => x.Name == request.Name) != null)
             LogAndThrowAuthenticationException("Name taken");
-        var user = new UserEntity()
-            { Name = request.Name, Surname = request.Surname, Password = request.Password };
+        var user = new UserEntity { Name = request.Name, Surname = request.Surname, Password = request.Password };
         UnitOfWork.UserRepository.Add(Mapper.Map<UserEntity>(user));
         Logger.Log($"{user.Name} registrated.");
         return CreateAuthenticateResponse(user);

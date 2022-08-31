@@ -88,7 +88,7 @@ internal sealed class ProductService : BaseService, IProductService
         return Task<bool>.Factory.StartNew(() =>
             category is not null && ChangeProperty(token, x => x.Category = category, productId));
     }
-    
+
     public Task<bool> Remove(string token, int id)
     {
         return Task<bool>.Factory.StartNew(() =>
