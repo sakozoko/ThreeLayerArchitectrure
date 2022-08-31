@@ -20,14 +20,13 @@ internal sealed class OrderService : BaseService, IOrderService
     {
         return Task<Order>.Factory.StartNew(() =>
         {
-            var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(id));
-            if (order is null) return null;
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
+            var order = UnitOfWork.OrderRepository.GetById(id);
+            if (order is null) return null;
             if (order.Owner.Id != requestUser.Id) ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
 
-            return order;
+            return Mapper.Map<Order>(order);
         });
     }
 
@@ -65,7 +64,7 @@ internal sealed class OrderService : BaseService, IOrderService
             return Mapper.Map<IEnumerable<Order>>(UnitOfWork.OrderRepository.GetAll());
         });
 
-    public Task<IEnumerable<Order>> GetUserOrders(string token, int userId) =>
+    public Task<IEnumerable<Order>> GetUserOrders(string token, int userId=0) =>
         Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
