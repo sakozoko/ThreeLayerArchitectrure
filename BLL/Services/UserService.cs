@@ -8,7 +8,7 @@ using Entities;
 
 namespace BLL.Services;
 
-public class UserService : BaseService, IUserService
+internal sealed class UserService : BaseService, IUserService
 {
     public UserService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper) :
         base(unitOfWork, tokenHandler, logger, mapper)
@@ -18,8 +18,8 @@ public class UserService : BaseService, IUserService
     public AuthenticateResponse Authenticate(AuthenticateRequest request)
     {
         if (request is null) LogAndThrowAuthenticationException("Request is null");
-        var user = Mapper.Map<User>(UnitOfWork.UserRepository.GetAll().FirstOrDefault
-            (x => x.Name == request.Name && x.Password == request.Password));
+        var user = UnitOfWork.UserRepository.GetAll().FirstOrDefault
+            (x => x.Name == request.Name && x.Password == request.Password);
         if (user is null) return null;
         Logger.Log($"{user.Name} signed in");
         return CreateAuthenticateResponse(user);
@@ -32,8 +32,8 @@ public class UserService : BaseService, IUserService
             return null;
         if (UnitOfWork.UserRepository.GetAll().FirstOrDefault(x => x.Name == request.Name) != null)
             LogAndThrowAuthenticationException("Name taken");
-        var user = new User
-            { Name = request.Name, Surname = request.Surname, Password = request.Password, Orders = new List<Order>() };
+        var user = new UserEntity()
+            { Name = request.Name, Surname = request.Surname, Password = request.Password };
         UnitOfWork.UserRepository.Add(Mapper.Map<UserEntity>(user));
         Logger.Log($"{user.Name} registrated.");
         return CreateAuthenticateResponse(user);
@@ -69,7 +69,7 @@ public class UserService : BaseService, IUserService
     public Task<bool> ChangePassword(string token, string value, string oldPsw, int targetId = 0)
     {
         var requestUser = targetId != 0
-            ? Mapper.Map<User>(UnitOfWork.UserRepository.GetById(targetId))
+            ? UnitOfWork.UserRepository.GetById(targetId)
             : TokenHandler.GetUser(token);
         return Task<bool>.Factory.StartNew(() =>
             requestUser?.Password == oldPsw && ChangeProperty(token, x => x.Password = value, targetId));
@@ -106,11 +106,6 @@ public class UserService : BaseService, IUserService
         });
     }
 
-    public Task<bool> Remove(string token, User entity)
-    {
-        return Task<bool>.Factory.StartNew(() => entity is not null && Remove(token, entity.Id).Result);
-    }
-
     public Task<bool> Remove(string token, int id)
     {
         return Task<bool>.Factory.StartNew(() =>
@@ -122,19 +117,19 @@ public class UserService : BaseService, IUserService
         });
     }
 
-    private AuthenticateResponse CreateAuthenticateResponse(User user)
+    private AuthenticateResponse CreateAuthenticateResponse(UserEntity user)
     {
-        return new AuthenticateResponse(user, TokenHandler.GenerateToken(user));
+        return new AuthenticateResponse(user, TokenHandler.GenerateToken(Mapper.Map<User>(user)));
     }
 
-    private bool ChangeProperty(string token, Action<User> act, int targetId = 0)
+    private bool ChangeProperty(string token, Action<UserEntity> act, int targetId = 0)
     {
         var requestUser = TokenHandler.GetUser(token);
 
         ThrowAuthenticationExceptionIfUserIsNull(requestUser);
         if (targetId != 0)
         {
-            var targetUser = Mapper.Map<User>(UnitOfWork.UserRepository.GetById(targetId));
+            var targetUser = UnitOfWork.UserRepository.GetById(targetId);
             if (targetUser is not null && targetUser.Id != requestUser.Id)
             {
                 ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);

@@ -8,7 +8,7 @@ using Entities;
 
 namespace BLL.Services;
 
-public class CategoryService : BaseService, ICategoryService
+internal sealed class CategoryService : BaseService, ICategoryService
 {
     public CategoryService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger,
         IMapper mapper) : base(unitOfWork, tokenHandler, logger, mapper)
@@ -95,7 +95,7 @@ public class CategoryService : BaseService, ICategoryService
         });
     }
 
-    private bool ValidateChangeNameOrCreate(User requestUser, string name)
+    private bool ValidateChangeNameOrCreate(UserEntity requestUser, string name)
     {
         ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
         if (string.IsNullOrWhiteSpace(name))

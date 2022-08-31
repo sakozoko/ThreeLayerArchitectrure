@@ -3,11 +3,11 @@ using BLL.Objects;
 using BLL.Util.Interface;
 using Entities;
 
-namespace BLL.Util;
+namespace BLL.Test.Helpers;
 
-public class AutoMapperHandler : IDomainMapperHandler
+public class AutoMapperHandlerTest : IDomainMapperHandler
 {
-    public IMapper GetMapper()
+    public  IMapper GetMapper()
     {
         var config = new MapperConfiguration(cfg =>
         {

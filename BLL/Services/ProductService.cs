@@ -8,7 +8,7 @@ using Entities;
 
 namespace BLL.Services;
 
-public class ProductService : BaseService, IProductService
+internal sealed class ProductService : BaseService, IProductService
 {
     public ProductService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger,
         IMapper mapper) : base(unitOfWork, tokenHandler, logger, mapper)
@@ -88,12 +88,7 @@ public class ProductService : BaseService, IProductService
         return Task<bool>.Factory.StartNew(() =>
             category is not null && ChangeProperty(token, x => x.Category = category, productId));
     }
-
-    public Task<bool> Remove(string token, Product product)
-    {
-        return Task<bool>.Factory.StartNew(() => product != null && Remove(token, product.Id).Result);
-    }
-
+    
     public Task<bool> Remove(string token, int id)
     {
         return Task<bool>.Factory.StartNew(() =>

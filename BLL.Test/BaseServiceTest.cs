@@ -2,10 +2,10 @@
 using AutoMapper;
 using BLL.Helpers.Token;
 using BLL.Logger;
-using BLL.Objects;
 using BLL.Services.Exception;
 using BLL.Test.Helpers;
 using DAL;
+using Entities;
 using Moq;
 using Xunit;
 
@@ -51,7 +51,7 @@ public class BaseServiceTest
 
         var actual = Assert.Throws<AuthenticationException>(() =>
             baseServiceTest.ThrowAuthenticationExceptionIfUserIsNotAdminTest(
-                new User
+                new UserEntity
                 {
                     IsAdmin = false
                 }));
@@ -95,7 +95,7 @@ public class BaseServiceTest
 
         var actual = Assert.Throws<AuthenticationException>(() =>
             baseServiceTest.ThrowAuthenticationExceptionIfUserIsNullOrNotAdminTest(
-                new User
+                new UserEntity
                 {
                     IsAdmin = false
                 }));
@@ -111,7 +111,7 @@ public class BaseServiceTest
         var baseServiceTest = new BaseServiceTester(unitOfWork, tokenHandler, moqLogger.Object, mapper);
 
         baseServiceTest.ThrowAuthenticationExceptionIfUserIsNullOrNotAdminTest(
-            new User
+            new UserEntity
             {
                 IsAdmin = true
             });

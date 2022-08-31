@@ -2,9 +2,9 @@
 using AutoMapper;
 using BLL.Helpers.Token;
 using BLL.Logger;
-using BLL.Objects;
 using BLL.Services.Exception;
 using DAL;
+using Entities;
 
 namespace BLL.Services;
 
@@ -37,20 +37,21 @@ public class BaseService
         throw ex;
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(User requestUserEntity,
+    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(UserEntity requestUserEntity,
         [CallerMemberName] string callerName = "")
     {
         ThrowAuthenticationExceptionIfUserIsNull(requestUserEntity, callerName);
         ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUserEntity, callerName);
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNull(User requestUserEntity,
+    protected void ThrowAuthenticationExceptionIfUserIsNull(UserEntity requestUserEntity,
         [CallerMemberName] string callerName = "")
     {
         if (requestUserEntity is null) LogAndThrowAuthenticationException("Token is bad", callerName);
     }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(User requestUserEntity,
+    
+    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(UserEntity requestUserEntity,
         [CallerMemberName] string callerName = "")
     {
         if (!requestUserEntity.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);

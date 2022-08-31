@@ -8,7 +8,7 @@ using Entities;
 
 namespace BLL.Services;
 
-public class OrderService : BaseService, IOrderService
+internal sealed class OrderService : BaseService, IOrderService
 {
     public OrderService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
         : base(unitOfWork, tokenHandler, logger, mapper)
@@ -31,15 +31,16 @@ public class OrderService : BaseService, IOrderService
         });
     }
 
-    public Task<int> Create(string token, string desc, int productId, int userId = 0)
-    {
-        return Task<int>.Factory.StartNew(() =>
+    public Task<int> Create(string token, string desc, int productId, int userId = 0) =>
+        Task<int>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
 
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
-            var order = new Order { Description = desc, Owner = requestUser, Products = new List<Product>() };
+            var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
+            if (product is null)
+                return -1;
+            var order = new Order { Description = desc, Owner = Mapper.Map<User>(requestUser), Products = new List<Product>{product} };
 
             if (userId > 0)
             {
@@ -50,22 +51,11 @@ public class OrderService : BaseService, IOrderService
                 order.Owner = Mapper.Map<User>(newOwner);
                 Logger.Log($"Admin {requestUser.Name} created new order to user id {userId}");
             }
-
-            if (productId > 0)
-            {
-                var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
-                if (product is null)
-                    return -1;
-                order.Products.Add(product);
-            }
-
             return UnitOfWork.OrderRepository.Add(Mapper.Map<OrderEntity>(order));
         });
-    }
 
-    public Task<IEnumerable<Order>> GetAll(string token)
-    {
-        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
+    public Task<IEnumerable<Order>> GetAll(string token) =>
+        Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
 
@@ -74,11 +64,9 @@ public class OrderService : BaseService, IOrderService
             Logger.Log($"Admin {requestUser.Name} invoke to get all order");
             return Mapper.Map<IEnumerable<Order>>(UnitOfWork.OrderRepository.GetAll());
         });
-    }
 
-    public Task<IEnumerable<Order>> GetUserOrders(string token, int userId)
-    {
-        return Task<IEnumerable<Order>>.Factory.StartNew(() =>
+    public Task<IEnumerable<Order>> GetUserOrders(string token, int userId) =>
+        Task<IEnumerable<Order>>.Factory.StartNew(() =>
         {
             var requestUser = TokenHandler.GetUser(token);
             ThrowAuthenticationExceptionIfUserIsNull(requestUser);
@@ -93,78 +81,71 @@ public class OrderService : BaseService, IOrderService
 
             return Mapper.Map<IEnumerable<Order>>(UnitOfWork.OrderRepository.GetAll()).Where(func);
         });
-    }
 
-    public Task<bool> AddProduct(string token, int productId, int orderId)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<bool> AddProduct(string token, int productId, int orderId) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, orderId, x =>
         {
-            var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
-            return product is not null && ChangeProperty(token, orderId, x => x.Products.Add(product));
-        });
-    }
+            var product = UnitOfWork.ProductRepository.GetById(productId);
+            if (product is null) return false;
+            x.Products.Add(product);
+            return true;
+        }));
 
-    public Task<bool> DeleteProduct(string token, int productId, int orderId)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<bool> DeleteProduct(string token, int productId, int orderId) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, orderId, x =>
         {
-            var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
-            return product is not null && ChangeProperty(token, orderId, x => x.Products.Remove(product));
-        });
-    }
+            var product = UnitOfWork.ProductRepository.GetById(productId);
+            return product is not null && x.Products.Remove(product);
+        }));
 
-    public Task<bool> ChangeDescription(string token, string desc, int orderId)
-    {
-        return Task<bool>.Factory.StartNew(() =>
-            !string.IsNullOrWhiteSpace(desc) && ChangeProperty(token, orderId, x => x.Description = desc));
-    }
+    public Task<bool> ChangeDescription(string token, string desc, int orderId) =>
+        Task<bool>.Factory.StartNew(() =>
+            ChangeProperty(token, orderId, x =>
+            {
+                if (string.IsNullOrWhiteSpace(desc)) return false;
+                x.Description = desc;
+                return true;
+            }));
 
-    public Task<bool> ChangeConfirmed(string token, bool confirmed, int orderId)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<bool> ChangeConfirmed(string token, bool confirmed, int orderId) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, orderId, x =>
         {
             var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
-            return order?.OrderStatus == OrderStatus.New &&
-                   ChangeProperty(token, orderId, x => x.Confirmed = confirmed);
-        });
-    }
+            if (order.OrderStatus != OrderStatus.New) return false;
+            x.Confirmed = confirmed;
+            return true;
+        }));
 
-    public Task<bool> ChangeOrderStatus(string token, string status, int orderId)
-    {
-        return Task<bool>.Factory.StartNew(() =>
+    public Task<bool> ChangeOrderStatus(string token, string status, int orderId) =>
+        Task<bool>.Factory.StartNew(() => ChangeProperty(token, orderId, x =>
         {
             var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
             var orderStatus = Enum.Parse<OrderStatus>(status?.Replace(" ", "").Trim() ?? "New", true);
-            return (TokenHandler.GetUser(token) is { IsAdmin: true }
-                    || (orderStatus == OrderStatus.CanceledByUser &&
-                        order?.OrderStatus != OrderStatus.Received)) &&
-                   ChangeProperty(token, orderId, x => { x.OrderStatus = orderStatus; });
-        });
-    }
+            if (order?.OrderStatus != null &&
+                TokenHandler.GetUser(token) is not { IsAdmin: true } &&
+                ((int)order.OrderStatus>2 || orderStatus!=OrderStatus.CanceledByUser)) return false;
+            x.OrderStatus = orderStatus.ToString();
+            return true;
 
-    private bool ValidPermissionForModifyOrder(string token, Order order)
+        }));
+
+    private bool ValidPermissionForModifyOrder(UserEntity requestUser, OrderEntity order)
     {
-        if (order is null) return false;
-
-        var requestUser = TokenHandler.GetUser(token);
-
         ThrowAuthenticationExceptionIfUserIsNull(requestUser);
-
+        if (order is null || order.Confirmed) return false;
         if (order.Owner.Id == requestUser.Id) return true;
-
         ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUser);
-
-        Logger.Log($"Admin {requestUser.Name} change property for order with id {order.Id}");
-
         return true;
     }
 
-    private bool ChangeProperty(string token, int orderId, Action<Order> act)
+    private bool ChangeProperty(string token, int orderId, Func<OrderEntity,bool> func)
     {
-        var order = Mapper.Map<Order>(UnitOfWork.OrderRepository.GetById(orderId));
-        if (!ValidPermissionForModifyOrder(token, order)) return false;
-        act?.Invoke(order);
-        UnitOfWork.OrderRepository.Update(Mapper.Map<OrderEntity>(order));
+        var requestUser = TokenHandler.GetUser(token);
+        var order = UnitOfWork.OrderRepository.GetById(orderId);
+        if (!ValidPermissionForModifyOrder(requestUser, order) || !(func?.Invoke(order) ?? false)) return false;
+        UnitOfWork.OrderRepository.Update(order);
+        if(requestUser.IsAdmin)
+            Logger.Log($"Admin {requestUser.Name} change property for order with id {order.Id}");
         return true;
     }
 }

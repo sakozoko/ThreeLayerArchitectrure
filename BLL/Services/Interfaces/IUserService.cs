@@ -15,5 +15,4 @@ public interface IUserService
     Task<bool> ChangeIsAdmin(string token, bool value, int targetId = 0);
     Task<IEnumerable<User>> GetAll(string token);
     Task<bool> Remove(string token, int id);
-    Task<bool> Remove(string token, User entity);
 }

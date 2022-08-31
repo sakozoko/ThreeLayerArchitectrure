@@ -4,6 +4,7 @@ using BLL.Logger;
 using BLL.Objects;
 using BLL.Services;
 using DAL;
+using Entities;
 
 namespace BLL.Test.Helpers;
 
@@ -24,17 +25,17 @@ public class BaseServiceTester : BaseService
         LogAndThrowAuthenticationException(msg);
     }
 
-    public void ThrowAuthenticationExceptionIfUserIsNullOrNotAdminTest(User user)
+    public void ThrowAuthenticationExceptionIfUserIsNullOrNotAdminTest(UserEntity user)
     {
         ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(user);
     }
 
-    public void ThrowAuthenticationExceptionIfUserIsNullTest(User user)
+    public void ThrowAuthenticationExceptionIfUserIsNullTest(UserEntity user)
     {
         ThrowAuthenticationExceptionIfUserIsNull(user);
     }
 
-    public void ThrowAuthenticationExceptionIfUserIsNotAdminTest(User user)
+    public void ThrowAuthenticationExceptionIfUserIsNotAdminTest(UserEntity user)
     {
         ThrowAuthenticationExceptionIfUserIsNotAdmin(user);
     }

@@ -13,5 +13,4 @@ public interface IProductService
     Task<bool> ChangeCost(string token, decimal value, int productId);
     Task<bool> ChangeCategory(string token, int categoryId, int productId);
     Task<bool> Remove(string token, int id);
-    Task<bool> Remove(string token, Product product);
 }

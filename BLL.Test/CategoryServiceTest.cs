@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
 using BLL.Helpers.Token;
 using BLL.Logger;
 using BLL.Objects;
-using BLL.Services;
 using BLL.Services.Exception;
+using BLL.Test.Helpers;
 using DAL;
 using DAL.Repositories;
 using Entities;
@@ -18,22 +16,7 @@ namespace BLL.Test;
 
 public class CategoryServiceTest
 {
-    private static void MethodsTestReturnedException(User tokenHandlerReturnedValue,
-        Func<CategoryService, Task> testMethod)
-    {
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == tokenHandlerReturnedValue);
-        var unitOfWork = Mock.Of<IUnitOfWork>();
-        var mapper = Mock.Of<IMapper>();
-        var moqLogger = new Mock<ILogger>();
-        moqLogger.Setup(x => x.Log(It.IsAny<Exception>())).Verifiable();
-        moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
 
-        var service = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
-
-        Assert.ThrowsAsync<AuthenticationException>(() => testMethod.Invoke(service)).Wait();
-        moqLogger.Verify(x => x.Log(It.IsAny<Exception>()), Times.Once);
-        moqLogger.Verify(x => x.Log(It.IsAny<string>()), Times.Never);
-    }
 
     #region CreateMethodTest
 
@@ -48,22 +31,14 @@ public class CategoryServiceTest
 
         var moqLogger = new Mock<ILogger>();
         moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
-
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity()
         {
             IsAdmin = true
         });
-
         var moqRepository = Mock.Of<IRepository<CategoryEntity>>(x =>
             x.Add(It.Is<CategoryEntity>(c => c.Name == categoryName)) == resultCategoryId);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == moqRepository);
-        var mapper = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<CategoryEntity, Category>();
-            cfg.CreateMap<Category, CategoryEntity>();
-        }).CreateMapper();
-
-        var categoryService = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
+        var categoryService = new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler,new AutoMapperHandlerTest()).CategoryService;
 
         var resultId = categoryService.Create("", categoryName).Result;
         var actual = resultId == resultCategoryId;
@@ -82,13 +57,14 @@ public class CategoryServiceTest
         moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
         moqLogger.Setup(x => x.Log(It.IsAny<Exception>())).Verifiable();
 
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity
         {
             IsAdmin = false
         });
         var unitOfWork = Mock.Of<IUnitOfWork>();
-        var mapper = Mock.Of<IMapper>();
-        var categoryService = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
+        var categoryService =
+            new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
+                .CategoryService;
 
         var actual = categoryService.Create("", categoryName);
 
@@ -100,7 +76,7 @@ public class CategoryServiceTest
     [Fact]
     public void CreateCategoryAndLoggingTestUserIsNullReturnedException()
     {
-        MethodsTestReturnedException(null, categoryService => categoryService.Create("", ""));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(null, service => service.CategoryService.Create("", ""));
     }
 
     [Fact]
@@ -111,7 +87,7 @@ public class CategoryServiceTest
         var moqLogger = new Mock<ILogger>();
         moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
 
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity
         {
             IsAdmin = true
         });
@@ -125,9 +101,8 @@ public class CategoryServiceTest
                 }
             });
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == moqRepository);
-        var mapper = new MapperConfiguration(cfg => { cfg.CreateMap<CategoryEntity, Category>(); }).CreateMapper();
-
-        var categoryService = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
+        var categoryService = new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
+            .CategoryService;
 
         var actual = categoryService.Create("", categoryName).Result;
 
@@ -150,21 +125,18 @@ public class CategoryServiceTest
         const string token = "token";
         var storedCategoryEntity = new CategoryEntity { Id = 1, Name = oldName };
 
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(token) == new User { IsAdmin = true });
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(token) == new UserEntity { IsAdmin = true });
         var repository = Mock.Of<IRepository<CategoryEntity>>(x =>
             x.GetById(storedCategoryEntity.Id) == storedCategoryEntity &&
             x.GetAll() == new List<CategoryEntity> { storedCategoryEntity });
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
-        var mapper = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<CategoryEntity, Category>();
-            cfg.CreateMap<Category, CategoryEntity>();
-        }).CreateMapper();
         var moqLogger = new Mock<ILogger>();
         moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
+        
+        var categoryService = new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
+            .CategoryService;
 
-        var actual = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper)
-            .ChangeName(token, newName, 1).Result;
+        var actual = categoryService.ChangeName(token, newName, 1).Result;
         var expectedInvokedTimes = expected ? Times.Once() : Times.Never();
 
         Assert.Equal(expected, actual);
@@ -174,14 +146,14 @@ public class CategoryServiceTest
     [Fact]
     public void ChangeNameAndLoggingTestWhenUserIsNotAdminReturnedException()
     {
-        MethodsTestReturnedException(new User { IsAdmin = false },
-            categoryService => categoryService.ChangeName("", "New Name", 1));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(new UserEntity { IsAdmin = false },
+            service => service.CategoryService.ChangeName("", "New Name", 1));
     }
 
     [Fact]
     public void ChangeNameAndLoggingTestWhenUserIsNullReturnedException()
     {
-        MethodsTestReturnedException(null, categoryService => categoryService.ChangeName("", "New Name", 1));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(null, service => service.CategoryService.ChangeName("", "New Name", 1));
     }
 
     #endregion
@@ -209,45 +181,25 @@ public class CategoryServiceTest
                 Name = "Third"
             }
         };
-        var expected = new List<Category>
-        {
-            new()
-            {
-                Id = 1,
-                Name = "First"
-            },
-            new()
-            {
-                Id = 2,
-                Name = "Second"
-            },
-            new()
-            {
-                Id = 3,
-                Name = "Third"
-            }
-        };
 
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User());
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity());
         var repository = Mock.Of<IRepository<CategoryEntity>>(x => x.GetAll() == categoryEntities);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
         var logger = Mock.Of<ILogger>();
-        var mapper = Mock.Of<IMapper>(x => x.Map<IEnumerable<Category>>(
-                                               It.Is<IEnumerable<CategoryEntity>>(c =>
-                                                   c.All(v => expected.Any(b => b.Id == v.Id)))) ==
-                                           expected);
 
-        var service = new CategoryService(unitOfWork, tokenHandler, logger, mapper);
+        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest())
+            .CategoryService;
 
-        var actual = service.GetAll("").Result;
+        var actual = service.GetAll("").Result.ToList();
 
-        Assert.Same(expected, actual);
+        Assert.True(actual.All(x=>categoryEntities.Any(c=>c.Id==x.Id)));
+        Assert.Equal(categoryEntities.Count,actual.Count);
     }
 
     [Fact]
     public void GetAllTestUserIsNullReturnedException()
     {
-        MethodsTestReturnedException(null, categoryService => categoryService.GetAll(""));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(null, service => service.CategoryService.GetAll(""));
     }
 
     #endregion
@@ -281,13 +233,12 @@ public class CategoryServiceTest
             Name = "Second"
         };
 
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User());
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity());
         var repository = Mock.Of<IRepository<CategoryEntity>>(x => x.GetAll() == categoryEntities);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
         var logger = Mock.Of<ILogger>();
-        var mapper = new MapperConfiguration(cfg => { cfg.CreateMap<CategoryEntity, Category>(); }).CreateMapper();
-
-        var service = new CategoryService(unitOfWork, tokenHandler, logger, mapper);
+        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest())
+            .CategoryService;
 
         var actual = service.GetByName("", "Second").Result;
 
@@ -297,7 +248,7 @@ public class CategoryServiceTest
     [Fact]
     public void GetByNameTestUserIsNullReturnedException()
     {
-        MethodsTestReturnedException(null, categoryService => categoryService.GetByName("", ""));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(null, service => service.CategoryService.GetByName("", ""));
     }
 
     #endregion
@@ -347,17 +298,16 @@ public class CategoryServiceTest
             }
         };
 
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User());
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity());
         var repository =
             Mock.Of<IRepository<CategoryEntity>>(x => x.GetById(expectedId) == categoryEntities[expectedId - 1]);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
         var logger = Mock.Of<ILogger>();
-        var mapper = new MapperConfiguration(cfg => { cfg.CreateMap<CategoryEntity, Category>(); }).CreateMapper();
-
-        var service = new CategoryService(unitOfWork, tokenHandler, logger, mapper);
+        var service = new ServiceContainer(unitOfWork, logger, tokenHandler, new AutoMapperHandlerTest())
+            .CategoryService;
 
         var actual = service.GetById("", expectedId).Result;
-        var expected = mapper.Map<Category>(categoryEntities[expectedId - 1]);
+        var expected = categoryEntities[expectedId - 1];
 
         Assert.Equal(expected.Id, actual.Id);
         Assert.Equal(expected.Name, actual.Name);
@@ -366,7 +316,7 @@ public class CategoryServiceTest
     [Fact]
     public void GetByIdTestUserIsNullReturnedException()
     {
-        MethodsTestReturnedException(null, categoryService => categoryService.GetById("", 0));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(null, service => service.CategoryService.GetById("", 0));
     }
 
     #endregion
@@ -382,16 +332,15 @@ public class CategoryServiceTest
     public void RemoveTestCorrectlyWork(int targetId, int removedId, bool expected)
     {
         var categoryEntity = new CategoryEntity { Id = targetId };
-        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new User { IsAdmin = true });
+        var tokenHandler = Mock.Of<ITokenHandler>(x => x.GetUser(It.IsAny<string>()) == new UserEntity { IsAdmin = true });
         var repository = Mock.Of<IRepository<CategoryEntity>>(x =>
             x.Delete(It.Is<CategoryEntity>(c => c.Id == targetId)) == true &&
             x.GetById(targetId) == categoryEntity);
         var unitOfWork = Mock.Of<IUnitOfWork>(x => x.CategoryRepository == repository);
         var moqLogger = new Mock<ILogger>();
         moqLogger.Setup(x => x.Log(It.IsAny<string>())).Verifiable();
-        var mapper = new MapperConfiguration(cfg => { cfg.CreateMap<CategoryEntity, Category>(); }).CreateMapper();
-
-        var service = new CategoryService(unitOfWork, tokenHandler, moqLogger.Object, mapper);
+        var service = new ServiceContainer(unitOfWork, moqLogger.Object, tokenHandler, new AutoMapperHandlerTest())
+            .CategoryService;
 
         var actual = service.Remove("", removedId).Result;
         var times = expected ? Times.Once() : Times.Never();
@@ -403,13 +352,13 @@ public class CategoryServiceTest
     [Fact]
     public void RemoveTestUserIsNotAdminReturnedException()
     {
-        MethodsTestReturnedException(new User { IsAdmin = false }, categoryService => categoryService.Remove("", 0));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(new UserEntity { IsAdmin = false }, service => service.CategoryService.Remove("", 0));
     }
 
     [Fact]
     public void RemoveTestUserIsNullReturnedException()
     {
-        MethodsTestReturnedException(null, categoryService => categoryService.Remove("", 0));
+        ServiceTest.MethodsTestReturnedException<ServiceContainer>(null, service => service.CategoryService.Remove("", 0));
     }
 
     #endregion

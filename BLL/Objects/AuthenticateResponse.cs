@@ -1,8 +1,10 @@
-﻿namespace BLL.Objects;
+﻿using Entities;
+
+namespace BLL.Objects;
 
 public class AuthenticateResponse
 {
-    public AuthenticateResponse(User user, string token)
+    public AuthenticateResponse(UserEntity user, string token)
     {
         Name = user.Name;
         Surname = user.Surname;
