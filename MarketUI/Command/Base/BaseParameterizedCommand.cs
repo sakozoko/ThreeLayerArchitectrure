@@ -5,26 +5,19 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Base;
 
-public abstract class BaseCommand : ICommand
+public abstract class BaseParameterizedCommand : BaseDescriptiveCommand, IExecutableCommand
 {
-    private readonly ICommandsInfoHandler _commandsInfo;
     protected readonly string[] Parameters;
 
-    protected BaseCommand(IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler commandsInfo)
+    protected BaseParameterizedCommand(IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler commandsInfo) : base(commandsInfo)
     {
-        _commandsInfo = commandsInfo;
-        Parameters = _commandsInfo.GetCommandInfo(GetType().Name).Parameters;
+        Parameters = CommandsInfo.GetCommandInfo(GetType().Name).Parameters;
         Mapper = mapperHandler.GetMapper();
     }
 
     protected IMapper Mapper { get; }
 
     public abstract string Execute(string[] args);
-
-    public string GetHelp()
-    {
-        return _commandsInfo.GetCommandInfo(GetType().Name).Tip;
-    }
 
     /// <summary>
     ///     Args must be as "-key, value, -key, value, etc",then algorithm working
@@ -80,4 +73,5 @@ public abstract class BaseCommand : ICommand
 
         return dict?.Count > 0;
     }
+    
 }

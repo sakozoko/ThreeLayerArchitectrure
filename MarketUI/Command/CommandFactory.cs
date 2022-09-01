@@ -7,7 +7,7 @@ namespace MarketUI.Command;
 public class CommandFactory : ICommandFactory
 {
     private readonly IContainer _container;
-    private readonly ICommand _helpCommand;
+    private readonly IExecutableCommand _helpCommand;
 
     public CommandFactory(IContainer container)
     {
@@ -19,10 +19,10 @@ public class CommandFactory : ICommandFactory
         #endregion
     }
 
-    public ICommand GetCommand(string name)
+    public IExecutableCommand GetCommand(string name)
     {
         return name is "h" or "?" or "help"
             ? _helpCommand
-            : _container.ResolveOptionalNamed<ICommand>(name) ?? _container.Resolve<ICommand>();
+            : _container.ResolveOptionalNamed<IExecutableCommand>(name) ?? _container.Resolve<IExecutableCommand>();
     }
 }

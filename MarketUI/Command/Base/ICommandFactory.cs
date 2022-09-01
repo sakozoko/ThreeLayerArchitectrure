@@ -2,5 +2,5 @@
 
 public interface ICommandFactory
 {
-    public ICommand GetCommand(string name);
+    public IExecutableCommand GetCommand(string name);
 }

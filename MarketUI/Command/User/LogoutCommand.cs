@@ -3,13 +3,13 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.User;
 
-public class LogoutCommand : BaseCommand
+public class LogoutCommand : BaseDescriptiveCommand, IExecutableCommand
 {
-    public LogoutCommand(IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler cih) : base(mapperHandler, cih)
+    public LogoutCommand(ICommandsInfoHandler cih) : base(cih)
     {
     }
 
-    public override string Execute(string[] args)
+    public string Execute(string[] args)
     {
         if (ConsoleUserInterface.AuthenticationData is null) return "You cannot log out until you are logged in.";
         var str = $"{ConsoleUserInterface.AuthenticationData.Name}, bye bye!";

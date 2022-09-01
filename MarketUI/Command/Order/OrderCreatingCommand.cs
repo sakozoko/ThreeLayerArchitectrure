@@ -4,7 +4,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Order;
 
-public class OrderCreatingCommand : BaseCommand
+public class OrderCreatingCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private string _desc;

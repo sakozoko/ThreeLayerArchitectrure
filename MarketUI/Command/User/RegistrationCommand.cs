@@ -7,7 +7,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.User;
 
-public class RegistrationCommand : BaseCommand
+public class RegistrationCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;

@@ -2,7 +2,7 @@
 
 namespace MarketUI.Command.Util;
 
-public class IncorrectCommand : ICommand
+public class IncorrectCommand : IExecutableCommand
 {
     public string Execute(string[] args)
     {

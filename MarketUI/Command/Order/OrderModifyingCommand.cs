@@ -5,7 +5,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Order;
 
-public class OrderModifyingCommand : BaseCommand
+public class OrderModifyingCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;

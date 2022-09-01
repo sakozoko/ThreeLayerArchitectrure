@@ -8,7 +8,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Category;
 
-public class CategoryViewCommand : BaseCommand
+public class CategoryViewCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
 

@@ -5,7 +5,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Product;
 
-public class ProductCreatingCommand : BaseCommand
+public class ProductCreatingCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;

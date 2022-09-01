@@ -1,6 +1,6 @@
 ﻿namespace MarketUI.Command.Base;
 
-public interface ICommand
+public interface IExecutableCommand
 {
     public string Execute(string[] args);
 }

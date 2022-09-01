@@ -8,7 +8,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Product;
 
-public class ProductsViewCommand : BaseCommand
+public class ProductsViewCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private bool _isGroupBy;

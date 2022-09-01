@@ -25,95 +25,95 @@ public static class AppConfiguration
 
         #region UserCommand
 
-        builder.RegisterType<LoginCommand>().As<ICommand>();
-        builder.RegisterType<LoginCommand>().Named<ICommand>(cih.GetCommandInfo(nameof(LoginCommand)).Abbreviated);
-        builder.RegisterType<LoginCommand>().Named<ICommand>(cih.GetCommandInfo(nameof(LoginCommand)).FullName);
+        builder.RegisterType<LoginCommand>().As<IDescriptiveCommand>();
+        builder.RegisterType<LoginCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LoginCommand)).Abbreviated);
+        builder.RegisterType<LoginCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LoginCommand)).FullName);
 
-        builder.RegisterType<LogoutCommand>().As<ICommand>();
-        builder.RegisterType<LogoutCommand>().Named<ICommand>(cih.GetCommandInfo(nameof(LogoutCommand)).Abbreviated);
-        builder.RegisterType<LogoutCommand>().Named<ICommand>(cih.GetCommandInfo(nameof(LogoutCommand)).FullName);
+        builder.RegisterType<LogoutCommand>().As<IDescriptiveCommand>();
+        builder.RegisterType<LogoutCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LogoutCommand)).Abbreviated);
+        builder.RegisterType<LogoutCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LogoutCommand)).FullName);
 
-        builder.RegisterType<RegistrationCommand>().As<ICommand>();
+        builder.RegisterType<RegistrationCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<RegistrationCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(RegistrationCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(RegistrationCommand)).Abbreviated);
         builder.RegisterType<RegistrationCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(RegistrationCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(RegistrationCommand)).FullName);
 
-        builder.RegisterType<PersonalInformationChangingCommand>().As<ICommand>();
+        builder.RegisterType<PersonalInformationChangingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<PersonalInformationChangingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(PersonalInformationChangingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(PersonalInformationChangingCommand)).Abbreviated);
         builder.RegisterType<PersonalInformationChangingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(PersonalInformationChangingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(PersonalInformationChangingCommand)).FullName);
 
         #endregion
 
         #region OrderCommands
 
-        builder.RegisterType<OrderModifyingCommand>().As<ICommand>();
+        builder.RegisterType<OrderModifyingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<OrderModifyingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(OrderModifyingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(OrderModifyingCommand)).Abbreviated);
         builder.RegisterType<OrderModifyingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(OrderModifyingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(OrderModifyingCommand)).FullName);
 
-        builder.RegisterType<OrderCreatingCommand>().As<ICommand>();
+        builder.RegisterType<OrderCreatingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<OrderCreatingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(OrderCreatingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(OrderCreatingCommand)).Abbreviated);
         builder.RegisterType<OrderCreatingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(OrderCreatingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(OrderCreatingCommand)).FullName);
 
-        builder.RegisterType<OrderHistoryViewCommand>().As<ICommand>();
+        builder.RegisterType<OrderHistoryViewCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<OrderHistoryViewCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(OrderHistoryViewCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(OrderHistoryViewCommand)).Abbreviated);
         builder.RegisterType<OrderHistoryViewCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(OrderHistoryViewCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(OrderHistoryViewCommand)).FullName);
 
         #endregion
 
         #region ProductCommands
 
-        builder.RegisterType<ProductsViewCommand>().As<ICommand>();
+        builder.RegisterType<ProductsViewCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<ProductsViewCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductsViewCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(ProductsViewCommand)).Abbreviated);
         builder.RegisterType<ProductsViewCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductsViewCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(ProductsViewCommand)).FullName);
 
-        builder.RegisterType<ProductModifyingCommand>().As<ICommand>();
+        builder.RegisterType<ProductModifyingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<ProductModifyingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).Abbreviated);
         builder.RegisterType<ProductModifyingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(ProductModifyingCommand)).FullName);
 
-        builder.RegisterType<ProductCreatingCommand>().As<ICommand>();
+        builder.RegisterType<ProductCreatingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<ProductCreatingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductCreatingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(ProductCreatingCommand)).Abbreviated);
         builder.RegisterType<ProductCreatingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(ProductCreatingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(ProductCreatingCommand)).FullName);
 
         #endregion
 
         #region CategoryCommands
 
-        builder.RegisterType<CategoryCreatingCommand>().As<ICommand>();
+        builder.RegisterType<CategoryCreatingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<CategoryCreatingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(CategoryCreatingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(CategoryCreatingCommand)).Abbreviated);
         builder.RegisterType<CategoryCreatingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(CategoryCreatingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(CategoryCreatingCommand)).FullName);
 
-        builder.RegisterType<CategoryModifyingCommand>().As<ICommand>();
+        builder.RegisterType<CategoryModifyingCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<CategoryModifyingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(CategoryModifyingCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(CategoryModifyingCommand)).Abbreviated);
         builder.RegisterType<CategoryModifyingCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(CategoryModifyingCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(CategoryModifyingCommand)).FullName);
 
-        builder.RegisterType<CategoryViewCommand>().As<ICommand>();
+        builder.RegisterType<CategoryViewCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<CategoryViewCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(CategoryViewCommand)).Abbreviated);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(CategoryViewCommand)).Abbreviated);
         builder.RegisterType<CategoryViewCommand>()
-            .Named<ICommand>(cih.GetCommandInfo(nameof(CategoryViewCommand)).FullName);
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(CategoryViewCommand)).FullName);
 
         #endregion
 
-        builder.RegisterType<IncorrectCommand>().As<ICommand>();
+        builder.RegisterType<IncorrectCommand>().As<IExecutableCommand>();
 
         #endregion
 

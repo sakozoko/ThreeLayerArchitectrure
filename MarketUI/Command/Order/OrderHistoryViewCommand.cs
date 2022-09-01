@@ -8,7 +8,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Order;
 
-public class OrderHistoryViewCommand : BaseCommand
+public class OrderHistoryViewCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private int _id;

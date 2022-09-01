@@ -4,7 +4,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.Category;
 
-public class CategoryCreatingCommand : BaseCommand
+public class CategoryCreatingCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private string _name;

@@ -6,7 +6,7 @@ using MarketUI.Util.Interface;
 
 namespace MarketUI.Command.User;
 
-public class PersonalInformationChangingCommand : BaseCommand
+public class PersonalInformationChangingCommand : BaseParameterizedCommand
 {
     private readonly IServiceManager _serviceManager;
     private Dictionary<string, string> _dict;
