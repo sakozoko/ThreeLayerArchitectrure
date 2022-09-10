@@ -26,12 +26,16 @@ public static class AppConfiguration
         #region UserCommand
 
         builder.RegisterType<LoginCommand>().As<IDescriptiveCommand>();
-        builder.RegisterType<LoginCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LoginCommand)).Abbreviated);
-        builder.RegisterType<LoginCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LoginCommand)).FullName);
+        builder.RegisterType<LoginCommand>()
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LoginCommand)).Abbreviated);
+        builder.RegisterType<LoginCommand>()
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LoginCommand)).FullName);
 
         builder.RegisterType<LogoutCommand>().As<IDescriptiveCommand>();
-        builder.RegisterType<LogoutCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LogoutCommand)).Abbreviated);
-        builder.RegisterType<LogoutCommand>().Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LogoutCommand)).FullName);
+        builder.RegisterType<LogoutCommand>()
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LogoutCommand)).Abbreviated);
+        builder.RegisterType<LogoutCommand>()
+            .Named<IExecutableCommand>(cih.GetCommandInfo(nameof(LogoutCommand)).FullName);
 
         builder.RegisterType<RegistrationCommand>().As<IDescriptiveCommand>();
         builder.RegisterType<RegistrationCommand>()

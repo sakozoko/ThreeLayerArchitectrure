@@ -9,7 +9,8 @@ public abstract class BaseParameterizedCommand : BaseDescriptiveCommand, IExecut
 {
     protected readonly string[] Parameters;
 
-    protected BaseParameterizedCommand(IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler commandsInfo) : base(commandsInfo)
+    protected BaseParameterizedCommand(IUserInterfaceMapperHandler mapperHandler, ICommandsInfoHandler commandsInfo) :
+        base(commandsInfo)
     {
         Parameters = CommandsInfo.GetCommandInfo(GetType().Name).Parameters;
         Mapper = mapperHandler.GetMapper();
@@ -73,5 +74,4 @@ public abstract class BaseParameterizedCommand : BaseDescriptiveCommand, IExecut
 
         return dict?.Count > 0;
     }
-    
 }

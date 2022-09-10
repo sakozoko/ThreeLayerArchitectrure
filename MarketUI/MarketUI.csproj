@@ -9,16 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BLL\BLL.csproj" />
+        <ProjectReference Include="..\BLL\BLL.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ConsoleTable" Version="1.0.1.1" />
-        <PackageReference Include="Json.Net" Version="1.0.33" />
+        <PackageReference Include="ConsoleTable" Version="1.0.1.1"/>
+        <PackageReference Include="Json.Net" Version="1.0.33"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="Util\CommandsInfo.json" />
+        <None Remove="Util\CommandsInfo.json"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -23,8 +23,8 @@ public class HelpCommand : IExecutableCommand
             .AddAlignment(Alignment.Center);
         foreach (var command in commands)
         {
-                var str =command.GetHelp();
-                consoleTable.AddRow(str.Split("\t").ToArray<object>());
+            var str = command.GetHelp();
+            consoleTable.AddRow(str.Split("\t").ToArray<object>());
         }
 
         consoleTable.AddRow("Help", "h or help", "none");
