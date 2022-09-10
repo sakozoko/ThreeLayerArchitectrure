@@ -68,25 +68,46 @@ internal sealed class ProductService : BaseService, IProductService
     public Task<bool> ChangeName(string token, string value, int productId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Name = value, productId));
+            ChangeProperty(token, x =>
+            {
+                if (string.IsNullOrWhiteSpace(value)) return false;
+                x.Name = value;
+                return true;
+            }, productId));
     }
 
     public Task<bool> ChangeDescription(string token, string value, int productId)
     {
         return Task<bool>.Factory.StartNew(() =>
-            !string.IsNullOrWhiteSpace(value) && ChangeProperty(token, x => x.Description = value, productId));
+            ChangeProperty(token, x =>
+            {
+                if (string.IsNullOrWhiteSpace(value)) return false;
+                x.Description = value;
+                return true;
+            }, productId));
     }
 
     public Task<bool> ChangeCost(string token, decimal value, int productId)
     {
-        return Task<bool>.Factory.StartNew(() => value > 0 && ChangeProperty(token, x => x.Cost = value, productId));
+        return Task<bool>.Factory.StartNew(() => value > 0 && ChangeProperty(token, x =>
+        {
+            if (value <= 0) return false;
+            x.Cost = value;
+            return true;
+        }, productId));
     }
 
     public Task<bool> ChangeCategory(string token, int categoryId, int productId)
     {
-        var category = Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(categoryId));
+        
         return Task<bool>.Factory.StartNew(() =>
-            category is not null && ChangeProperty(token, x => x.Category = category, productId));
+            ChangeProperty(token, x =>
+            {
+                var category = UnitOfWork.CategoryRepository.GetById(categoryId);
+                if (category is null) return false;
+                x.Category = category;
+                return true;
+            }, productId));
     }
 
     public Task<bool> Remove(string token, int id)
@@ -100,18 +121,15 @@ internal sealed class ProductService : BaseService, IProductService
         });
     }
 
-    private bool ChangeProperty(string token, Action<Product> act, int productId)
+    private bool ChangeProperty(string token, Func<ProductEntity,bool> act, int productId)
     {
-        var product = Mapper.Map<Product>(UnitOfWork.ProductRepository.GetById(productId));
-        if (product is null)
-            return false;
         var requestUser = TokenHandler.GetUser(token);
-
         ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-
-        act.Invoke(product);
+        
+        var product = UnitOfWork.ProductRepository.GetById(productId);
+        if (product is null || !act.Invoke(product)) return false;
         Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
-        UnitOfWork.ProductRepository.Update(Mapper.Map<ProductEntity>(product));
+        UnitOfWork.ProductRepository.Update(product);
         return true;
     }
 }
