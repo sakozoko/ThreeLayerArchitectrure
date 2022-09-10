@@ -35,10 +35,10 @@ internal sealed class CategoryService : BaseService, ICategoryService
         {
             var requestUser = TokenHandler.GetUser(token);
             if (!ValidateChangeNameOrCreate(requestUser, newName)) return false;
-            var category = Mapper.Map<Category>(UnitOfWork.CategoryRepository.GetById(categoryId));
+            var category = UnitOfWork.CategoryRepository.GetById(categoryId);
             if (category is null) return false;
             category.Name = newName;
-            UnitOfWork.CategoryRepository.Update(Mapper.Map<CategoryEntity>(category));
+            UnitOfWork.CategoryRepository.Update(category);
             Logger.Log($"Admin {requestUser.Name} changed name category with id {categoryId}");
             return true;
         });
