@@ -205,7 +205,6 @@ public class ProductServiceTest
     [Fact]
     public void ChangeCategoryCorrectlyWork()
     {
-        const decimal newCost = 0.01m;
         const int productId = 1;
         const int categoryId = productId;
         var logger = Mock.Of<ILogger>();
