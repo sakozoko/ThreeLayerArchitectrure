@@ -4,16 +4,17 @@ using BLL.Logger;
 using BLL.Util.Interface;
 using DAL.Util;
 
-namespace BLL.Util;
-
-public class ServiceContainerModule : Module
+namespace BLL.Util
 {
-    protected override void Load(ContainerBuilder builder)
+    public class ServiceContainerModule : Module
     {
-        builder.RegisterModule(new UnitOfWorkModule());
-        builder.RegisterType<AutoMapperHandler>().As<IDomainMapperHandler>();
-        builder.RegisterType<DebugLogger>().As<ILogger>();
-        builder.RegisterType<CustomTokenHandler>().As<ITokenHandler>();
-        builder.RegisterType<ServiceManager>().As<IServiceManager>();
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new UnitOfWorkModule());
+            builder.RegisterType<AutoMapperHandler>().As<IDomainMapperHandler>();
+            builder.RegisterType<DebugLogger>().As<ILogger>();
+            builder.RegisterType<CustomTokenHandler>().As<ITokenHandler>();
+            builder.RegisterType<ServiceManager>().As<IServiceManager>();
+        }
     }
 }

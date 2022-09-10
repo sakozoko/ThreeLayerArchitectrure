@@ -1,8 +1,9 @@
 ﻿using MarketUI.Models;
 
-namespace MarketUI.Util.Interface;
-
-public interface ICommandsInfoHandler
+namespace MarketUI.Util.Interface
 {
-    CommandInfoModel GetCommandInfo(string commandName);
+    public interface ICommandsInfoHandler
+    {
+        CommandInfoModel GetCommandInfo(string commandName);
+    }
 }

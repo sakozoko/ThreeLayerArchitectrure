@@ -2,27 +2,28 @@
 using MarketUI.Command.Base;
 using MarketUI.Command.Util;
 
-namespace MarketUI.Command;
-
-public class CommandFactory : ICommandFactory
+namespace MarketUI.Command
 {
-    private readonly IContainer _container;
-    private readonly IExecutableCommand _helpCommand;
-
-    public CommandFactory(IContainer container)
+    public class CommandFactory : ICommandFactory
     {
-        #region SetCommands
+        private readonly IContainer _container;
+        private readonly IExecutableCommand _helpCommand;
 
-        _container = container;
-        _helpCommand = new HelpCommand(_container);
+        public CommandFactory(IContainer container)
+        {
+            #region SetCommands
 
-        #endregion
-    }
+            _container = container;
+            _helpCommand = new HelpCommand(_container);
 
-    public IExecutableCommand GetCommand(string name)
-    {
-        return name is "h" or "?" or "help"
-            ? _helpCommand
-            : _container.ResolveOptionalNamed<IExecutableCommand>(name) ?? _container.Resolve<IExecutableCommand>();
+            #endregion
+        }
+
+        public IExecutableCommand GetCommand(string name)
+        {
+            return name is "h" || name is "?" || name is "help"
+                ? _helpCommand
+                : _container.ResolveOptionalNamed<IExecutableCommand>(name) ?? _container.Resolve<IExecutableCommand>();
+        }
     }
 }

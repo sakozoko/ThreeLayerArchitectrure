@@ -1,10 +1,13 @@
-﻿namespace BLL.Objects;
+﻿using System.Collections.Generic;
 
-public class Order : BaseDto
+namespace BLL.Objects
 {
-    public User Owner { get; set; }
-    public List<Product> Products { get; set; }
-    public string Description { get; set; }
-    public OrderStatus OrderStatus { get; set; }
-    public bool Confirmed { get; set; }
+    public class Order : BaseDto
+    {
+        public User Owner { get; set; }
+        public List<Product> Products { get; set; }
+        public string Description { get; set; }
+        public OrderStatus OrderStatus { get; set; }
+        public bool Confirmed { get; set; }
+    }
 }

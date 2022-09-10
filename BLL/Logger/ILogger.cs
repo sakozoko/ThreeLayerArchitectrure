@@ -1,7 +1,11 @@
-﻿namespace BLL.Logger;
+﻿using System;
+using System.Threading.Tasks;
 
-public interface ILogger
+namespace BLL.Logger
 {
-    public Task Log(string msg);
-    public Task Log(Exception exception);
+    public interface ILogger
+    {
+        public Task Log(string msg);
+        public Task Log(Exception exception);
+    }
 }

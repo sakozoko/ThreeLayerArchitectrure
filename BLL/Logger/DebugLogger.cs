@@ -1,34 +1,37 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace BLL.Logger;
-
-public class DebugLogger : ILogger
+namespace BLL.Logger
 {
-    public Task Log(string msg)
+    public class DebugLogger : ILogger
     {
-        return Task.Factory.StartNew(() => Debug.WriteLine(msg));
-    }
-
-    public Task Log(Exception exception)
-    {
-        return Task.Factory.StartNew(() =>
+        public Task Log(string msg)
         {
-            StringBuilder sb = new();
-            if (exception.Data.Contains("type"))
-            {
-                var type = exception.Data["type"] as Type;
-                sb.Append(type.FullName);
-            }
+            return Task.Factory.StartNew(() => Debug.WriteLine(msg));
+        }
 
-            if (exception.Data.Contains("callerName"))
+        public Task Log(Exception exception)
+        {
+            return Task.Factory.StartNew(() =>
             {
-                var callerName = exception.Data["callerName"] as string;
-                sb.Append($".{callerName}");
-            }
+                var sb = new StringBuilder();
+                if (exception.Data.Contains("type"))
+                {
+                    var type = exception.Data["type"] as Type;
+                    sb.Append(type.FullName);
+                }
 
-            sb.Append($": {exception.Message} - {exception.GetType().FullName}");
-            Debug.WriteLine(sb.ToString(), "Exception");
-        });
+                if (exception.Data.Contains("callerName"))
+                {
+                    var callerName = exception.Data["callerName"] as string;
+                    sb.Append($".{callerName}");
+                }
+
+                sb.Append($": {exception.Message} - {exception.GetType().FullName}");
+                Debug.WriteLine(sb.ToString(), "Exception");
+            });
+        }
     }
 }

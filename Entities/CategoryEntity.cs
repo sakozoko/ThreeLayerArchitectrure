@@ -1,6 +1,7 @@
-﻿namespace Entities;
-
-public class CategoryEntity : BaseEntity
+﻿namespace Entities
 {
-    public string Name { get; set; }
+    public class CategoryEntity : BaseEntity
+    {
+        public string Name { get; set; }
+    }
 }

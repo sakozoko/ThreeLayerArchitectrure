@@ -1,63 +1,67 @@
-﻿using DAL.DataContext;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using DAL.DataContext;
 using Entities;
 
-namespace DAL.Repositories;
-
-internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
+namespace DAL.Repositories
 {
-    private readonly IDbContext _dbContext;
-
-    private int _lastId;
-
-    public GenericRepository(IDbContext dbContext)
+    internal class GenericRepository<T> : SyncRepository, IRepository<T> where T : BaseEntity
     {
-        _dbContext = dbContext;
-        _lastId = _dbContext.Set<T>().Count;
-    }
+        private readonly IDbContext _dbContext;
 
-    public int Add(T entity)
-    {
-        lock (Obj)
+        private int _lastId;
+
+        public GenericRepository(IDbContext dbContext)
         {
-            entity.Id = ++_lastId;
-            _dbContext.Set<T>().Add(entity);
-            return _lastId;
+            _dbContext = dbContext;
+            _lastId = _dbContext.Set<T>().Count;
         }
-    }
 
-    public IEnumerable<T> GetAll()
-    {
-        lock (Obj)
+        public int Add(T entity)
         {
-            return _dbContext.Set<T>();
+            lock (Obj)
+            {
+                entity.Id = ++_lastId;
+                _dbContext.Set<T>().Add(entity);
+                return _lastId;
+            }
         }
-    }
 
-    public T GetById(int id)
-    {
-        lock (Obj)
+        public IEnumerable<T> GetAll()
         {
-            return _dbContext.Set<T>().FirstOrDefault(x => x.Id == id);
+            lock (Obj)
+            {
+                return _dbContext.Set<T>();
+            }
         }
-    }
 
-    public bool Delete(T entity)
-    {
-        lock (Obj)
+        public T GetById(int id)
         {
-            return _dbContext.Set<T>().Remove(GetById(entity.Id));
+            lock (Obj)
+            {
+                return _dbContext.Set<T>().FirstOrDefault(x => x.Id == id);
+            }
         }
-    }
 
-    public void Update(T entity)
-    {
-        var value = GetById(entity.Id);
-        if (value is null) throw new ArgumentException(nameof(entity));
-
-        lock (Obj)
+        public bool Delete(T entity)
         {
-            var index = _dbContext.Set<T>().IndexOf(value);
-            _dbContext.Set<T>()[index] = entity;
+            lock (Obj)
+            {
+                return _dbContext.Set<T>().Remove(GetById(entity.Id));
+            }
+        }
+
+        public void Update(T entity)
+        {
+            var value = GetById(entity.Id);
+            if (value is null) throw new ArgumentException(nameof(entity));
+
+            lock (Obj)
+            {
+                var index = _dbContext.Set<T>().IndexOf(value);
+                _dbContext.Set<T>()[index] = entity;
+            }
         }
     }
 }

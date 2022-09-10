@@ -3,94 +3,96 @@ using BLL;
 using MarketUI.Command.Base;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Command.Order;
-
-public class OrderModifyingCommand : BaseParameterizedCommand
+namespace MarketUI.Command.Order
 {
-    private readonly IServiceManager _serviceManager;
-    private Dictionary<string, string> _dict;
-
-    public OrderModifyingCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
-        ICommandsInfoHandler cih) :
-        base(mapperHandler, cih)
+    public class OrderModifyingCommand : BaseParameterizedCommand
     {
-        _serviceManager = serviceManager;
-    }
+        private readonly IServiceManager _serviceManager;
+        private Dictionary<string, string> _dict;
 
-    public override string Execute(string[] args)
-    {
-        if (!ArgumentsAreValid(args)) return GetHelp();
+        public OrderModifyingCommand(IServiceManager serviceManager, IUserInterfaceMapperHandler mapperHandler,
+            ICommandsInfoHandler cih) :
+            base(mapperHandler, cih)
+        {
+            _serviceManager = serviceManager;
+        }
 
-        _dict.TryGetValue(Parameters[0], out var stringOrderId);
+        public override string Execute(string[] args)
+        {
+            if (!ArgumentsAreValid(args)) return GetHelp();
 
-        int.TryParse(stringOrderId, out var orderId);
+            _dict.TryGetValue(Parameters[0], out var stringOrderId);
 
-        if (ResultOfTryChanging(orderId))
-            return $"Order with id {orderId} updated";
+            int.TryParse(stringOrderId, out var orderId);
 
-        return "Something wrong";
-    }
+            if (ResultOfTryChanging(orderId))
+                return $"Order with id {orderId} updated";
 
-    private bool ResultOfTryChanging(int orderId)
-    {
-        var firstFlag = TryChangeOrderProducts(orderId);
-        var secondFlag = TryChangeDescription(orderId);
-        var thirdFlag = TryChangeOrderStatus(orderId);
-        var fourthFlag = TryChangeConfirmed(orderId);
-        return firstFlag || secondFlag || thirdFlag || fourthFlag;
-    }
+            return "Something wrong";
+        }
 
-    private bool TryChangeOrderStatus(int orderId)
-    {
-        return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
-               _serviceManager.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
-                   stringOrderStatus,
-                   orderId).Result;
-    }
+        private bool ResultOfTryChanging(int orderId)
+        {
+            var firstFlag = TryChangeOrderProducts(orderId);
+            var secondFlag = TryChangeDescription(orderId);
+            var thirdFlag = TryChangeOrderStatus(orderId);
+            var fourthFlag = TryChangeConfirmed(orderId);
+            return firstFlag || secondFlag || thirdFlag || fourthFlag;
+        }
 
-    private bool TryChangeDescription(int orderId)
-    {
-        return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) &&
-               _serviceManager.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
-                   orderId).Result;
-    }
+        private bool TryChangeOrderStatus(int orderId)
+        {
+            return _dict.TryGetValue(Parameters[4], out var stringOrderStatus) &&
+                   _serviceManager.OrderService.ChangeOrderStatus(ConsoleUserInterface.AuthenticationData.Token,
+                       stringOrderStatus,
+                       orderId).Result;
+        }
 
-    private bool TryChangeOrderProducts(int orderId)
-    {
-        _dict.TryGetValue(Parameters[1], out var stringProductId);
+        private bool TryChangeDescription(int orderId)
+        {
+            return _dict.TryGetValue(Parameters[3], out var desc) && !string.IsNullOrWhiteSpace(desc) &&
+                   _serviceManager.OrderService.ChangeDescription(ConsoleUserInterface.AuthenticationData.Token, desc,
+                       orderId).Result;
+        }
 
-        if (!int.TryParse(stringProductId, out var productId)) return false;
+        private bool TryChangeOrderProducts(int orderId)
+        {
+            _dict.TryGetValue(Parameters[1], out var stringProductId);
 
-        var addProduct = !_dict.ContainsKey(Parameters[2]);
+            if (!int.TryParse(stringProductId, out var productId)) return false;
 
-        if (productId < 1) return false;
+            var addProduct = !_dict.ContainsKey(Parameters[2]);
 
-        if (addProduct)
-            return _serviceManager.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
+            if (productId < 1) return false;
+
+            if (addProduct)
+                return _serviceManager.OrderService.AddProduct(ConsoleUserInterface.AuthenticationData.Token,
+                    productId, orderId).Result;
+            return _serviceManager.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
                 productId, orderId).Result;
-        return _serviceManager.OrderService.DeleteProduct(ConsoleUserInterface.AuthenticationData.Token,
-            productId, orderId).Result;
-    }
+        }
 
-    private bool ArgumentsAreValid(string[] args)
-    {
-        return TrySetDictionary(args) && (_dict.ContainsKey(Parameters[0]) ||
-                                          (_dict.ContainsKey(Parameters[1]) && !_dict.ContainsKey(Parameters[2])));
-    }
+        private bool ArgumentsAreValid(string[] args)
+        {
+            return TrySetDictionary(args) && (_dict.ContainsKey(Parameters[0]) ||
+                                              (_dict.ContainsKey(Parameters[1]) && !_dict.ContainsKey(Parameters[2])));
+        }
 
-    private bool TrySetDictionary(string[] args)
-    {
-        return TryParseArgs(args, out _dict);
-    }
+        private bool TrySetDictionary(string[] args)
+        {
+            return TryParseArgs(args, out _dict);
+        }
 
-    private bool TryChangeConfirmed(int orderId)
-    {
-        if (_dict.ContainsKey(Parameters[5]))
-            return _serviceManager.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, true,
-                orderId).Result;
-        if (_dict.ContainsKey(Parameters[6]))
-            return _serviceManager.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, false,
-                orderId).Result;
-        return false;
+        private bool TryChangeConfirmed(int orderId)
+        {
+            if (_dict.ContainsKey(Parameters[5]))
+                return _serviceManager.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token, true,
+                    orderId).Result;
+            if (_dict.ContainsKey(Parameters[6]))
+                return _serviceManager.OrderService.ChangeConfirmed(ConsoleUserInterface.AuthenticationData.Token,
+                    false,
+                    orderId).Result;
+            return false;
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 
-namespace BLL.Util.Interface;
-
-public interface IDomainMapperHandler
+namespace BLL.Util.Interface
 {
-    IMapper GetMapper();
+    public interface IDomainMapperHandler
+    {
+        IMapper GetMapper();
+    }
 }

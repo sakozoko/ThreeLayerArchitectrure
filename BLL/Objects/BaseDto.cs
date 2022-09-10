@@ -1,6 +1,7 @@
-﻿namespace BLL.Objects;
-
-public abstract class BaseDto
+﻿namespace BLL.Objects
 {
-    public int Id { get; set; }
+    public abstract class BaseDto
+    {
+        public int Id { get; set; }
+    }
 }

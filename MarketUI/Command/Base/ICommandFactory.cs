@@ -1,6 +1,7 @@
-﻿namespace MarketUI.Command.Base;
-
-public interface ICommandFactory
+﻿namespace MarketUI.Command.Base
 {
-    public IExecutableCommand GetCommand(string name);
+    public interface ICommandFactory
+    {
+        public IExecutableCommand GetCommand(string name);
+    }
 }

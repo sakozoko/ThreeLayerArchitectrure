@@ -3,23 +3,24 @@ using BLL.Objects;
 using BLL.Util.Interface;
 using Entities;
 
-namespace BLL.Util;
-
-public class AutoMapperHandler : IDomainMapperHandler
+namespace BLL.Util
 {
-    public IMapper GetMapper()
+    public class AutoMapperHandler : IDomainMapperHandler
     {
-        var config = new MapperConfiguration(cfg =>
+        public IMapper GetMapper()
         {
-            cfg.CreateMap<Category, CategoryEntity>();
-            cfg.CreateMap<CategoryEntity, Category>();
-            cfg.CreateMap<Product, ProductEntity>();
-            cfg.CreateMap<ProductEntity, Product>();
-            cfg.CreateMap<User, UserEntity>();
-            cfg.CreateMap<UserEntity, User>();
-            cfg.CreateMap<Order, OrderEntity>();
-            cfg.CreateMap<OrderEntity, Order>();
-        });
-        return config.CreateMapper();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Category, CategoryEntity>();
+                cfg.CreateMap<CategoryEntity, Category>();
+                cfg.CreateMap<Product, ProductEntity>();
+                cfg.CreateMap<ProductEntity, Product>();
+                cfg.CreateMap<User, UserEntity>();
+                cfg.CreateMap<UserEntity, User>();
+                cfg.CreateMap<Order, OrderEntity>();
+                cfg.CreateMap<OrderEntity, Order>();
+            });
+            return config.CreateMapper();
+        }
     }
 }

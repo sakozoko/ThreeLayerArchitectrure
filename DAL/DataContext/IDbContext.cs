@@ -1,7 +1,11 @@
-﻿namespace DAL.DataContext;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IDbContext
+namespace DAL.DataContext
 {
-    public IList<T> Set<T>();
-    public Task Save();
+    public interface IDbContext
+    {
+        public IList<T> Set<T>();
+        public Task Save();
+    }
 }

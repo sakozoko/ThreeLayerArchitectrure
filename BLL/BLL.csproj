@@ -2,19 +2,18 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <LangVersion>latestmajor</LangVersion>
+        <LangVersion>8</LangVersion>
         <Configurations>Debug;Release;test</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DAL\DAL.csproj"/>
+        <ProjectReference Include="..\DAL\DAL.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="11.0.1"/>
+        <PackageReference Include="AutoMapper" Version="11.0.1" />
     </ItemGroup>
 
 </Project>

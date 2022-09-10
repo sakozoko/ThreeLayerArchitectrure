@@ -1,6 +1,7 @@
-﻿namespace MarketUI.Command.Base;
-
-public interface IDescriptiveCommand
+﻿namespace MarketUI.Command.Base
 {
-    public string GetHelp();
+    public interface IDescriptiveCommand
+    {
+        public string GetHelp();
+    }
 }

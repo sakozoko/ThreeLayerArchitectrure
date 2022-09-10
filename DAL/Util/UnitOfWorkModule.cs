@@ -1,13 +1,14 @@
 ﻿using Autofac;
 using DAL.DataContext;
 
-namespace DAL.Util;
-
-public class UnitOfWorkModule : Module
+namespace DAL.Util
 {
-    protected override void Load(ContainerBuilder builder)
+    public class UnitOfWorkModule : Module
     {
-        builder.RegisterType<DbContext>().As<IDbContext>().SingleInstance();
-        builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder.RegisterType<DbContext>().As<IDbContext>().SingleInstance();
+            builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+        }
     }
 }

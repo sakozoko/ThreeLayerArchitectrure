@@ -1,6 +1,7 @@
-﻿namespace BLL.Objects;
-
-public class Category : BaseDto
+﻿namespace BLL.Objects
 {
-    public string Name { get; set; }
+    public class Category : BaseDto
+    {
+        public string Name { get; set; }
+    }
 }

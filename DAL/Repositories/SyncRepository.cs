@@ -1,10 +1,11 @@
-﻿namespace DAL.Repositories;
-
-internal class SyncRepository
+﻿namespace DAL.Repositories
 {
-    protected static readonly object Obj = new();
-
-    protected SyncRepository()
+    internal class SyncRepository
     {
+        protected static readonly object Obj = new object();
+
+        protected SyncRepository()
+        {
+        }
     }
 }

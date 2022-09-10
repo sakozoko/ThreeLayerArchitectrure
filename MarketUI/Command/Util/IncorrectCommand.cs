@@ -1,11 +1,12 @@
 ﻿using MarketUI.Command.Base;
 
-namespace MarketUI.Command.Util;
-
-public class IncorrectCommand : IExecutableCommand
+namespace MarketUI.Command.Util
 {
-    public string Execute(string[] args)
+    public class IncorrectCommand : IExecutableCommand
     {
-        return "Write h or help to help about commands";
+        public string Execute(string[] args)
+        {
+            return "Write h or help to help about commands";
+        }
     }
 }

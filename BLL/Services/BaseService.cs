@@ -6,54 +6,55 @@ using BLL.Services.Exception;
 using DAL;
 using Entities;
 
-namespace BLL.Services;
-
-public class BaseService
+namespace BLL.Services
 {
-    protected readonly ILogger Logger;
-    protected readonly IMapper Mapper;
-    protected readonly ITokenHandler TokenHandler;
-    protected readonly IUnitOfWork UnitOfWork;
-
-    protected BaseService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
+    public class BaseService
     {
-        UnitOfWork = unitOfWork;
-        TokenHandler = tokenHandler;
-        Logger = logger;
-        Mapper = mapper;
-    }
+        protected readonly ILogger Logger;
+        protected readonly IMapper Mapper;
+        protected readonly ITokenHandler TokenHandler;
+        protected readonly IUnitOfWork UnitOfWork;
 
-    protected void LogAndThrowAuthenticationException(string msg, [CallerMemberName] string callerName = "")
-    {
-        var ex = new AuthenticationException(msg)
+        protected BaseService(IUnitOfWork unitOfWork, ITokenHandler tokenHandler, ILogger logger, IMapper mapper)
         {
-            Data =
+            UnitOfWork = unitOfWork;
+            TokenHandler = tokenHandler;
+            Logger = logger;
+            Mapper = mapper;
+        }
+
+        protected void LogAndThrowAuthenticationException(string msg, [CallerMemberName] string callerName = "")
+        {
+            var ex = new AuthenticationException(msg)
             {
-                ["type"] = GetType(),
-                ["callerName"] = callerName
-            }
-        };
-        Logger.Log(ex);
-        throw ex;
-    }
+                Data =
+                {
+                    ["type"] = GetType(),
+                    ["callerName"] = callerName
+                }
+            };
+            Logger.Log(ex);
+            throw ex;
+        }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(UserEntity requestUserEntity,
-        [CallerMemberName] string callerName = "")
-    {
-        ThrowAuthenticationExceptionIfUserIsNull(requestUserEntity, callerName);
-        ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUserEntity, callerName);
-    }
+        protected void ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(UserEntity requestUserEntity,
+            [CallerMemberName] string callerName = "")
+        {
+            ThrowAuthenticationExceptionIfUserIsNull(requestUserEntity, callerName);
+            ThrowAuthenticationExceptionIfUserIsNotAdmin(requestUserEntity, callerName);
+        }
 
-    protected void ThrowAuthenticationExceptionIfUserIsNull(UserEntity requestUserEntity,
-        [CallerMemberName] string callerName = "")
-    {
-        if (requestUserEntity is null) LogAndThrowAuthenticationException("Token is bad", callerName);
-    }
+        protected void ThrowAuthenticationExceptionIfUserIsNull(UserEntity requestUserEntity,
+            [CallerMemberName] string callerName = "")
+        {
+            if (requestUserEntity is null) LogAndThrowAuthenticationException("Token is bad", callerName);
+        }
 
 
-    protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(UserEntity requestUserEntity,
-        [CallerMemberName] string callerName = "")
-    {
-        if (!requestUserEntity.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);
+        protected void ThrowAuthenticationExceptionIfUserIsNotAdmin(UserEntity requestUserEntity,
+            [CallerMemberName] string callerName = "")
+        {
+            if (!requestUserEntity.IsAdmin) LogAndThrowAuthenticationException("Do not have permission", callerName);
+        }
     }
 }

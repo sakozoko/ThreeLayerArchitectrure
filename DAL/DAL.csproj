@@ -2,24 +2,23 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
-        <LangVersion>latestmajor</LangVersion>
+        <LangVersion>8</LangVersion>
         <Configurations>Debug;Release;test</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Entities\Entities.csproj"/>
+        <ProjectReference Include="..\Entities\Entities.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Autofac" Version="6.4.0"/>
-        <PackageReference Include="Moq" Version="4.18.2"/>
+        <PackageReference Include="Autofac" Version="6.4.0" />
+        <PackageReference Include="Moq" Version="4.18.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="DataContext\MoqDbContext.cs"/>
+        <Compile Remove="DataContext\MoqDbContext.cs" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
-﻿namespace MarketUI.Models;
-
-public class BaseModel
+﻿namespace MarketUI.Models
 {
-    public int Id { get; set; }
+    public class BaseModel
+    {
+        public int Id { get; set; }
+    }
 }

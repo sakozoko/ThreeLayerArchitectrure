@@ -5,21 +5,22 @@ using Json.Net;
 using MarketUI.Models;
 using MarketUI.Util.Interface;
 
-namespace MarketUI.Util;
-
-public class CommandsInfoHandlerJson : ICommandsInfoHandler
+namespace MarketUI.Util
 {
-    private Dictionary<string, CommandInfoModel> _dictionary;
-
-    public CommandInfoModel GetCommandInfo(string commandName)
+    public class CommandsInfoHandlerJson : ICommandsInfoHandler
     {
-        if (_dictionary is null || !_dictionary.ContainsKey(commandName))
-            _dictionary =
-                JsonNet.Deserialize<Dictionary<string, CommandInfoModel>>(
-                    File.ReadAllText(@"Command/CommandsInfo.json"));
+        private Dictionary<string, CommandInfoModel> _dictionary;
 
-        if (_dictionary.ContainsKey(commandName))
-            return _dictionary[commandName];
-        throw new ArgumentException($"Json file doesnt have keys name {commandName}", nameof(commandName));
+        public CommandInfoModel GetCommandInfo(string commandName)
+        {
+            if (_dictionary is null || !_dictionary.ContainsKey(commandName))
+                _dictionary =
+                    JsonNet.Deserialize<Dictionary<string, CommandInfoModel>>(
+                        File.ReadAllText(@"Command/CommandsInfo.json"));
+
+            if (_dictionary.ContainsKey(commandName))
+                return _dictionary[commandName];
+            throw new ArgumentException($"Json file doesnt have keys name {commandName}", nameof(commandName));
+        }
     }
 }

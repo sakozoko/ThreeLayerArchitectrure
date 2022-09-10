@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 
-namespace MarketUI.Util.Interface;
-
-public interface IUserInterfaceMapperHandler
+namespace MarketUI.Util.Interface
 {
-    IMapper GetMapper();
+    public interface IUserInterfaceMapperHandler
+    {
+        IMapper GetMapper();
+    }
 }
