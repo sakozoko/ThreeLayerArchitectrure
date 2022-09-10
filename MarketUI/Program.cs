@@ -7,6 +7,7 @@ namespace MarketUI;
 
 public static class Program
 {
+    
     private static ConsoleUserInterface _consoleUserInterface;
 
     private static void Main(string[] args)
