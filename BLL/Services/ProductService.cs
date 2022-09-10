@@ -99,7 +99,6 @@ internal sealed class ProductService : BaseService, IProductService
 
     public Task<bool> ChangeCategory(string token, int categoryId, int productId)
     {
-        
         return Task<bool>.Factory.StartNew(() =>
             ChangeProperty(token, x =>
             {
@@ -121,11 +120,11 @@ internal sealed class ProductService : BaseService, IProductService
         });
     }
 
-    private bool ChangeProperty(string token, Func<ProductEntity,bool> act, int productId)
+    private bool ChangeProperty(string token, Func<ProductEntity, bool> act, int productId)
     {
         var requestUser = TokenHandler.GetUser(token);
         ThrowAuthenticationExceptionIfUserIsNullOrNotAdmin(requestUser);
-        
+
         var product = UnitOfWork.ProductRepository.GetById(productId);
         if (product is null || !act.Invoke(product)) return false;
         Logger.Log($"Admin {requestUser.Name} changed property for product id {product.Id}");
